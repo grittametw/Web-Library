@@ -4,6 +4,8 @@ import "./Home.css";
 export default function Home() {
 
   return (
-    <Sidebar />
+    <div>
+      <Sidebar />
+    </div>
   );
 }

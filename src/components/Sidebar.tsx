@@ -9,76 +9,62 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 export default function Sidebar() {
 
   return (
-    <body>
+    <div>
       <div className="d-flex flex-column flex-shrink-0 p-4" style={{ width: '300px', height: '100vh', backgroundColor: '#fff' }}>
-        <a href="/" className="d-flex justify-content-center p-2 pb-5">
-          <img src="icon_web.png" alt="" width={'140px'} />
+        <a href="/" className="d-flex align-items-center p-2 pb-4 gap-3">
+          <img src="icon_web.png" alt="" width={'48px'} />
+          Web - Library
         </a>
 
         <div className="nav-pills flex-column mb-auto">
-          <ul className="nav p-4 gap-2" style={{ borderBottom: '1px solid #ebedf4' }}>
-            <li className="nav-item d-flex align-items-center">
-              <a href="#" className="nav-link active p-2" aria-current="page">
+          <ul className="nav p-2 pb-4 gap-2" style={{ borderBottom: '1px solid #ebedf4' }}>
+            <li className="nav-item" style={{ width: '100%' }}>
+              <a href="#" className="nav-link active d-flex align-items-center gap-4" aria-current="page" style={{ fontSize: '24px' }}>
                 <HomeOutlinedIcon />
-              </a>
-              <a href="#" className="nav-link" aria-current="page">
                 Home
               </a>
             </li>
-            <li className="d-flex align-items-center">
-              <a href="#" className="nav-link disabled p-2">
+            <li style={{ width: '100%' }}>
+              <a href="#" className="nav-link d-flex align-items-center gap-4" style={{ fontSize: '24px' }}>
                 <CategoryOutlinedIcon />
-              </a>
-              <a href="#" className="nav-link disabled">
                 Category
               </a>
             </li>
-            <li className="d-flex align-items-center">
-              <a href="#" className="nav-link disabled p-2">
+            <li style={{ width: '100%' }}>
+              <a href="#" className="nav-link d-flex align-items-center gap-4" style={{ fontSize: '24px' }}>
                 <LocalLibraryOutlinedIcon />
-              </a>
-              <a href="#" className="nav-link disabled">
                 My Library
               </a>
             </li>
-            <li className="d-flex align-items-center">
-              <a href="#" className="nav-link disabled p-2">
+            <li style={{ width: '100%' }}>
+              <a href="#" className="nav-link d-flex align-items-center gap-4" style={{ fontSize: '24px' }}>
                 <FavoriteBorderOutlinedIcon />
-              </a>
-              <a href="#" className="nav-link disabled">
                 Favourite
               </a>
             </li>
           </ul>
-          <ul className="nav p-4 gap-2">
-            <li className="d-flex align-items-center">
-              <a href="#" className="nav-link disabled p-2">
+          <ul className="nav p-2 pt-4gap-2" style={{ fontSize: '24px' }}>
+            <li style={{ width: '100%' }}>
+              <a href="#" className="nav-link d-flex align-items-center gap-4" style={{ fontSize: '24px' }}>
                 <SettingsOutlinedIcon />
-              </a>
-              <a href="#" className="nav-link disabled">
                 Settings
               </a>
             </li>
-            <li className="d-flex align-items-center">
-              <a href="#" className="nav-link disabled p-2">
+            <li style={{ width: '100%' }}>
+              <a href="#" className="nav-link d-flex align-items-center gap-4" style={{ fontSize: '24px' }}>
                 <SupportAgentOutlinedIcon />
-              </a>
-              <a href="#" className="nav-link disabled">
                 Support
               </a>
             </li>
-            <li className="d-flex align-items-center">
-              <a href="#" className="nav-link disabled p-2">
+            <li style={{ width: '100%' }}>
+              <a href="#" className="nav-link d-flex align-items-center gap-4" style={{ fontSize: '24px' }}>
                 <LogoutOutlinedIcon />
-              </a>
-              <a href="#" className="nav-link disabled">
                 Logout
               </a>
             </li>
           </ul>
         </div>
-
       </div>
-    </body>
+    </div>
   );
 }
