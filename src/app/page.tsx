@@ -1,5 +1,5 @@
 import Sidebar from "@/components/Sidebar";
-import "./Home.css";
+import "@/styles/home.css";
 
 export default function Home() {
 
