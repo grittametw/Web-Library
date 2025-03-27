@@ -3,7 +3,7 @@
 import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
 import {
   HomeOutlined, CategoryOutlined, LocalLibraryOutlined, FavoriteBorderOutlined,
-  SettingsOutlined, SupportAgentOutlined, LogoutOutlined, Menu
+  SettingsOutlined, SupportAgentOutlined, LogoutOutlined
 } from '@mui/icons-material';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,14 +15,13 @@ export default function Sidebar() {
   return (
 
     <Box
-      className="sidebar d-flex flex-column position-fixed top-0 p-4"
+      className="sidebar d-flex flex-column p-4 shadow z-1"
       sx={{ width: '100%', maxWidth: 300, minHeight: '100vh', backgroundColor: '#fff' }}>
-      <Grid2 className="d-flex justify-content-between align-items-center p-2 pb-4">
+      <Grid2 className="d-flex justify-content-center align-items-center p-2 pb-4">
         <Link href="/" className="d-flex align-items-center gap-2">
           <Image src="/icon_web.png" alt="" width={48} height={48} />
           <Typography fontWeight={600} fontSize={20}>Web - Library</Typography>
         </Link>
-        <Menu sx={{ fontSize: '24px' }} />
       </Grid2>
 
       <Grid2 className="nav-pills flex-column mb-auto">

@@ -1,11 +1,14 @@
 import Sidebar from "@/components/Sidebar";
+import Navbar from '@/components/Navbar';
 import "@/styles/home.css";
+import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
 
 export default function Home() {
 
   return (
-    <div>
+    <Box className="d-flex">
       <Sidebar />
-    </div>
+      <Navbar />
+    </Box>
   );
 }

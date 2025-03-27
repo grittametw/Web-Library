@@ -1,6 +1,7 @@
 'use client'
 
-import { Box, Autocomplete, TextField, Grid2, Typography, } from '@mui/material';
+import { Box, Autocomplete, TextField, Grid2, Typography, Input, IconButton, InputBase } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { NotificationsOutlined } from '@mui/icons-material';
 import Image from 'next/image';
 
@@ -11,24 +12,22 @@ export default function Navbar() {
     ]
 
     return (
-        <Box className="d-flex justify-content-between align-items-center p-3 px-5 pt-4" sx={{  backgroundColor: '#fff' }}>
-            <Autocomplete
-                freeSolo
-                options={top100books.map((option) => option.title)}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        sx={{ width: '300px' }}
-                        label="Search input"
-                        slotProps={{
-                            input: {
-                                ...params.InputProps,
-                                type: 'search',
-                            },
-                        }}
-                    />
-                )}
-            />
+        <Box
+            className="d-flex justify-content-between align-items-center p-3 px-5 pt-4 shadow"
+            sx={{ width: '100%', height: '100%', backgroundColor: '#fff' }}>
+            <Box
+                component="form"
+                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400, backgroundColor: '#f1f3f4', borderRadius: '8px' }}
+            >
+                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                    <SearchIcon />
+                </IconButton>
+                <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Search books"
+                    inputProps={{ 'aria-label': 'search google maps' }}
+                />
+            </Box>
 
             <Grid2 className="d-flex align-items-center gap-2">
                 <NotificationsOutlined />
