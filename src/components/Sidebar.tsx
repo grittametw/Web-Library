@@ -16,14 +16,14 @@ export default function Sidebar() {
 
     <Box
       className="sidebar d-flex flex-column p-4 shadow z-1"
-      sx={{ width: '100%', maxWidth: 300, minHeight: '100vh', backgroundColor: '#fff' }}>
+      sx={{ width: '100%', maxWidth: 300, minHeight: '100vh', backgroundColor: '#fff' }}
+    >
       <Grid2 className="d-flex justify-content-center align-items-center p-2 pb-4">
         <Link href="/" className="d-flex align-items-center gap-3">
           <Image src="/icon_web.png" alt="" width={48} height={48} />
           <Typography fontWeight={600} fontSize={20}>Web - Library</Typography>
         </Link>
       </Grid2>
-
       <Grid2 className="nav-pills flex-column mb-auto">
         <List className="nav pb-4" sx={{ borderBottom: '1px solid #ebedf4' }}>
           <ListItem className="nav-item">
