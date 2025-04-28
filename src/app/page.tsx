@@ -8,13 +8,13 @@ import { Box, Grid2, Typography, Button, Paper } from '@mui/material';
 import { Sort } from '@mui/icons-material';
 
 interface Book {
-  id: number;
-  name: string;
-  author: string;
-  story: string;
-  image: string;
-  price: number;
-  rate: number;
+  id: number
+  name: string
+  author: string
+  story: string
+  image: string
+  price: number
+  rate: number
 }
 
 export default function Home() {
@@ -22,11 +22,10 @@ export default function Home() {
   const [books, setBooks] = useState<Book[]>([]);
 
   useEffect(() => {
-    // Fetch data from API
-    fetch('http://localhost:5000/api/books')
+    fetch('/api/books')
       .then((response) => response.json())
       .then((data) => setBooks(data))
-      .catch((error) => console.error('Error fetching books:', error));
+      .catch((error) => console.error('Error fetching books:', error))
   }, []);
 
   return (
