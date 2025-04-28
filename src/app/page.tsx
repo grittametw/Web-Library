@@ -1,10 +1,32 @@
+'use client'
+
+import { useEffect, useState } from 'react';
 import Sidebar from "@/components/Sidebar";
 import Navbar from '@/components/Navbar';
 import "@/styles/home.css";
 import { Box, Grid2, Typography, Button, Paper } from '@mui/material';
 import { Sort } from '@mui/icons-material';
 
+interface Book {
+  id: number
+  name: string
+  author: string
+  story: string
+  image: string
+  price: number
+  rate: number
+}
+
 export default function Home() {
+
+  const [books, setBooks] = useState<Book[]>([]);
+
+  useEffect(() => {
+    fetch('/api/books')
+      .then((response) => response.json())
+      .then((data) => setBooks(data))
+      .catch((error) => console.error('Error fetching books:', error))
+  }, []);
 
   return (
     <Box className="d-flex">
@@ -60,9 +82,18 @@ export default function Home() {
                 </Button>
               </Grid2>
               <Grid2>
-                <Paper>
-                  image/price/name/author/rate/button
-                </Paper>
+                {books.map((book) => (
+                  <Paper key={book.id} className="d-flex gap-4 p-4" sx={{ marginBottom: '16px', borderRadius: '8px' }}>
+                    <img src={book.image} alt={book.name} style={{ width: '100px', height: '150px', objectFit: 'cover' }} />
+                    <Box className="d-flex flex-column">
+                      <Typography fontWeight={600} fontSize={18}>{book.name}</Typography>
+                      <Typography fontSize={16}>Author: {book.author}</Typography>
+                      <Typography fontSize={16}>Price: ${book.price}</Typography>
+                      <Typography fontSize={16}>Rate: {book.rate}</Typography>
+                      <Button variant="contained" sx={{ marginTop: '8px', borderRadius: '8px' }}>View Details</Button>
+                    </Box>
+                  </Paper>
+                ))}
               </Grid2>
             </Box>
           </Grid2>
