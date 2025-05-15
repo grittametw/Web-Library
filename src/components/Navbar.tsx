@@ -9,7 +9,7 @@ export default function Navbar() {
 
     return (
         <Box
-            className="d-flex justify-content-between align-items-center p-3 px-4 pt-4 shadow"
+            className="d-flex justify-content-between align-items-center p-3 px-4 pt-4 shadow z-1"
             sx={{ width: '100%',  backgroundColor: '#fff' }}>
             <Box
                 component="form"

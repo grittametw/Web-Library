@@ -2,7 +2,7 @@
 
 import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
 import {
-  HomeOutlined, CategoryOutlined, LocalLibraryOutlined, FavoriteBorderOutlined,
+  HomeOutlined, CategoryOutlined, LocalLibraryOutlined, FavoriteBorder,
   SettingsOutlined, SupportAgentOutlined, LogoutOutlined
 } from '@mui/icons-material';
 import Link from 'next/link';
@@ -15,7 +15,7 @@ export default function Sidebar() {
   return (
 
     <Box
-      className="sidebar d-flex flex-column p-4 shadow z-1"
+      className="sidebar d-flex flex-column p-4 shadow z-2"
       sx={{ width: '100%', maxWidth: 300, minHeight: '100vh', backgroundColor: '#fff' }}
     >
       <Grid2 className="d-flex justify-content-center align-items-center p-2 pb-4">
@@ -25,7 +25,7 @@ export default function Sidebar() {
         </Link>
       </Grid2>
       <Grid2 className="nav-pills flex-column mb-auto">
-        <List className="nav pb-4" sx={{ borderBottom: '1px solid #ebedf4' }}>
+        <List className="nav pb-4" sx={{ borderBottom: '1px solid #ccc' }}>
           <ListItem className="nav-item">
             <Link
               href="/"
@@ -55,11 +55,11 @@ export default function Sidebar() {
           </ListItem>
           <ListItem>
             <Link
-              href="/favourite"
-              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/favourite' ? 'active' : ''}`}
+              href="/favorite"
+              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/favorite' ? 'active' : ''}`}
               style={{ width: '100%' }}>
-              <FavoriteBorderOutlined />
-              <Typography fontSize={24}>Favourite</Typography>
+              <FavoriteBorder />
+              <Typography fontSize={24}>Favorite</Typography>
             </Link>
           </ListItem>
         </List>
