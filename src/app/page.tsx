@@ -17,12 +17,16 @@ interface Book {
   rate: number
 }
 
+interface CartItem extends Book {
+  quantity: number;
+}
+
 export default function Home() {
 
   const [books, setBooks] = useState<Book[]>([])
   const [favorites, setFavorites] = useState<number[]>([])
   const [value, setValue] = useState<number | null>()
-  const [isToggled, setIsToggled] = useState(false);
+  const [cart, setCart] = useState<CartItem[]>([])
 
   useEffect(() => {
     fetch('/api/books')
@@ -39,9 +43,38 @@ export default function Home() {
     )
   }
 
-  const handleToggle = () => {
-    setIsToggled(!isToggled);
-  };
+  const handleAddToCart = (book: Book) => {
+    setCart((prevCart) => {
+      const found = prevCart.find(item => item.id === book.id)
+      if (found) return prevCart
+      return [...prevCart, { ...book, quantity: 1 }]
+    })
+  }
+
+  const handleIncrease = (bookId: number) => {
+    setCart((prevCart) =>
+      prevCart.map(item =>
+        item.id === bookId ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    )
+  }
+
+  const handleDecrease = (bookId: number) => {
+    setCart((prevCart) =>
+      prevCart
+        .map(item =>
+          item.id === bookId ? { ...item, quantity: item.quantity - 1 } : item
+        )
+        .filter(item => item.quantity > 0)
+    )
+  }
+
+  const getCartQuantity = (bookId: number) => {
+    const found = cart.find(item => item.id === bookId)
+    return found ? found.quantity : 0
+  }
+
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   return (
     <Box className="d-flex">
@@ -97,50 +130,69 @@ export default function Home() {
                 </Button>
               </Grid2>
               <Grid2 className="d-flex gap-4" sx={{ overflowX: 'auto' }}>
-                {books.map((book) => (
-                  <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }}>
-                    <Grid2 className="d-flex justify-content-end pt-2 px-2">
-                      <IconButton disableRipple onClick={() => toggleFavorite(book.id)}>
-                        {favorites.includes(book.id) ? <Favorite color="error" /> : <FavoriteBorder />}
-                      </IconButton>
-                    </Grid2>
-                    <Grid2 className="d-flex gap-4 p-4 pt-0">
-                      <Image src={book.image} alt={book.name} width={100} height={150} />
-                      <Box className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
-                        <Grid2>
-                          <Typography fontWeight={600} fontSize={16} width={160}>{book.name}</Typography>
-                          <Typography fontSize={14}>Author: {book.author}</Typography>
-                          <Typography fontSize={14}>Price: ฿{book.price}</Typography>
-                          <Typography fontSize={14} className="d-flex">
-                            Rate: <Rating name="read-only" value={value} readOnly size="small" />{book.rate}
-                          </Typography>
-                        </Grid2>
-                        <Grid2 className="d-flex align-items-center gap-3">
-                          <Button variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
-                            <Typography fontSize={14}>-</Typography>
-                          </Button>
-                          <Typography fontSize={14}>0</Typography>
-                          <Button variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
-                            <Typography fontSize={14}>+</Typography>
-                          </Button>
-                        </Grid2>
-                      </Box>
-                    </Grid2>
-                  </Paper>
-                ))}
+                {books.map((book) => {
+                  const quantity = getCartQuantity(book.id)
+                  return (
+                    <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }}>
+                      <Grid2 className="d-flex justify-content-end pt-2 px-2">
+                        <IconButton disableRipple onClick={() => toggleFavorite(book.id)}>
+                          {favorites.includes(book.id) ? <Favorite color="error" /> : <FavoriteBorder />}
+                        </IconButton>
+                      </Grid2>
+                      <Grid2 className="d-flex gap-4 p-4 pt-0">
+                        <Image src={book.image} alt={book.name} width={100} height={150} />
+                        <Box className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
+                          <Grid2>
+                            <Typography fontWeight={600} fontSize={16} width={160}>{book.name}</Typography>
+                            <Typography fontSize={14}>Author: {book.author}</Typography>
+                            <Typography fontSize={14}>Price: ฿{book.price}</Typography>
+                            <Typography fontSize={14} className="d-flex">
+                              Rate: <Rating name="read-only" value={value} readOnly size="small" />{book.rate}
+                            </Typography>
+                          </Grid2>
+                          <Grid2 className="d-flex align-items-center gap-3">
+                            {quantity === 0 ? (
+                              <Button onClick={() => handleAddToCart(book)} variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
+                                <Typography fontSize={14}>Add to cart</Typography>
+                              </Button>
+                            ) : (
+                              <>
+                                <Button onClick={() => handleDecrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
+                                  <Typography fontSize={14}>-</Typography>
+                                </Button>
+                                <Typography fontSize={14}>{quantity}</Typography>
+                                <Button onClick={() => handleIncrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
+                                  <Typography fontSize={14}>+</Typography>
+                                </Button>
+                              </>
+                            )}
+                          </Grid2>
+                        </Box>
+                      </Grid2>
+                    </Paper>
+                  )
+                })}
               </Grid2>
             </Box>
           </Grid2>
           <Box className="cart d-flex flex-column align-items-center p-2" sx={{ backgroundColor: '#fff' }}>
             <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%', paddingBottom: '16px' }}>
               <Typography>Total</Typography>
-              <Typography>฿ </Typography>
+              <Typography>฿ {totalPrice}</Typography>
               <Button sx={{ width: '160px', marginTop: '8px', border: 'solid 1px #000', borderRadius: '8px', textTransform: 'none' }}>
                 <Typography fontSize={14} color='#000'>Go to cart</Typography>
               </Button>
             </Box>
             <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%', paddingBottom: '16px' }}>
               <Image src="/icon_web.png" alt="" width={48} height={48} />
+              {cart.map(item => (
+                <Box key={item.id} className="d-flex align-items-center gap-2 mt-2">
+                  <Image src={item.image} alt={item.name} width={32} height={48} />
+                  <Typography fontSize={14}>{item.name}</Typography>
+                  <Typography fontSize={14}>x{item.quantity}</Typography>
+                  <Typography fontSize={14}>฿{item.price * item.quantity}</Typography>
+                </Box>
+              ))}
               <Button sx={{ width: '160px', marginTop: '8px', border: 'solid 1px #000', borderRadius: '8px', textTransform: 'none' }}>
                 <Typography fontSize={14} color='#000'>sss</Typography>
               </Button>

@@ -2,7 +2,7 @@
 
 import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
 import {
-  HomeOutlined, CategoryOutlined, LocalLibraryOutlined, FavoriteBorder,
+  HomeOutlined, CategoryOutlined, ShoppingCartOutlined, FavoriteBorder,
   SettingsOutlined, SupportAgentOutlined, LogoutOutlined
 } from '@mui/icons-material';
 import Link from 'next/link';
@@ -46,11 +46,10 @@ export default function Sidebar() {
           </ListItem>
           <ListItem>
             <Link
-              href="/library"
-              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/library' ? 'active' : ''}`}
+              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/mycart' ? 'active' : ''}`}
               style={{ width: '100%' }}>
-              <LocalLibraryOutlined />
-              <Typography fontSize={24}>My Library</Typography>
+              <ShoppingCartOutlined />
+              <Typography fontSize={24}>My Cart</Typography>
             </Link>
           </ListItem>
           <ListItem>
