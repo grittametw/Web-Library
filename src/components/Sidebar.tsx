@@ -46,6 +46,7 @@ export default function Sidebar() {
           </ListItem>
           <ListItem>
             <Link
+              href="/mycart"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/mycart' ? 'active' : ''}`}
               style={{ width: '100%' }}>
               <ShoppingCartOutlined />
