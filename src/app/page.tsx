@@ -7,6 +7,7 @@ import '@/styles/home.css';
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton } from '@mui/material';
 import { Sort, FavoriteBorder, Favorite } from '@mui/icons-material';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface Book {
   id: number
@@ -27,6 +28,7 @@ export default function Home() {
   const [favorites, setFavorites] = useState<number[]>([])
   const [value, setValue] = useState<number | null>()
   const [cart, setCart] = useState<CartItem[]>([])
+  const [isCartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/books')
@@ -34,6 +36,14 @@ export default function Home() {
       .then((data) => setBooks(data))
       .catch((error) => console.error('Error fetching books:', error))
   }, [])
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      setCartOpen(true);
+    } else {
+      setCartOpen(false);
+    }
+  }, [cart]);
 
   const toggleFavorite = (bookId: number) => {
     setFavorites((prevFavorites) =>
@@ -77,11 +87,11 @@ export default function Home() {
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   return (
-    <Box className="d-flex">
+    <Box className="main-layout d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
       <Sidebar />
-      <Grid2 className="d-flex flex-column" sx={{ width: '100%' }}>
+      <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
         <Navbar />
-        <Grid2 className="d-flex">
+        <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
           <Grid2 className="d-flex flex-column gap-4 my-4" sx={{ width: '100%' }}>
             <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               <Typography fontWeight={600} fontSize={20}>Recommended</Typography>
@@ -143,7 +153,11 @@ export default function Home() {
                         <Image src={book.image} alt={book.name} width={100} height={150} />
                         <Box className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
                           <Grid2>
-                            <Typography fontWeight={600} fontSize={16} width={160}>{book.name}</Typography>
+                            <Link href="/" className="text-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+                              <Typography fontWeight={600} fontSize={16} width={160}>
+                                {book.name}
+                              </Typography>
+                            </Link>
                             <Typography fontSize={14}>Author: {book.author}</Typography>
                             <Typography fontSize={14}>Price: ฿{book.price}</Typography>
                             <Typography fontSize={14} className="d-flex">
@@ -152,16 +166,16 @@ export default function Home() {
                           </Grid2>
                           <Grid2 className="d-flex align-items-center gap-3">
                             {quantity === 0 ? (
-                              <Button onClick={() => handleAddToCart(book)} variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
+                              <Button onClick={() => handleAddToCart(book)} variant="contained" sx={{ width: '100%', borderRadius: '8px', textTransform: 'none' }}>
                                 <Typography fontSize={14}>Add to cart</Typography>
                               </Button>
                             ) : (
                               <>
-                                <Button onClick={() => handleDecrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
+                                <Button onClick={() => handleDecrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px' }}>
                                   <Typography fontSize={14}>-</Typography>
                                 </Button>
                                 <Typography fontSize={14}>{quantity}</Typography>
-                                <Button onClick={() => handleIncrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px', textTransform: 'none' }}>
+                                <Button onClick={() => handleIncrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px' }}>
                                   <Typography fontSize={14}>+</Typography>
                                 </Button>
                               </>
@@ -175,28 +189,42 @@ export default function Home() {
               </Grid2>
             </Box>
           </Grid2>
-          <Box className="cart d-flex flex-column align-items-center p-2" sx={{ backgroundColor: '#fff' }}>
-            <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%', paddingBottom: '16px' }}>
-              <Typography>Total</Typography>
-              <Typography>฿ {totalPrice}</Typography>
-              <Button sx={{ width: '160px', marginTop: '8px', border: 'solid 1px #000', borderRadius: '8px', textTransform: 'none' }}>
-                <Typography fontSize={14} color='#000'>Go to cart</Typography>
-              </Button>
-            </Box>
-            <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%', paddingBottom: '16px' }}>
-              <Image src="/icon_web.png" alt="" width={48} height={48} />
-              {cart.map(item => (
-                <Box key={item.id} className="d-flex align-items-center gap-2 mt-2">
-                  <Image src={item.image} alt={item.name} width={32} height={48} />
-                  <Typography fontSize={14}>{item.name}</Typography>
-                  <Typography fontSize={14}>x{item.quantity}</Typography>
-                  <Typography fontSize={14}>฿{item.price * item.quantity}</Typography>
+          <Box className={`Cartbar ${isCartOpen ? 'cart-open' : ''}`} sx={{ backgroundColor: '#fff' }}>
+            {isCartOpen && (
+              <>
+                <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%', paddingBottom: '16px' }}>
+                  <Typography>Total</Typography>
+                  <Typography>฿ {totalPrice}</Typography>
+                  <Button sx={{ width: '160px', marginTop: '8px', border: 'solid 1px #000', borderRadius: '8px', textTransform: 'none' }}>
+                    <Typography fontSize={14} color='#000'>Go to cart</Typography>
+                  </Button>
                 </Box>
-              ))}
-              <Button sx={{ width: '160px', marginTop: '8px', border: 'solid 1px #000', borderRadius: '8px', textTransform: 'none' }}>
-                <Typography fontSize={14} color='#000'>sss</Typography>
-              </Button>
-            </Box>
+                <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%' }}>
+                  {cart.map(item => {
+                    const quantity = getCartQuantity(item.id)
+                    return (
+                      <Box key={item.id} className="d-flex flex-column align-items-center p-2">
+                        <Grid2 className="d-flex justify-content-between align-items-center gap-2" sx={{ width: '100%' }}>
+                          <Image src={item.image} alt={item.name} width={48} height={72} />
+                          <Typography fontSize={14}>{item.name}</Typography>
+                          <Typography fontSize={14}>x{item.quantity}</Typography>
+                          <Typography fontSize={14}>฿{item.price * item.quantity}</Typography>
+                        </Grid2>
+                        <Box className="d-flex justify-content-center align-items-center gap-2 mt-2" sx={{border: 'solid 1px #ccc', borderRadius: '8px' }}>
+                          <Button onClick={() => handleDecrease(item.id)} sx={{ width: 'auto', borderRadius: '8px', border: 'none', borderhover: 'none' }}>
+                            <Typography fontSize={14}>-</Typography>
+                          </Button>
+                          <Typography fontSize={14}>{quantity}</Typography>
+                          <Button onClick={() => handleIncrease(item.id)} sx={{ width: 'auto', borderRadius: '8px', }}>
+                            <Typography fontSize={14}>+</Typography> 
+                          </Button>
+                        </Box>
+                      </Box>
+                    )
+                  })}
+                </Box>
+              </>
+            )}
           </Box>
         </Grid2>
 
