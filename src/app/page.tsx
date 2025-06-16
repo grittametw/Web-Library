@@ -22,7 +22,7 @@ interface CartItem extends Book {
   quantity: number;
 }
 
-export default function Home() {
+export default function HomePage() {
 
   const [books, setBooks] = useState<Book[]>([])
   const [favorites, setFavorites] = useState<number[]>([])
@@ -85,10 +85,11 @@ export default function Home() {
   }
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <Box className="main-layout d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
-      <Sidebar />
+      <Sidebar cartCount={cartCount}/>
       <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
         <Navbar />
         <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
@@ -210,13 +211,13 @@ export default function Home() {
                           <Typography fontSize={14}>x{item.quantity}</Typography>
                           <Typography fontSize={14}>฿{item.price * item.quantity}</Typography>
                         </Grid2>
-                        <Box className="d-flex justify-content-center align-items-center gap-2 mt-2" sx={{border: 'solid 1px #ccc', borderRadius: '8px' }}>
+                        <Box className="d-flex justify-content-center align-items-center gap-2 mt-2" sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
                           <Button onClick={() => handleDecrease(item.id)} sx={{ width: 'auto', borderRadius: '8px', border: 'none', borderhover: 'none' }}>
                             <Typography fontSize={14}>-</Typography>
                           </Button>
                           <Typography fontSize={14}>{quantity}</Typography>
                           <Button onClick={() => handleIncrease(item.id)} sx={{ width: 'auto', borderRadius: '8px', }}>
-                            <Typography fontSize={14}>+</Typography> 
+                            <Typography fontSize={14}>+</Typography>
                           </Button>
                         </Box>
                       </Box>

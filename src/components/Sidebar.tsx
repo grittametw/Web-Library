@@ -9,7 +9,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
-export default function Sidebar() {
+interface SidebarProps {
+  cartCount?: number;
+}
+
+export default function Sidebar({ cartCount }: SidebarProps) {
   const currentPath = usePathname()
 
   return (
@@ -20,7 +24,7 @@ export default function Sidebar() {
     >
       <Grid2 className="d-flex justify-content-center align-items-center p-2 pb-4">
         <Link href="/" className="d-flex align-items-center gap-3 text-decoration-none text-dark">
-          <Image src="/icon_web.png" alt="" width={48} height={48} />
+          <Image src="/favicon.ico" alt="" width={48} height={48} />
           <Typography fontWeight={600} fontSize={20}>Web - Library</Typography>
         </Link>
       </Grid2>
@@ -50,7 +54,23 @@ export default function Sidebar() {
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/mycart' ? 'active' : ''}`}
               style={{ width: '100%' }}>
               <ShoppingCartOutlined />
-              <Typography fontSize={24}>My Cart</Typography>
+              <Grid2 className="d-flex justify-content-between align-items-center w-100">
+                <Typography fontSize={24}>My Cart</Typography>
+                {cartCount !== undefined && cartCount > 0 && (
+                  <Box
+                    sx={{
+                      padding: '0 12px',
+                      background: '#ff0f0f',
+                      color: '#fff',
+                      borderRadius: '24px',
+                      fontSize: '24px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {cartCount}
+                  </Box>
+                )}
+              </Grid2>
             </Link>
           </ListItem>
           <ListItem>

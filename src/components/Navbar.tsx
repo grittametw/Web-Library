@@ -3,7 +3,6 @@
 import { Box, Grid2, Typography, IconButton, InputBase, Avatar } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { NotificationsOutlined, Person } from '@mui/icons-material';
-import Image from 'next/image';
 
 export default function Navbar() {
 
