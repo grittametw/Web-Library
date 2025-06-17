@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import '@/styles/login.css';
 import { Box, Typography, FormControl, TextField, Button, Grid2, Icon } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -11,45 +12,62 @@ export default function LoginPage() {
   const [emailErrorMessage, setEmailErrorMessage] = useState('')
   const [passwordError, setPasswordError] = useState(false)
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+  const [loading, setLoading] = useState(false);
 
-  const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
+  const validateInputs = (email: string, password: string) => {
+    let isValid = true
 
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setEmailError(true)
+      setEmailErrorMessage('Please enter a valid email address.')
+      isValid = false
     } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
+      setEmailError(false)
+      setEmailErrorMessage('')
     }
 
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
+    if (!password || password.length < 6) {
+      setPasswordError(true)
+      setPasswordErrorMessage('Password must be at least 6 characters long.')
+      isValid = false
     } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
+      setPasswordError(false)
+      setPasswordErrorMessage('')
     }
 
-    return isValid;
-  };
+    return isValid
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setLoginError('')
+    const data = new FormData(event.currentTarget)
+    const email = data.get('email') as string
+    const password = data.get('password') as string
+
+    if (!validateInputs(email, password)) return
+
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        router.push('/')
+      } else {
+        const result = await res.json()
+        setLoginError(result.error || 'Login failed')
+      }
+    } catch (err) {
+      setLoginError('Network error')
+    }
+    setLoading(false)
+  }
 
   return (
     <Box className="d-flex justify-content-center align-items-center gap-5" sx={{ height: '100vh' }}>
@@ -87,7 +105,7 @@ export default function LoginPage() {
         <Box
           component="form"
           onSubmit={handleSubmit}
-          className="d-flex flex-column gap-2 my-4"
+          className="d-flex flex-column gap-2 mt-4"
           sx={{ width: '100%' }}
         >
           <FormControl>
@@ -124,21 +142,23 @@ export default function LoginPage() {
           </FormControl>
           <Link
             href="/"
-            className="d-flex justify-content-end text-decoration-none"
+            className="d-flex justify-content-end text-decoration-none mb-4"
           >
             <Typography className="forgotpassword" fontSize={14} sx={{ color: '#000' }}>Forgot Password?</Typography>
           </Link>
+          {loginError && (
+            <Typography color="error" fontSize={14}>{loginError}</Typography>
+          )}
+          <Button
+            variant="contained"
+            type="submit"
+            fullWidth
+            disabled={loading}
+            className="d-flex align-items-center p-3 px-4"
+            sx={{ borderRadius: '4px' }}>
+            <Typography>{loading ? 'Signing in...' : 'Sign in'}</Typography>
+          </Button>
         </Box>
-
-        <Button
-          variant="contained"
-          type="submit"
-          fullWidth
-          onClick={validateInputs}
-          className="d-flex align-items-center p-3 px-4"
-          sx={{ borderRadius: '4px' }}>
-          <Typography>Sign in</Typography>
-        </Button>
 
         <Box className="d-flex align-items-center w-100 my-2" sx={{ gap: 2 }}>
           <Box sx={{ flex: 1, height: 2, backgroundColor: '#ccc' }} />
