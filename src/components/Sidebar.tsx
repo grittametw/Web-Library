@@ -104,8 +104,8 @@ export default function Sidebar({ cartCount }: SidebarProps) {
           </ListItem>
           <ListItem>
             <Link
-              href="#"
-              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '#' ? 'active' : ''}`}
+              href="/login"
+              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/login' ? 'active' : ''}`}
               style={{ width: '100%' }}>
               <LogoutOutlined />
               <Typography fontSize={24}>Logout</Typography>

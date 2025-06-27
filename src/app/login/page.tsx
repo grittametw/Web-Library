@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import '@/styles/login.css';
 import { Box, Typography, FormControl, TextField, Button, Grid2, Icon } from '@mui/material';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -52,7 +52,7 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/admins', {
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -112,10 +112,10 @@ export default function LoginPage() {
             <TextField
               error={emailError}
               helperText={emailErrorMessage}
+              name="email"
               id="email"
               type="email"
-              name="email"
-              placeholder="Email address"
+              label="Email address"
               autoComplete="email"
               autoFocus
               required
@@ -129,9 +129,9 @@ export default function LoginPage() {
               error={passwordError}
               helperText={passwordErrorMessage}
               name="password"
-              placeholder="Password"
-              type="password"
               id="password"
+              type="password"
+              label="Password"
               autoComplete="current-password"
               autoFocus
               required
@@ -155,8 +155,8 @@ export default function LoginPage() {
             fullWidth
             disabled={loading}
             className="d-flex align-items-center p-3 px-4"
-            sx={{ borderRadius: '4px' }}>
-            <Typography>{loading ? 'Signing in...' : 'Sign in'}</Typography>
+            sx={{ borderRadius: '4px', textTransform: 'none' }}>
+            <Typography>{loading ? 'Logging in...' : 'Login'}</Typography>
           </Button>
         </Box>
 
@@ -183,7 +183,7 @@ export default function LoginPage() {
 
         <Grid2 className="d-flex gap-1">
           <Typography>Don't have an account?</Typography>
-          <Link href="/" className="text-decoration-none">
+          <Link href="/register" className="text-decoration-none">
             <Typography className="signup" sx={{ color: '#055cdb' }}>Signup</Typography>
           </Link>
         </Grid2>
