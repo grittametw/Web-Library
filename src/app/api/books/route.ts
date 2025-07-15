@@ -7,7 +7,7 @@ export async function GET() {
         const connection = await mysql.createConnection(dbConfig)
         const [results] = await connection.execute(
             'SELECT id, name, author, image, price, rate FROM books'
-        );
+        )
         await connection.end()
 
         return NextResponse.json(results)
@@ -16,6 +16,6 @@ export async function GET() {
         return NextResponse.json(
             { error: 'Error fetching data', details: error.message },
             { status: 500 }
-        );
+        )
     }
 }

@@ -19,13 +19,14 @@ export default function LoginPage() {
     const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState('')
     const [confirmPasswordValue, setConfirmPasswordValue] = useState('')
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-    const [loginError, setLoginError] = useState('')
+    const [registerError, setRegisterError] = useState('')
     const router = useRouter()
 
     const isLengthValid = passwordValue.length >= 6
     const isUppercaseValid = /[A-Z]/.test(passwordValue)
     const isNumberValid = /\d/.test(passwordValue)
     const isPasswordMatch = passwordValue === confirmPasswordValue && passwordValue.length > 0
+
     const [loading, setLoading] = useState(false)
 
     const handleClickShowPassword = () => setShowPassword((show) => !show)
@@ -71,7 +72,7 @@ export default function LoginPage() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        setLoginError('')
+        setRegisterError('')
         const data = new FormData(event.currentTarget)
         const email = data.get('email') as string
         const password = data.get('password') as string
@@ -81,19 +82,19 @@ export default function LoginPage() {
 
         setLoading(true);
         try {
-            const res = await fetch('/api/admins', {
+            const res = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
             if (res.ok) {
-                router.push('/')
+                router.push('/login')
             } else {
                 const result = await res.json()
-                setLoginError(result.error || 'Login failed')
+                setRegisterError(result.error || 'Create account failed')
             }
         } catch (err) {
-            setLoginError('Network error')
+            setRegisterError('Network error')
         }
         setLoading(false)
     }
@@ -243,16 +244,16 @@ export default function LoginPage() {
                     </Grid2>
 
                     <Grid2 className="d-flex align-content-start gap-2 my-2">
-                        <Checkbox sx={{ width: 0, height: 0 }} />
-                        <Typography fontSize={14} color='#999'>
+                        <Checkbox sx={{ width: 0, height: 0 }} required/>
+                        <Typography fontWeight={600} fontSize={14} color='#1a5276'>
                             By creating an account you agree to our Terms of Service
                             and Privacy Policy, and confirm you are authorized to create this
                             account on behalf of the company.
                         </Typography>
                     </Grid2>
 
-                    {loginError && (
-                        <Typography color="error" fontSize={14}>{loginError}</Typography>
+                    {registerError && (
+                        <Typography color="error" fontSize={14}>{registerError}</Typography>
                     )}
                     <Button
                         variant="contained"

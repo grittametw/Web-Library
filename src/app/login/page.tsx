@@ -13,9 +13,9 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState(false)
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
   const [loginError, setLoginError] = useState('')
-  const router = useRouter();
+  const router = useRouter()
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const validateInputs = (email: string, password: string) => {
     let isValid = true
@@ -85,7 +85,7 @@ export default function LoginPage() {
             <Typography fontWeight={600} fontSize={32}>management With</Typography>
             <Typography fontWeight={600} fontSize={32}>Our dashboard.</Typography>
           </Grid2>
-          <Typography fontSize={14} >Simplify your e-commerce management with our user-friendly dashboard</Typography>
+          <Typography fontSize={14}>Simplify your e-commerce management with our user-friendly dashboard</Typography>
         </Grid2>
 
         <Image src="/image-hero.png" alt="ImageHero" width={300} height={300} />
@@ -122,6 +122,11 @@ export default function LoginPage() {
               fullWidth
               variant="outlined"
               color={emailError ? 'error' : 'primary'}
+              onChange={() => {
+                setEmailError(false);
+                setEmailErrorMessage('');
+                setLoginError('');
+              }}
             />
           </FormControl>
           <FormControl>
@@ -133,11 +138,15 @@ export default function LoginPage() {
               type="password"
               label="Password"
               autoComplete="current-password"
-              autoFocus
               required
               fullWidth
               variant="outlined"
               color={passwordError ? 'error' : 'primary'}
+              onChange={() => {
+                setPasswordError(false);
+                setPasswordErrorMessage('');
+                setLoginError('');
+              }}
             />
           </FormControl>
           <Link

@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import Sidebar from '@/components/Sidebar';
-import Navbar from '@/components/Navbar';
+
+import Sidebar from '@/view/components/Sidebar';
+import Navbar from '@/view/components/Navbar';
 import '@/styles/home.css';
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton } from '@mui/material';
 import { Sort, FavoriteBorder, Favorite } from '@mui/icons-material';
@@ -19,7 +20,7 @@ interface Book {
 }
 
 interface CartItem extends Book {
-  quantity: number;
+  quantity: number
 }
 
 export default function HomePage() {
@@ -28,7 +29,7 @@ export default function HomePage() {
   const [favorites, setFavorites] = useState<number[]>([])
   const [value, setValue] = useState<number | null>()
   const [cart, setCart] = useState<CartItem[]>([])
-  const [isCartOpen, setCartOpen] = useState(false);
+  const [isCartOpen, setCartOpen] = useState(false)
 
   useEffect(() => {
     fetch('/api/books')
@@ -39,11 +40,11 @@ export default function HomePage() {
 
   useEffect(() => {
     if (cart.length > 0) {
-      setCartOpen(true);
+      setCartOpen(true)
     } else {
-      setCartOpen(false);
+      setCartOpen(false)
     }
-  }, [cart]);
+  }, [cart])
 
   const toggleFavorite = (bookId: number) => {
     setFavorites((prevFavorites) =>
@@ -85,10 +86,10 @@ export default function HomePage() {
   }
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <Box className="main-layout d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
+    <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
       <Sidebar cartCount={cartCount}/>
       <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
         <Navbar />

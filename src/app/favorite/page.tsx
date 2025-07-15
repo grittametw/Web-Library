@@ -1,5 +1,5 @@
-import Navbar from '@/components/Navbar';
-import Sidebar from '@/components/Sidebar';
+import Navbar from '@/view/components/Navbar';
+import Sidebar from '@/view/components/Sidebar';
 import { Box } from '@mui/material';
 
 export default function FavoritePage() {
