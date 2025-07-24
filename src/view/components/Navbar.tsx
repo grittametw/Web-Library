@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Grid2, Typography, IconButton, InputBase, Avatar } from '@mui/material';
+import { Box, Grid2, Typography, InputBase, Avatar } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { NotificationsOutlined, Person } from '@mui/icons-material';
 
@@ -27,7 +27,7 @@ export default function Navbar() {
                     <Avatar >
                         <Person />
                     </Avatar>
-                    <Typography>Gong</Typography>
+                    <Typography>User</Typography>
                 </Grid2>
             </Grid2>
         </Box>

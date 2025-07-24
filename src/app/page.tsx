@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Sidebar from '@/view/components/Sidebar';
 import Navbar from '@/view/components/Navbar';
 import '@/styles/home.css';
-import { Box, Grid2, Typography, Button, Paper, Rating, IconButton } from '@mui/material';
+import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material';
 import { Sort, FavoriteBorder, Favorite } from '@mui/icons-material';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,6 +17,7 @@ interface Book {
   image: string
   price: number
   rate: number
+  genre: string
 }
 
 interface CartItem extends Book {
@@ -27,9 +28,10 @@ export default function HomePage() {
 
   const [books, setBooks] = useState<Book[]>([])
   const [favorites, setFavorites] = useState<number[]>([])
-  const [value, setValue] = useState<number | null>()
   const [cart, setCart] = useState<CartItem[]>([])
   const [isCartOpen, setCartOpen] = useState(false)
+  const [sortType, setSortType] = useState<string>('Featured')
+  const [selectedCategory, setSelectedCategory] = useState<string>('All')
 
   useEffect(() => {
     fetch('/api/books')
@@ -45,6 +47,24 @@ export default function HomePage() {
       setCartOpen(false)
     }
   }, [cart])
+
+  const filteredBooks = selectedCategory === 'All'
+    ? books
+    : books.filter(book => book.genre === selectedCategory)
+
+  const sortedBooks = [...filteredBooks].sort((a, b) => {
+    switch (sortType) {
+      case 'Price: Low to High':
+        return a.price - b.price
+      case 'Price: High to Low':
+        return b.price - a.price
+      case 'Avg. Customer Review':
+        return b.rate - a.rate
+      case 'Featured':
+      default:
+        return 0
+    }
+  })
 
   const toggleFavorite = (bookId: number) => {
     setFavorites((prevFavorites) =>
@@ -90,7 +110,7 @@ export default function HomePage() {
 
   return (
     <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
-      <Sidebar cartCount={cartCount}/>
+      <Sidebar cartCount={cartCount} />
       <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
         <Navbar />
         <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
@@ -101,48 +121,45 @@ export default function HomePage() {
             <Box className="d-flex flex-column mx-4 p-2 px-4 gap-2" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               <Grid2 className="d-flex justify-content-between align-items-center">
                 <Typography fontWeight={600} fontSize={20}>Categories</Typography>
-                <Button sx={{ minWidth: '20px', backgroundColor: '#e7f1fe', borderRadius: '8px' }}>
-                  <Sort sx={{ fontSize: '20px' }} />
-                </Button>
+
+                <Box sx={{ minWidth: '100px', backgroundColor: '#e7f1fe', borderRadius: '8px' }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="Sort by"
+                      value={sortType}
+                      onChange={(e) => setSortType(e.target.value)}
+                    >
+                      <MenuItem value="Featured">Featured</MenuItem>
+                      <MenuItem value="Price: Low to High">Price: Low to High</MenuItem>
+                      <MenuItem value="Price: High to Low">Price: High to Low</MenuItem>
+                      <MenuItem value="Avg. Customer Review">Avg. Customer Review</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
               </Grid2>
               <Grid2 className="d-flex gap-2 mb-2" sx={{ overflowX: 'auto' }}>
-                <Button
-                  variant="contained"
-                  sx={{ borderRadius: '8px', textTransform: 'none' }}
-                >
-                  <Typography>All</Typography>
-                </Button>
-                <Button
-                  variant="contained"
-                  disableElevation
-                  sx={{ backgroundColor: '#e7f1fe', borderRadius: '8px', textTransform: 'none' }}
-                >
-                  <Typography sx={{ color: '#000' }}>Sci-Fi</Typography>
-                </Button>
-                <Button
-                  variant="contained"
-                  disableElevation
-                  sx={{ backgroundColor: '#e7f1fe', borderRadius: '8px', textTransform: 'none' }}
-                >
-                  <Typography sx={{ color: '#000' }}>Fantasy</Typography>
-                </Button>
-                <Button
-                  variant="contained"
-                  disableElevation
-                  sx={{ backgroundColor: '#e7f1fe', borderRadius: '8px', textTransform: 'none' }}
-                >
-                  <Typography sx={{ color: '#000' }}>Drama</Typography>
-                </Button>
-                <Button
-                  variant="contained"
-                  disableElevation
-                  sx={{ backgroundColor: '#e7f1fe', borderRadius: '8px', textTransform: 'none' }}
-                >
-                  <Typography sx={{ color: '#000' }}>Horror</Typography>
-                </Button>
+                {['All', 'Sci-Fi', 'Fantasy', 'Drama', 'Horror', 'Historical'].map(category => (
+                  <Button
+                    key={category}
+                    variant="contained"
+                    disableElevation={selectedCategory !== category}
+                    sx={{
+                      backgroundColor: selectedCategory === category ? '#1976d2' : '#e7f1fe',
+                      color: selectedCategory === category ? '#fff' : '#000',
+                      borderRadius: '8px',
+                      textTransform: 'none'
+                    }}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    <Typography>{category}</Typography>
+                  </Button>
+                ))}
               </Grid2>
               <Grid2 className="d-flex gap-4" sx={{ overflowX: 'auto' }}>
-                {books.map((book) => {
+                {sortedBooks.map((book) => {
                   const quantity = getCartQuantity(book.id)
                   return (
                     <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }}>
@@ -155,7 +172,9 @@ export default function HomePage() {
                         <Image src={book.image} alt={book.name} width={100} height={150} />
                         <Box className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
                           <Grid2>
-                            <Link href="/" className="text-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+                            <Link
+                              href="/"
+                              className="text-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
                               <Typography fontWeight={600} fontSize={16} width={160}>
                                 {book.name}
                               </Typography>
@@ -163,21 +182,35 @@ export default function HomePage() {
                             <Typography fontSize={14}>Author: {book.author}</Typography>
                             <Typography fontSize={14}>Price: ฿{book.price}</Typography>
                             <Typography fontSize={14} className="d-flex">
-                              Rate: <Rating name="read-only" value={value} readOnly size="small" />{book.rate}
+                              Rate:
+                              <Rating
+                                name="rate-feedback"
+                                value={book.rate}
+                                readOnly size="small"
+                                precision={0.5} />
                             </Typography>
                           </Grid2>
                           <Grid2 className="d-flex align-items-center gap-3">
                             {quantity === 0 ? (
-                              <Button onClick={() => handleAddToCart(book)} variant="contained" sx={{ width: '100%', borderRadius: '8px', textTransform: 'none' }}>
+                              <Button
+                                onClick={() => handleAddToCart(book)}
+                                variant="contained"
+                                sx={{ width: '100%', borderRadius: '8px', textTransform: 'none' }}>
                                 <Typography fontSize={14}>Add to cart</Typography>
                               </Button>
                             ) : (
                               <>
-                                <Button onClick={() => handleDecrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px' }}>
+                                <Button
+                                  onClick={() => handleDecrease(book.id)}
+                                  variant="contained"
+                                  sx={{ width: 'auto', borderRadius: '8px' }}>
                                   <Typography fontSize={14}>-</Typography>
                                 </Button>
                                 <Typography fontSize={14}>{quantity}</Typography>
-                                <Button onClick={() => handleIncrease(book.id)} variant="contained" sx={{ width: 'auto', borderRadius: '8px' }}>
+                                <Button
+                                  onClick={() => handleIncrease(book.id)}
+                                  variant="contained"
+                                  sx={{ width: 'auto', borderRadius: '8px' }}>
                                   <Typography fontSize={14}>+</Typography>
                                 </Button>
                               </>
@@ -212,12 +245,18 @@ export default function HomePage() {
                           <Typography fontSize={14}>x{item.quantity}</Typography>
                           <Typography fontSize={14}>฿{item.price * item.quantity}</Typography>
                         </Grid2>
-                        <Box className="d-flex justify-content-center align-items-center gap-2 mt-2" sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
-                          <Button onClick={() => handleDecrease(item.id)} sx={{ width: 'auto', borderRadius: '8px', border: 'none', borderhover: 'none' }}>
+                        <Box
+                          className="d-flex justify-content-center align-items-center gap-4 mt-2"
+                          sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
+                          <Button
+                            onClick={() => handleDecrease(item.id)}
+                            sx={{ width: 'auto', borderRadius: '0px', borderRight: '1px solid #ccc' }}>
                             <Typography fontSize={14}>-</Typography>
                           </Button>
                           <Typography fontSize={14}>{quantity}</Typography>
-                          <Button onClick={() => handleIncrease(item.id)} sx={{ width: 'auto', borderRadius: '8px', }}>
+                          <Button
+                            onClick={() => handleIncrease(item.id)}
+                            sx={{ width: 'auto', borderRadius: '0px', borderLeft: '1px solid #ccc' }}>
                             <Typography fontSize={14}>+</Typography>
                           </Button>
                         </Box>

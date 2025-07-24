@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import '@/styles/login.css';
-import { Box, Typography, FormControl, TextField, Button, Grid2, Icon } from '@mui/material';
+import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 

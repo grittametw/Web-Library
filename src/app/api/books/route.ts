@@ -6,7 +6,7 @@ export async function GET() {
     try {
         const connection = await mysql.createConnection(dbConfig)
         const [results] = await connection.execute(
-            'SELECT id, name, author, image, price, rate FROM books'
+            'SELECT id, name, author, image, price, rate, genre FROM books'
         )
         await connection.end()
 
