@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-
 import Sidebar from '@/view/components/Sidebar';
 import Navbar from '@/view/components/Navbar';
 import '@/styles/home.css';
@@ -26,6 +25,7 @@ interface CartItem extends Book {
 
 export default function HomePage() {
 
+  const [search, setSearch] = useState('')
   const [books, setBooks] = useState<Book[]>([])
   const [favorites, setFavorites] = useState<number[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
@@ -52,7 +52,15 @@ export default function HomePage() {
     ? books
     : books.filter(book => book.genre === selectedCategory)
 
-  const sortedBooks = [...filteredBooks].sort((a, b) => {
+  const searchedBooks = search
+    ? filteredBooks.filter(book =>
+      book.name.toLowerCase().includes(search.toLowerCase()) ||
+      book.author.toLowerCase().includes(search.toLowerCase()) ||
+      book.genre.toLowerCase().includes(search.toLowerCase())
+    )
+    : filteredBooks
+
+  const sortedBooks = [...searchedBooks].sort((a, b) => {
     switch (sortType) {
       case 'Price: Low to High':
         return a.price - b.price
@@ -112,7 +120,7 @@ export default function HomePage() {
     <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
       <Sidebar cartCount={cartCount} />
       <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
-        <Navbar />
+        <Navbar onSearch={setSearch} books={books} />
         <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
           <Grid2 className="d-flex flex-column gap-4 my-4" sx={{ width: '100%' }}>
             <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
