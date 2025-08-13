@@ -39,15 +39,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               <Typography fontSize={24}>Home</Typography>
             </Link>
           </ListItem>
-          <ListItem>
-            <Link
-              href="/category"
-              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/category' ? 'active' : ''}`}
-              style={{ width: '100%' }}>
-              <CategoryOutlined />
-              <Typography fontSize={24}>Category</Typography>
-            </Link>
-          </ListItem>
+          
           <ListItem>
             <Link
               href="/mycart"

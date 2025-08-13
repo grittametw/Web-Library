@@ -5,9 +5,11 @@ import Sidebar from '@/view/components/Sidebar';
 import Navbar from '@/view/components/Navbar';
 import '@/styles/home.css';
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material';
-import { Sort, FavoriteBorder, Favorite } from '@mui/icons-material';
+import { FavoriteBorder, Favorite } from '@mui/icons-material';
 import Image from 'next/image';
 import Link from 'next/link';
+import Cartbar from '@/view/components/Cartbar';
+import { useCart } from '@/hooks/useCart';
 
 interface Book {
   id: number
@@ -19,16 +21,20 @@ interface Book {
   genre: string
 }
 
-interface CartItem extends Book {
-  quantity: number
-}
-
 export default function HomePage() {
 
   const [search, setSearch] = useState('')
   const [books, setBooks] = useState<Book[]>([])
   const [favorites, setFavorites] = useState<number[]>([])
-  const [cart, setCart] = useState<CartItem[]>([])
+  const {
+    cart,
+    handleAddToCart,
+    handleIncrease,
+    handleDecrease,
+    getCartQuantity,
+    totalPrice,
+    cartCount,
+  } = useCart()
   const [isCartOpen, setCartOpen] = useState(false)
   const [sortType, setSortType] = useState<string>('Featured')
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
@@ -81,40 +87,6 @@ export default function HomePage() {
         : [...prevFavorites, bookId]
     )
   }
-
-  const handleAddToCart = (book: Book) => {
-    setCart((prevCart) => {
-      const found = prevCart.find(item => item.id === book.id)
-      if (found) return prevCart
-      return [...prevCart, { ...book, quantity: 1 }]
-    })
-  }
-
-  const handleIncrease = (bookId: number) => {
-    setCart((prevCart) =>
-      prevCart.map(item =>
-        item.id === bookId ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    )
-  }
-
-  const handleDecrease = (bookId: number) => {
-    setCart((prevCart) =>
-      prevCart
-        .map(item =>
-          item.id === bookId ? { ...item, quantity: item.quantity - 1 } : item
-        )
-        .filter(item => item.quantity > 0)
-    )
-  }
-
-  const getCartQuantity = (bookId: number) => {
-    const found = cart.find(item => item.id === bookId)
-    return found ? found.quantity : 0
-  }
-
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
@@ -170,7 +142,7 @@ export default function HomePage() {
                 {sortedBooks.map((book) => {
                   const quantity = getCartQuantity(book.id)
                   return (
-                    <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }}>
+                    <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }} elevation={3}>
                       <Grid2 className="d-flex justify-content-end pt-2 px-2">
                         <IconButton disableRipple onClick={() => toggleFavorite(book.id)}>
                           {favorites.includes(book.id) ? <Favorite color="error" /> : <FavoriteBorder />}
@@ -181,13 +153,13 @@ export default function HomePage() {
                         <Box className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
                           <Grid2>
                             <Link
-                              href="/"
+                              href={`/${book.name}`}
                               className="text-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
                               <Typography fontWeight={600} fontSize={16} width={160}>
                                 {book.name}
                               </Typography>
                             </Link>
-                            <Typography fontSize={14}>Author: {book.author}</Typography>
+                            <Typography color="text.secondary">by {book.author}</Typography>
                             <Typography fontSize={14}>Price: ฿{book.price}</Typography>
                             <Typography fontSize={14} className="d-flex">
                               Rate:
@@ -232,52 +204,16 @@ export default function HomePage() {
               </Grid2>
             </Box>
           </Grid2>
-          <Box className={`Cartbar ${isCartOpen ? 'cart-open' : ''}`} sx={{ backgroundColor: '#fff' }}>
-            {isCartOpen && (
-              <>
-                <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%', paddingBottom: '16px' }}>
-                  <Typography>Total</Typography>
-                  <Typography>฿ {totalPrice}</Typography>
-                  <Button sx={{ width: '160px', marginTop: '8px', border: 'solid 1px #000', borderRadius: '8px', textTransform: 'none' }}>
-                    <Typography fontSize={14} color='#000'>Go to cart</Typography>
-                  </Button>
-                </Box>
-                <Box className="d-flex flex-column align-items-center" sx={{ borderBottom: 'solid 1px #ccc', width: '100%' }}>
-                  {cart.map(item => {
-                    const quantity = getCartQuantity(item.id)
-                    return (
-                      <Box key={item.id} className="d-flex flex-column align-items-center p-2">
-                        <Grid2 className="d-flex justify-content-between align-items-center gap-2" sx={{ width: '100%' }}>
-                          <Image src={item.image} alt={item.name} width={48} height={72} />
-                          <Typography fontSize={14}>{item.name}</Typography>
-                          <Typography fontSize={14}>x{item.quantity}</Typography>
-                          <Typography fontSize={14}>฿{item.price * item.quantity}</Typography>
-                        </Grid2>
-                        <Box
-                          className="d-flex justify-content-center align-items-center gap-4 mt-2"
-                          sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
-                          <Button
-                            onClick={() => handleDecrease(item.id)}
-                            sx={{ width: 'auto', borderRadius: '0px', borderRight: '1px solid #ccc' }}>
-                            <Typography fontSize={14}>-</Typography>
-                          </Button>
-                          <Typography fontSize={14}>{quantity}</Typography>
-                          <Button
-                            onClick={() => handleIncrease(item.id)}
-                            sx={{ width: 'auto', borderRadius: '0px', borderLeft: '1px solid #ccc' }}>
-                            <Typography fontSize={14}>+</Typography>
-                          </Button>
-                        </Box>
-                      </Box>
-                    )
-                  })}
-                </Box>
-              </>
-            )}
-          </Box>
+          <Cartbar
+            cart={cart}
+            isCartOpen={isCartOpen}
+            totalPrice={totalPrice}
+            getCartQuantity={getCartQuantity}
+            handleIncrease={handleIncrease}
+            handleDecrease={handleDecrease}
+          />
         </Grid2>
-
       </Grid2>
     </Box>
-  );
+  )
 }
