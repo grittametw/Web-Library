@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Cartbar from '@/view/components/Cartbar';
 import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Book {
   id: number
@@ -26,6 +27,10 @@ export default function HomePage() {
   const [search, setSearch] = useState('')
   const [books, setBooks] = useState<Book[]>([])
   const [favorites, setFavorites] = useState<number[]>([])
+  const [isCartOpen, setCartOpen] = useState(false)
+  const [sortType, setSortType] = useState<string>('Featured')
+  const [selectedCategory, setSelectedCategory] = useState<string>('All')
+  const { user } = useAuth()
   const {
     cart,
     handleAddToCart,
@@ -35,9 +40,6 @@ export default function HomePage() {
     totalPrice,
     cartCount,
   } = useCart()
-  const [isCartOpen, setCartOpen] = useState(false)
-  const [sortType, setSortType] = useState<string>('Featured')
-  const [selectedCategory, setSelectedCategory] = useState<string>('All')
 
   useEffect(() => {
     fetch('/api/books')
@@ -101,7 +103,9 @@ export default function HomePage() {
             <Box className="d-flex flex-column mx-4 p-2 px-4 gap-2" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               <Grid2 className="d-flex justify-content-between align-items-center">
                 <Typography fontWeight={600} fontSize={20}>Categories</Typography>
-
+                {user?.role === 'admin' && (
+                  <Button variant="contained">Add Item</Button>
+                )}
                 <Box sx={{ minWidth: '100px', backgroundColor: '#e7f1fe', borderRadius: '8px' }}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Sort by</InputLabel>

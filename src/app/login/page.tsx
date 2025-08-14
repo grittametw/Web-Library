@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import '@/styles/login.css';
 import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
   const [emailError, setEmailError] = useState(false)
@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState(false)
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
   const [loginError, setLoginError] = useState('')
-  const router = useRouter()
+  const { login } = useAuth()
 
   const [loading, setLoading] = useState(false)
 
@@ -50,15 +50,17 @@ export default function LoginPage() {
 
     if (!validateInputs(email, password)) return
 
-    setLoading(true);
+    setLoading(true)
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-      });
+      })
       if (res.ok) {
-        router.push('/')
+        const user = await res.json()
+        login(user)
+        window.location.href = '/'
       } else {
         const result = await res.json()
         setLoginError(result.error || 'Login failed')

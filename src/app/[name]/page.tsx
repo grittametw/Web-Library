@@ -22,10 +22,10 @@ interface Book {
 export default function ItemPage() {
     const [search, setSearch] = useState('')
     const [books, setBooks] = useState<Book[]>([])
-    const { name } = useParams()
     const [book, setBook] = useState<Book | null>(null)
     const [loading, setLoading] = useState(true)
     const [sortType, setSortType] = useState<string>('1')
+    const { name } = useParams()
     const {
         cart,
         handleAddToCart,
@@ -69,7 +69,9 @@ export default function ItemPage() {
                             ) : book ? (
                                 <Grid2>
                                     <Grid2 className="d-flex gap-4 pb-4 mb-4" sx={{ borderBottom: '1px solid #ccc' }}>
-                                        <Image src={book.image} alt={book.name} width={400} height={500} />
+                                        <Box className="d-flex justify-content-center align-items-center" sx={{ width: '400px', height: '500px', border: 'solid 1px #ccc', borderRadius: '8px' }}>
+                                            <Image src={book.image} alt={book.name} width={250} height={400} />
+                                        </Box>
                                         <Grid2 className="d-flex flex-column gap-4">
                                             <Grid2 className="d-flex flex-column">
                                                 <Typography fontWeight={600} fontSize={26}>{book.name}</Typography>

@@ -2,19 +2,21 @@
 
 import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
 import {
-  HomeOutlined, CategoryOutlined, ShoppingCartOutlined, FavoriteBorder,
+  HomeOutlined, ShoppingCartOutlined, FavoriteBorder,
   SettingsOutlined, SupportAgentOutlined, LogoutOutlined
 } from '@mui/icons-material';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SidebarProps {
-  cartCount?: number;
+  cartCount?: number
 }
 
 export default function Sidebar({ cartCount }: SidebarProps) {
   const currentPath = usePathname()
+  const { user, logout } = useAuth()
 
   return (
 
@@ -39,7 +41,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               <Typography fontSize={24}>Home</Typography>
             </Link>
           </ListItem>
-          
+
           <ListItem>
             <Link
               href="/mycart"
@@ -95,13 +97,28 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             </Link>
           </ListItem>
           <ListItem>
-            <Link
-              href="/login"
-              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/login' ? 'active' : ''}`}
-              style={{ width: '100%' }}>
-              <LogoutOutlined />
-              <Typography fontSize={24}>Logout</Typography>
-            </Link>
+            {user ? (
+              <Link
+                href="#"
+                onClick={e => {
+                  e.preventDefault()
+                  logout()
+                  window.location.href = '/login'
+                }}
+                className={"nav-link d-flex align-items-center gap-4"}
+                style={{ width: '100%' }}>
+                <LogoutOutlined />
+                <Typography fontSize={24}>Logout</Typography>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className={"nav-link d-flex align-items-center gap-4"}
+                style={{ width: '100%' }}>
+                <LogoutOutlined />
+                <Typography fontSize={24}>Login</Typography>
+              </Link>
+            )}
           </ListItem>
         </List>
       </Grid2>

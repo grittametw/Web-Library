@@ -5,6 +5,7 @@ import { Box, Grid2, Typography, InputBase, Paper, List, ListItemButton, Avatar 
 import Image from 'next/image';
 import SearchIcon from '@mui/icons-material/Search';
 import { NotificationsOutlined, Person } from '@mui/icons-material';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavbarProps {
     onSearch: (value: string) => void
@@ -13,6 +14,7 @@ interface NavbarProps {
 
 export default function Navbar({ onSearch, books }: NavbarProps) {
     const [search, setSearch] = useState('')
+    const { user } = useAuth()
     const [showSuggestions, setShowSuggestions] = useState(false)
 
     const suggestions = search
@@ -92,7 +94,7 @@ export default function Navbar({ onSearch, books }: NavbarProps) {
                     <Avatar >
                         <Person />
                     </Avatar>
-                    <Typography>User</Typography>
+                    <Typography>{user?.name || 'Guest'}</Typography>
                 </Grid2>
             </Grid2>
         </Box>
