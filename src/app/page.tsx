@@ -97,9 +97,10 @@ export default function HomePage() {
         <Navbar onSearch={setSearch} books={books} />
         <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
           <Grid2 className="d-flex flex-column gap-4 my-4" sx={{ width: '100%' }}>
+            {/* // Recommended feature under development
             <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               <Typography fontWeight={600} fontSize={20}>Recommended</Typography>
-            </Box>
+            </Box> */}
             <Box className="d-flex flex-column mx-4 p-2 px-4 gap-2" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               <Grid2 className="d-flex justify-content-between align-items-center">
                 <Typography fontWeight={600} fontSize={20}>Categories</Typography>

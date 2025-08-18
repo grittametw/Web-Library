@@ -38,7 +38,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/' ? 'active' : ''}`}
               style={{ width: '100%' }}>
               <HomeOutlined />
-              <Typography fontSize={24}>Home</Typography>
+              <Typography fontSize={22}>Home</Typography>
             </Link>
           </ListItem>
 
@@ -49,7 +49,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               style={{ width: '100%' }}>
               <ShoppingCartOutlined />
               <Grid2 className="d-flex justify-content-between align-items-center w-100">
-                <Typography fontSize={24}>My Cart</Typography>
+                <Typography fontSize={22}>My Cart</Typography>
                 {cartCount !== undefined && cartCount > 0 && (
                   <Box
                     sx={{
@@ -73,18 +73,18 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/favorite' ? 'active' : ''}`}
               style={{ width: '100%' }}>
               <FavoriteBorder />
-              <Typography fontSize={24}>Favorite</Typography>
+              <Typography fontSize={22}>Favorite</Typography>
             </Link>
           </ListItem>
         </List>
-        <List className="nav pt-4" sx={{ fontSize: '24px' }}>
+        <List className="nav pt-4">
           <ListItem>
             <Link
-              href="/setting"
-              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/setting' ? 'active' : ''}`}
+              href="/account"
+              className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/account' ? 'active' : ''}`}
               style={{ width: '100%' }}>
               <SettingsOutlined />
-              <Typography fontSize={24}>Settings</Typography>
+              <Typography fontSize={22}>Your Account</Typography>
             </Link>
           </ListItem>
           <ListItem>
@@ -93,7 +93,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/support' ? 'active' : ''}`}
               style={{ width: '100%' }}>
               <SupportAgentOutlined />
-              <Typography fontSize={24}>Support</Typography>
+              <Typography fontSize={22}>Support</Typography>
             </Link>
           </ListItem>
           <ListItem>
@@ -108,15 +108,19 @@ export default function Sidebar({ cartCount }: SidebarProps) {
                 className={"nav-link d-flex align-items-center gap-4"}
                 style={{ width: '100%' }}>
                 <LogoutOutlined />
-                <Typography fontSize={24}>Logout</Typography>
+                <Typography fontSize={22}>Logout</Typography>
               </Link>
             ) : (
               <Link
-                href="/login"
+                href="/#"
+                onClick={e => {
+                  e.preventDefault()
+                  window.location.href = '/login'
+                }}
                 className={"nav-link d-flex align-items-center gap-4"}
                 style={{ width: '100%' }}>
                 <LogoutOutlined />
-                <Typography fontSize={24}>Login</Typography>
+                <Typography fontSize={22}>Login</Typography>
               </Link>
             )}
           </ListItem>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCartContext } from '@/context/CartContext';
 
 export interface CartItem {
   id: number
@@ -12,7 +12,7 @@ export interface CartItem {
 }
 
 export function useCart() {
-  const [cart, setCart] = useState<CartItem[]>([])
+  const { cart, setCart } = useCartContext()
 
   const handleAddToCart = (book: Omit<CartItem, 'quantity'>) => {
     setCart((prevCart) => {

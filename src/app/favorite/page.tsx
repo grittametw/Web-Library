@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Navbar from '@/view/components/Navbar';
 import Sidebar from '@/view/components/Sidebar';
 import { Box, Grid2 } from '@mui/material';
+import { useCart } from '@/hooks/useCart';
 
 interface Book {
   id: number
@@ -18,10 +19,11 @@ interface Book {
 export default function FavoritePage() {
   const [search, setSearch] = useState('')
   const [books, setBooks] = useState<Book[]>([])
+  const { cartCount } = useCart()
 
   return (
     <Box className="d-flex">
-      <Sidebar />
+      <Sidebar cartCount={cartCount} />
       <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
         <Navbar onSearch={setSearch} books={books} />
       </Grid2>
