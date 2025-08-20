@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '@/view/components/Navbar';
-import Sidebar from '@/view/components/Sidebar';
 import { Box, Grid2 } from '@mui/material';
 import { useCart } from '@/hooks/useCart';
+import Navbar from '@/view/components/Navbar';
+import Sidebar from '@/view/components/Sidebar';
 
 interface Book {
   id: number

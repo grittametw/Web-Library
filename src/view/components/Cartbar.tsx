@@ -1,6 +1,7 @@
 import { Box, Grid2, Typography, Button } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
+import QuantityButton from './QuantityButton';
 
 interface CartItem {
     id: number
@@ -37,7 +38,7 @@ export default function Cartbar({
                         <Link
                             href="/mycart"
                             className="d-flex justify-content-center align-items-center p-2"
-                            style={{ width: '160px', textDecoration: 'none', border: 'solid 1px #000', borderRadius: '8px'}}>
+                            style={{ width: '160px', textDecoration: 'none', border: 'solid 1px #000', borderRadius: '8px' }}>
                             <Typography fontSize={14} color='#000'>Go to cart</Typography>
                         </Link>
                     </Box>
@@ -52,21 +53,11 @@ export default function Cartbar({
                                         <Typography fontSize={14}>x{item.quantity}</Typography>
                                         <Typography fontSize={14}>฿{item.price * item.quantity}</Typography>
                                     </Grid2>
-                                    <Box
-                                        className="d-flex justify-content-center align-items-center gap-4 mt-2"
-                                        sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
-                                        <Button
-                                            onClick={() => handleDecrease(item.id)}
-                                            sx={{ width: 'auto', borderRadius: '0px', borderRight: '1px solid #ccc' }}>
-                                            <Typography fontSize={14}>-</Typography>
-                                        </Button>
-                                        <Typography fontSize={14}>{quantity}</Typography>
-                                        <Button
-                                            onClick={() => handleIncrease(item.id)}
-                                            sx={{ width: 'auto', borderRadius: '0px', borderLeft: '1px solid #ccc' }}>
-                                            <Typography fontSize={14}>+</Typography>
-                                        </Button>
-                                    </Box>
+                                    <QuantityButton
+                                        quantity={quantity}
+                                        onIncrease={() => handleIncrease(item.id)}
+                                        onDecrease={() => handleDecrease(item.id)}
+                                    />
                                 </Box>
                             )
                         })}

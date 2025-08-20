@@ -1,15 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Box, Grid2, Typography, FormControl, Select, MenuItem } from '@mui/material';
+import { useCart } from '@/hooks/useCart';
+import Image from 'next/image';
 import Navbar from '@/view/components/Navbar';
 import Sidebar from '@/view/components/Sidebar';
-import { Box, Grid2, Typography } from '@mui/material';
-import { useCart } from '@/hooks/useCart';
+import QuantityButton from '@/view/components/QuantityButton';
 
 export default function MycartPage() {
   const [search, setSearch] = useState('')
-  const { cart, totalPrice } = useCart()
-  const { cartCount } = useCart()
+  const [sortType, setSortType] = useState<string>('1')
+  const { cart, totalPrice, cartCount, handleIncrease, handleDecrease } = useCart()
 
   return (
     <Box className="d-flex">
@@ -29,14 +31,35 @@ export default function MycartPage() {
                 ) : (
                   cart.map((item) => (
                     <Box key={item.id} className="d-flex justify-content-between align-items-center">
-                      <Typography fontWeight={600} fontSize={16}>{item.name} x{item.quantity}</Typography>
+                      <Grid2 className="d-flex align-items-center gap-2">
+                        <Image src={item.image} alt={item.name} width={100} height={150} />
+                        <Grid2>
+                          <Typography fontWeight={600} fontSize={16}>{item.name}</Typography>
+                          <Box sx={{ minWidth: '100px', border: 'solid 1px #000', borderRadius: '8px' }}>
+                            <FormControl fullWidth>
+                              <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={sortType}
+                                onChange={(e) => setSortType(e.target.value)}
+                              >
+                                <MenuItem value="1">ปกอ่อน (฿ {item.price})</MenuItem>
+                                <MenuItem value="2">test-2</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Box>
+                          <QuantityButton
+                            quantity={item.quantity}
+                            onIncrease={() => handleIncrease(item.id)}
+                            onDecrease={() => handleDecrease(item.id)}
+                          />
+                        </Grid2>
+                      </Grid2>
                       <Typography fontWeight={600} fontSize={16}>฿{item.price * item.quantity}</Typography>
                     </Box>
                   ))
                 )}
               </Box>
-
-
               <Box className="d-flex justify-content-end mt-4">
                 <Typography fontWeight={600} fontSize={18}>Total: ฿{totalPrice}</Typography>
               </Box>

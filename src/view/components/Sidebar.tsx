@@ -3,12 +3,13 @@
 import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
 import {
   HomeOutlined, ShoppingCartOutlined, FavoriteBorder,
-  SettingsOutlined, SupportAgentOutlined, LogoutOutlined
+  AssignmentIndOutlined, SupportAgentOutlined, LogoutOutlined
 } from '@mui/icons-material';
-import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
+import Image from 'next/image';
+import '@/styles/Sidebar.css';
 
 interface SidebarProps {
   cartCount?: number
@@ -83,7 +84,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               href="/account"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/account' ? 'active' : ''}`}
               style={{ width: '100%' }}>
-              <SettingsOutlined />
+              <AssignmentIndOutlined />
               <Typography fontSize={22}>Your Account</Typography>
             </Link>
           </ListItem>

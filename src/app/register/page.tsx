@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import '@/styles/register.css';
 import { Box, Typography, FormControl, TextField, Button, Grid2, Checkbox } from '@mui/material';
 import { CheckCircle, Visibility, VisibilityOff } from '@mui/icons-material';
 import Image from 'next/image';
 import Link from 'next/link';
+import '@/styles/register.css';
 
 export default function LoginPage() {
     const [emailError, setEmailError] = useState(false)

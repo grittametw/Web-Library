@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Box, Grid2, Typography, InputBase, Paper, List, ListItemButton, Avatar } from '@mui/material';
-import Image from 'next/image';
-import SearchIcon from '@mui/icons-material/Search';
 import { NotificationsOutlined, Person } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
+import Image from 'next/image';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface NavbarProps {
     onSearch: (value: string) => void

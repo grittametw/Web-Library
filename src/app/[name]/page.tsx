@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Navbar from '@/view/components/Navbar';
-import Sidebar from '@/view/components/Sidebar';
 import { Box, Grid2, Typography, Rating, FormControl, Select, MenuItem, Button } from '@mui/material';
-import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
+import Image from 'next/image';
+import Navbar from '@/view/components/Navbar';
+import Sidebar from '@/view/components/Sidebar';
 
 interface Book {
     id: number

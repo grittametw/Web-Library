@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { dbConfig } from '@/database';
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcryptjs';
-import { dbConfig } from '@/database';
 
 export async function POST(req: NextRequest) {
     try {

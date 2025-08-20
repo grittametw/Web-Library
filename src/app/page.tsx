@@ -1,16 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import Sidebar from '@/view/components/Sidebar';
-import Navbar from '@/view/components/Navbar';
-import '@/styles/home.css';
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material';
 import { FavoriteBorder, Favorite } from '@mui/icons-material';
+import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
+import Sidebar from '@/view/components/Sidebar';
+import Navbar from '@/view/components/Navbar';
 import Image from 'next/image';
 import Link from 'next/link';
 import Cartbar from '@/view/components/Cartbar';
-import { useCart } from '@/hooks/useCart';
-import { useAuth } from '@/hooks/useAuth';
 
 interface Book {
   id: number
@@ -153,9 +152,9 @@ export default function HomePage() {
                           {favorites.includes(book.id) ? <Favorite color="error" /> : <FavoriteBorder />}
                         </IconButton>
                       </Grid2>
-                      <Grid2 className="d-flex gap-4 p-4 pt-0">
+                      <Box className="d-flex gap-4 p-4 pt-0">
                         <Image src={book.image} alt={book.name} width={100} height={150} />
-                        <Box className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
+                        <Grid2 className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
                           <Grid2>
                             <Link
                               href={`/${book.name}`}
@@ -201,8 +200,8 @@ export default function HomePage() {
                               </>
                             )}
                           </Grid2>
-                        </Box>
-                      </Grid2>
+                        </Grid2>
+                      </Box>
                     </Paper>
                   )
                 })}

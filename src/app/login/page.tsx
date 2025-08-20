@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import '@/styles/login.css';
 import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material';
+import { useAuth } from '@/hooks/useAuth';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAuth } from '@/hooks/useAuth';
+import '@/styles/login.css';
 
 export default function LoginPage() {
   const [emailError, setEmailError] = useState(false)
