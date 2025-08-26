@@ -151,12 +151,14 @@ export default function LoginPage() {
               }}
             />
           </FormControl>
-          <Link
-            href="/"
-            className="d-flex justify-content-end text-decoration-none mb-4"
-          >
-            <Typography className="forgotpassword" fontSize={14} sx={{ color: '#000' }}>Forgot Password?</Typography>
-          </Link>
+          <Box className="d-flex justify-content-end mb-4">
+            <Link
+              href="#"
+              className="text-decoration-none"
+            >
+              <Typography className="forgotpassword" fontSize={14} sx={{ color: '#000' }}>Forgot Password?</Typography>
+            </Link>
+          </Box>
           {loginError && (
             <Typography color="error" fontSize={14}>{loginError}</Typography>
           )}

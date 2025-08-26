@@ -1,0 +1,6 @@
+.checkoutButton {
+    background-color: #055cdb;
+    &:hover {
+        background-color: #034bb8;
+    }
+}

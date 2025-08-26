@@ -9,7 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 interface NavbarProps {
     onSearch: (value: string) => void
-    books: { image: string; name: string; author: string; genre: string }[];
+    books: { image: string; name: string; author: string; genre: string }[]
 }
 
 export default function Navbar({ onSearch, books }: NavbarProps) {

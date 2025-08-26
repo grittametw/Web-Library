@@ -13,10 +13,15 @@ interface Book {
     name: string
     author: string
     image: string
-    price: number
     rate: number
     genre: string
     description: string
+    options: {
+        id: number
+        type: string
+        price: number
+        stock: number
+    }[]
 }
 
 export default function ItemPage() {
@@ -24,7 +29,7 @@ export default function ItemPage() {
     const [books, setBooks] = useState<Book[]>([])
     const [book, setBook] = useState<Book | null>(null)
     const [loading, setLoading] = useState(true)
-    const [sortType, setSortType] = useState<string>('1')
+    const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null)
     const { name } = useParams()
     const {
         cart,
@@ -56,9 +61,15 @@ export default function ItemPage() {
         }
     }, [name])
 
+    useEffect(() => {
+        if (book && book.options && book.options.length > 0) {
+            setSelectedOptionId(book.options[0].id)
+        }
+    }, [book])
+
     return (
         <Box className="d-flex">
-            <Sidebar />
+            <Sidebar cartCount={cartCount} />
             <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
                 <Navbar onSearch={setSearch} books={books} />
                 <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
@@ -84,17 +95,20 @@ export default function ItemPage() {
                                                         precision={0.5} />
                                                 </Typography>
                                             </Grid2>
-                                            <Typography fontWeight={600} fontSize={26} className="my-2" sx={{ color: '#ff2a00' }}>฿{book.price}</Typography>
+                                            <Typography fontWeight={600} fontSize={26} className="my-2" sx={{ color: '#ff2a00' }}>฿{book.options[0]?.price}</Typography>
                                             <Box sx={{ minWidth: '100px', border: 'solid 1px #000', borderRadius: '8px' }}>
                                                 <FormControl fullWidth>
                                                     <Select
-                                                        labelId="demo-simple-select-label"
-                                                        id="demo-simple-select"
-                                                        value={sortType}
-                                                        onChange={(e) => setSortType(e.target.value)}
+                                                        labelId="book-option-select-label"
+                                                        id="book-option-select"
+                                                        value={selectedOptionId ?? ''}
+                                                        onChange={(e) => setSelectedOptionId(Number(e.target.value))}
                                                     >
-                                                        <MenuItem value="1">ปกอ่อน (฿ {book.price})</MenuItem>
-                                                        <MenuItem value="2">test-2</MenuItem>
+                                                        {book.options.map(option => (
+                                                            <MenuItem key={option.id} value={option.id}>
+                                                                {option.type} (฿ {option.price})
+                                                            </MenuItem>
+                                                        ))}
                                                     </Select>
                                                 </FormControl>
                                             </Box>
@@ -114,7 +128,9 @@ export default function ItemPage() {
                                                 </Button>
                                             </Box>
                                             <Button
-                                                onClick={() => handleAddToCart(book)}
+                                                onClick={() => {
+                                                    if (selectedOptionId !== null) handleAddToCart(book, selectedOptionId)
+                                                }}
                                                 variant="contained"
                                                 sx={{ width: '100%', height: '40px', borderRadius: '8px', textTransform: 'none' }}>
                                                 <Typography fontSize={14}>Add to cart</Typography>

@@ -14,25 +14,21 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth()
   const [cart, setCart] = useState<CartItem[]>([])
-  const [lastUserId, setLastUserId] = useState<number | null>(null)
+
+  const getCartKey = () => {
+    if (user?.id && user?.role) return `cart_${user.role}_${user.id}`
+    return 'cart_guest'
+  }
 
   useEffect(() => {
-    if (user?.id && user?.role) {
-      const key = `cart_${user.role}_${user.id}`
-      const saved = localStorage.getItem(key)
-      setCart(saved ? JSON.parse(saved) : [])
-      setLastUserId(user.id)
-    } else {
-      setCart([])
-      setLastUserId(null)
-    }
+    const key = getCartKey()
+    const saved = localStorage.getItem(key)
+    setCart(saved ? JSON.parse(saved) : [])
   }, [user?.id, user?.role])
 
   useEffect(() => {
-    if (user?.id && user?.role) {
-      const key = `cart_${user.role}_${user.id}`
-      localStorage.setItem(key, JSON.stringify(cart))
-    }
+    const key = getCartKey()
+    localStorage.setItem(key, JSON.stringify(cart))
   }, [cart, user?.id, user?.role])
 
   return (

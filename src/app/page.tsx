@@ -16,9 +16,15 @@ interface Book {
   name: string
   author: string
   image: string
-  price: number
   rate: number
   genre: string
+  description: string
+  options: {
+    id: number
+    type: string
+    price: number
+    stock: number
+  }[]
 }
 
 export default function HomePage() {
@@ -29,6 +35,7 @@ export default function HomePage() {
   const [isCartOpen, setCartOpen] = useState(false)
   const [sortType, setSortType] = useState<string>('Featured')
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
+  const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
   const { user } = useAuth()
   const {
     cart,
@@ -70,9 +77,9 @@ export default function HomePage() {
   const sortedBooks = [...searchedBooks].sort((a, b) => {
     switch (sortType) {
       case 'Price: Low to High':
-        return a.price - b.price
+        return a.options[0].price - b.options[0].price
       case 'Price: High to Low':
-        return b.price - a.price
+        return b.options[0].price - a.options[0].price
       case 'Avg. Customer Review':
         return b.rate - a.rate
       case 'Featured':
@@ -90,9 +97,9 @@ export default function HomePage() {
   }
 
   return (
-    <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
+    <Box className="d-flex" sx={{ height: '100vh' }}>
       <Sidebar cartCount={cartCount} />
-      <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
+      <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%' }}>
         <Navbar onSearch={setSearch} books={books} />
         <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
           <Grid2 className="d-flex flex-column gap-4 my-4" sx={{ width: '100%' }}>
@@ -142,9 +149,10 @@ export default function HomePage() {
                   </Button>
                 ))}
               </Grid2>
-              <Grid2 className="d-flex gap-4" sx={{ overflowX: 'auto' }}>
+              <Grid2 className="d-flex gap-4 p-4" sx={{ overflow: 'auto' }}>
                 {sortedBooks.map((book) => {
-                  const quantity = getCartQuantity(book.id)
+                  const optionId = selectedOptionIds[book.id] ?? book.options[0]?.id
+                  const quantity = optionId ? getCartQuantity(book.id, optionId) : 0
                   return (
                     <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }} elevation={3}>
                       <Grid2 className="d-flex justify-content-end pt-2 px-2">
@@ -153,7 +161,7 @@ export default function HomePage() {
                         </IconButton>
                       </Grid2>
                       <Box className="d-flex gap-4 p-4 pt-0">
-                        <Image src={book.image} alt={book.name} width={100} height={150} />
+                        <Image src={book.image} alt={book.name} width={130} height={180} />
                         <Grid2 className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
                           <Grid2>
                             <Link
@@ -164,7 +172,6 @@ export default function HomePage() {
                               </Typography>
                             </Link>
                             <Typography color="text.secondary">by {book.author}</Typography>
-                            <Typography fontSize={14}>Price: ฿{book.price}</Typography>
                             <Typography fontSize={14} className="d-flex">
                               Rate:
                               <Rating
@@ -173,11 +180,40 @@ export default function HomePage() {
                                 readOnly size="small"
                                 precision={0.5} />
                             </Typography>
+                            <Grid2 className="d-flex align-items-center gap-1">
+                              <Typography fontSize={14}>Price:</Typography>
+                              <Typography fontSize={16}>฿{book.options.find(opt => opt.id === (selectedOptionIds[book.id] ?? book.options[0]?.id))?.price ?? '-'}</Typography>
+                            </Grid2>
+                            <Grid2 className="d-flex gap-1">
+                              <Typography fontSize={14}>Format:</Typography>
+                              <FormControl variant="standard">
+                                <Select
+                                  labelId={`book-option-select-label-${book.id}`}
+                                  id={`book-option-select-${book.id}`}
+                                  value={selectedOptionIds[book.id] ?? book.options[0]?.id ?? ''}
+                                  onChange={(e) =>
+                                    setSelectedOptionIds((prev) => ({
+                                      ...prev,
+                                      [book.id]: Number(e.target.value),
+                                    }))
+                                  }
+                                  sx={{ height: 24, fontSize: 14 }}
+                                >
+                                  {book.options.map(option => (
+                                    <MenuItem key={option.id} value={option.id}>
+                                      {option.type}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                            </Grid2>
                           </Grid2>
                           <Grid2 className="d-flex align-items-center gap-3">
                             {quantity === 0 ? (
                               <Button
-                                onClick={() => handleAddToCart(book)}
+                                onClick={() => {
+                                  if (optionId) handleAddToCart({ ...book, description: book.description ?? '' }, optionId)
+                                }}
                                 variant="contained"
                                 sx={{ width: '100%', borderRadius: '8px', textTransform: 'none' }}>
                                 <Typography fontSize={14}>Add to cart</Typography>
@@ -185,14 +221,14 @@ export default function HomePage() {
                             ) : (
                               <>
                                 <Button
-                                  onClick={() => handleDecrease(book.id)}
+                                  onClick={() => handleDecrease(book.id, optionId)}
                                   variant="contained"
                                   sx={{ width: 'auto', borderRadius: '8px' }}>
                                   <Typography fontSize={14}>-</Typography>
                                 </Button>
                                 <Typography fontSize={14}>{quantity}</Typography>
                                 <Button
-                                  onClick={() => handleIncrease(book.id)}
+                                  onClick={() => handleIncrease(book.id, optionId)}
                                   variant="contained"
                                   sx={{ width: 'auto', borderRadius: '8px' }}>
                                   <Typography fontSize={14}>+</Typography>

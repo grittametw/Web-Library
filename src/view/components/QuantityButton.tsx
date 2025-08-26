@@ -13,13 +13,13 @@ export default function QuantityButton({ quantity, onIncrease, onDecrease }: Qua
       sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
       <Button
         onClick={onDecrease}
-        sx={{ width: 'auto', borderRadius: '0px', borderRight: '1px solid #ccc' }}>
+        sx={{ width: '100%', borderRadius: '0px', borderRight: '1px solid #ccc' }}>
         <Typography fontSize={14}>-</Typography>
       </Button>
       <Typography fontSize={14}>{quantity}</Typography>
       <Button
         onClick={onIncrease}
-        sx={{ width: 'auto', borderRadius: '0px', borderLeft: '1px solid #ccc' }}>
+        sx={{ width: '100%', borderRadius: '0px', borderLeft: '1px solid #ccc' }}>
         <Typography fontSize={14}>+</Typography>
       </Button>
     </Box>

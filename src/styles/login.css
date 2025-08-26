@@ -2,9 +2,7 @@ body {
     background-color: #fff;
 }
 
-.forgotpassword,
-.signup {
-    &:hover {
-        text-decoration: underline;
-    }
+.forgotpassword:hover,
+.signup:hover {
+    text-decoration: underline;
 }
