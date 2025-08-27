@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Box, Grid2, Typography, Rating, FormControl, Select, MenuItem, Button } from '@mui/material';
+import { Box, Grid2, Typography, Rating, FormControl, Select, MenuItem, Button, Snackbar, Alert } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import Image from 'next/image';
 import Navbar from '@/view/components/Navbar';
 import Sidebar from '@/view/components/Sidebar';
+import QuantityButton from '@/view/components/QuantityButton';
 
 interface Book {
     id: number
@@ -30,6 +31,9 @@ export default function ItemPage() {
     const [book, setBook] = useState<Book | null>(null)
     const [loading, setLoading] = useState(true)
     const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null)
+    const [quantity, setQuantity] = useState(1)
+    const [openSnackbar, setOpenSnackbar] = useState(false)
+    const [snackbarMessage, setSnackbarMessage] = useState('')
     const { name } = useParams()
     const {
         cart,
@@ -67,6 +71,14 @@ export default function ItemPage() {
         }
     }, [book])
 
+    const handleAddToCartClick = () => {
+        if (book && selectedOptionId) {
+            const updated = handleAddToCart(book, selectedOptionId, quantity)
+            setSnackbarMessage(updated ? 'Updated quantity in cart' : 'Added to cart')
+            setOpenSnackbar(true)
+        }
+    }
+
     return (
         <Box className="d-flex">
             <Sidebar cartCount={cartCount} />
@@ -86,8 +98,8 @@ export default function ItemPage() {
                                         <Grid2 className="d-flex flex-column gap-4">
                                             <Grid2 className="d-flex flex-column">
                                                 <Typography fontWeight={600} fontSize={26}>{book.name}</Typography>
-                                                <Typography fontSize={14} sx={{}}>
-                                                    {book.rate}
+                                                <Typography fontSize={14} className="d-flex gap-1">
+                                                    {book.rate.toLocaleString()}
                                                     <Rating
                                                         name="rate-feedback"
                                                         value={book.rate}
@@ -112,25 +124,15 @@ export default function ItemPage() {
                                                     </Select>
                                                 </FormControl>
                                             </Box>
-                                            <Box
-                                                className="d-flex justify-content-center align-items-center gap-4 mt-2"
-                                                sx={{ width: '200px', border: 'solid 1px #ccc', borderRadius: '8px' }}>
-                                                <Button
-                                                    onClick={() => handleDecrease(book.id)}
-                                                    sx={{ width: '100%', borderRadius: '0px', borderRight: '1px solid #ccc' }}>
-                                                    <Typography fontSize={14}>-</Typography>
-                                                </Button>
-                                                <Typography fontSize={14}>0</Typography>
-                                                <Button
-                                                    onClick={() => handleIncrease(book.id)}
-                                                    sx={{ width: '100%', borderRadius: '0px', borderLeft: '1px solid #ccc' }}>
-                                                    <Typography fontSize={14}>+</Typography>
-                                                </Button>
-                                            </Box>
+                                            <Grid2 sx={{ width: '200px' }}>
+                                                <QuantityButton
+                                                    quantity={quantity}
+                                                    onIncrease={() => setQuantity(quantity + 1)}
+                                                    onDecrease={() => setQuantity(quantity - 1)}
+                                                />
+                                            </Grid2>
                                             <Button
-                                                onClick={() => {
-                                                    if (selectedOptionId !== null) handleAddToCart(book, selectedOptionId)
-                                                }}
+                                                onClick={handleAddToCartClick}
                                                 variant="contained"
                                                 sx={{ width: '100%', height: '40px', borderRadius: '8px', textTransform: 'none' }}>
                                                 <Typography fontSize={14}>Add to cart</Typography>
@@ -151,6 +153,16 @@ export default function ItemPage() {
                     </Grid2>
                 </Grid2>
             </Grid2>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={3000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert severity="success" onClose={() => setOpenSnackbar(false)}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

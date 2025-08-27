@@ -98,8 +98,25 @@ export default function HomePage() {
 
   return (
     <Box className="d-flex" sx={{ height: '100vh' }}>
-      <Sidebar cartCount={cartCount} />
-      <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%' }}>
+      <Box sx={{
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        width: 300,
+        height: '100vh',
+        zIndex: 10
+      }}>
+        <Sidebar cartCount={cartCount} />
+      </Box>
+      <Grid2
+        className="content-area d-flex flex-column"
+        sx={{
+          marginLeft: '300px',
+          width: '100%',
+          paddingRight: isCartOpen ? '300px' : '0',
+          transition: 'padding-right 0.3s ease'
+        }}
+      >
         <Navbar onSearch={setSearch} books={books} />
         <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
           <Grid2 className="d-flex flex-column gap-4 my-4" sx={{ width: '100%' }}>
@@ -107,7 +124,7 @@ export default function HomePage() {
             <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               <Typography fontWeight={600} fontSize={20}>Recommended</Typography>
             </Box> */}
-            <Box className="d-flex flex-column mx-4 p-2 px-4 gap-2" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
+            <Box className="d-flex flex-column mx-4 p-2 px-4 gap-2" sx={{ height: '100%', backgroundColor: '#fff', borderRadius: '8px' }}>
               <Grid2 className="d-flex justify-content-between align-items-center">
                 <Typography fontWeight={600} fontSize={20}>Categories</Typography>
                 {user?.role === 'admin' && (
@@ -149,7 +166,7 @@ export default function HomePage() {
                   </Button>
                 ))}
               </Grid2>
-              <Grid2 className="d-flex gap-4 p-4" sx={{ overflow: 'auto' }}>
+              <Grid2 container className="d-flex gap-4 p-4" sx={{ overflow: 'auto' }}>
                 {sortedBooks.map((book) => {
                   const optionId = selectedOptionIds[book.id] ?? book.options[0]?.id
                   const quantity = optionId ? getCartQuantity(book.id, optionId) : 0
@@ -212,7 +229,7 @@ export default function HomePage() {
                             {quantity === 0 ? (
                               <Button
                                 onClick={() => {
-                                  if (optionId) handleAddToCart({ ...book, description: book.description ?? '' }, optionId)
+                                  if (optionId) handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1)
                                 }}
                                 variant="contained"
                                 sx={{ width: '100%', borderRadius: '8px', textTransform: 'none' }}>

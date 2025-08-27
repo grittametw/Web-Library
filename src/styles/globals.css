@@ -39,11 +39,13 @@ body {
 }
 
 .Cartbar {
-    width: 0;
-    right: 0;
-    transition: 0.3s;
+  width: 0;
 }
 
 .Cartbar.cart-open {
-    width: 300px;
+  width: 300px;
+}
+
+.cartButton:hover {
+  background-color: #f0f0f0;
 }

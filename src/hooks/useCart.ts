@@ -33,26 +33,44 @@ export interface CartItem {
 export function useCart() {
   const { cart, setCart } = useCartContext()
 
-  const handleAddToCart = (book: Book, optionId: number) => {
+  const handleAddToCart = (book: Book, optionId: number, quantity: number): boolean => {
     const option = book.options.find(o => o.id === optionId)
-    if (!option) return
+    if (!option) return false
+
+    let isUpdate = false
+
     setCart((prevCart) => {
-      const found = prevCart.find(item => item.id === book.id && item.option_id === optionId)
-      if (found) return prevCart
-      return [...prevCart, {
-        id: book.id,
-        name: book.name,
-        author: book.author,
-        image: book.image,
-        rate: book.rate,
-        genre: book.genre,
-        option_id: option.id,
-        option_type: option.type,
-        price: option.price,
-        stock: option.stock,
-        quantity: 1
-      }]
+      const foundIndex = prevCart.findIndex(item => item.id === book.id && item.option_id === optionId)
+
+      if (foundIndex !== -1) {
+        isUpdate = true
+        const updatedCart = [...prevCart]
+        updatedCart[foundIndex] = {
+          ...updatedCart[foundIndex],
+          quantity: updatedCart[foundIndex].quantity + quantity
+        };
+        return updatedCart;
+      }
+
+      return [
+        ...prevCart,
+        {
+          id: book.id,
+          name: book.name,
+          author: book.author,
+          image: book.image,
+          rate: book.rate,
+          genre: book.genre,
+          option_id: option.id,
+          option_type: option.type,
+          price: option.price,
+          stock: option.stock,
+          quantity: quantity
+        }
+      ]
     })
+
+    return isUpdate
   }
 
   const handleIncrease = (bookId: number, optionId: number) => {

@@ -20,10 +20,14 @@ export default function Sidebar({ cartCount }: SidebarProps) {
   const { user, logout } = useAuth()
 
   return (
-
     <Box
       className="sidebar d-flex flex-column p-4 shadow z-2"
-      sx={{ width: '100%', maxWidth: 300, minHeight: '100vh', backgroundColor: '#fff' }}
+      sx={{ 
+        width: '100%', 
+        maxWidth: 300, 
+        height: '100vh', 
+        backgroundColor: '#fff'
+      }}
     >
       <Grid2 className="d-flex justify-content-center align-items-center p-2 pb-4">
         <Link href="/" className="d-flex align-items-center gap-3 text-decoration-none text-dark">
@@ -31,7 +35,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
           <Typography fontWeight={600} fontSize={20}>Web - Library</Typography>
         </Link>
       </Grid2>
-      <Grid2 className="nav-pills flex-column mb-auto">
+      <Grid2 className="nav-pills flex-column mb-auto" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <List className="nav pb-4" sx={{ borderBottom: '1px solid #ccc' }}>
           <ListItem className="nav-item">
             <Link
