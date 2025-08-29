@@ -94,7 +94,7 @@ export default function Navbar({ onSearch, books }: NavbarProps) {
                     <Avatar >
                         <Person />
                     </Avatar>
-                    <Typography>{user?.name || 'Guest'}</Typography>
+                    <Typography>{user?.name || "Guest"}</Typography>
                 </Grid2>
             </Grid2>
         </Box>

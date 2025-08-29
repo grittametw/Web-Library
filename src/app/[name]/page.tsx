@@ -30,18 +30,16 @@ export default function ItemPage() {
     const [books, setBooks] = useState<Book[]>([])
     const [book, setBook] = useState<Book | null>(null)
     const [loading, setLoading] = useState(true)
-    const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null)
+    const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
     const [quantity, setQuantity] = useState(1)
     const [openSnackbar, setOpenSnackbar] = useState(false)
     const [snackbarMessage, setSnackbarMessage] = useState('')
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
     const { name } = useParams()
     const {
         cart,
         handleAddToCart,
-        handleIncrease,
-        handleDecrease,
-        getCartQuantity,
-        totalPrice,
+        getAvailableStock,
         cartCount,
     } = useCart()
 
@@ -66,18 +64,45 @@ export default function ItemPage() {
     }, [name])
 
     useEffect(() => {
-        if (book && book.options && book.options.length > 0) {
-            setSelectedOptionId(book.options[0].id)
+        if (book && selectedOptionId) {
+            const selectedOption = book.options.find(opt => opt.id === selectedOptionId)
+            if (selectedOption) {
+                const availableStock = getAvailableStock(book.id, selectedOptionId, selectedOption.stock)
+                if (quantity > availableStock) {
+                    setQuantity(Math.max(1, availableStock))
+                }
+            }
         }
-    }, [book])
+    }, [book, selectedOptionIds, cart])
 
     const handleAddToCartClick = () => {
         if (book && selectedOptionId) {
-            const updated = handleAddToCart(book, selectedOptionId, quantity)
-            setSnackbarMessage(updated ? 'Updated quantity in cart' : 'Added to cart')
+            const result = handleAddToCart(book, selectedOptionId, quantity)
+
+            if (result.success) {
+                setSnackbarMessage(result.isUpdate ? "Updated quantity in cart" : "Added to cart")
+                setSnackbarSeverity('success')
+            } else {
+                setSnackbarMessage(result.error || "Failed to add to cart")
+                setSnackbarSeverity('error')
+            }
+
             setOpenSnackbar(true)
         }
     }
+
+    const getSelectedOptionAvailableStock = () => {
+        if (!book || !selectedOptionId) return 0
+        const selectedOption = book.options.find(opt => opt.id === (selectedOptionIds[book.id] ?? book.options[0]?.id))?.stock
+        if (!selectedOption) return 0
+        return getAvailableStock(book.id, selectedOptionId, selectedOption)
+    }
+
+    const selectedOptionId = selectedOptionIds[book?.id ?? 0] ?? book?.options[0]?.id
+    const selectedOption = book?.options.find(opt => opt.id === selectedOptionId)
+    const selectedOptionPrice = selectedOption?.price ?? 0
+    const selectedOptionStock = selectedOption?.stock ?? 0
+    const availableStock = getSelectedOptionAvailableStock()
 
     return (
         <Box className="d-flex">
@@ -99,7 +124,7 @@ export default function ItemPage() {
                                             <Grid2 className="d-flex flex-column">
                                                 <Typography fontWeight={600} fontSize={26}>{book.name}</Typography>
                                                 <Typography fontSize={14} className="d-flex gap-1">
-                                                    {book.rate.toLocaleString()}
+                                                    {book.rate > 0 ? book.rate.toLocaleString() : "0"}
                                                     <Rating
                                                         name="rate-feedback"
                                                         value={book.rate}
@@ -107,35 +132,59 @@ export default function ItemPage() {
                                                         precision={0.5} />
                                                 </Typography>
                                             </Grid2>
-                                            <Typography fontWeight={600} fontSize={26} className="my-2" sx={{ color: '#ff2a00' }}>฿{book.options[0]?.price}</Typography>
-                                            <Box sx={{ minWidth: '100px', border: 'solid 1px #000', borderRadius: '8px' }}>
+                                            <Typography fontWeight={600} fontSize={26} className="my-2" sx={{ color: '#ff2a00' }}>
+                                                ฿{selectedOptionPrice}
+                                            </Typography>
+                                            <Box sx={{ width: '350px', border: 'solid 1px #000', borderRadius: '8px' }}>
                                                 <FormControl fullWidth>
                                                     <Select
                                                         labelId="book-option-select-label"
                                                         id="book-option-select"
                                                         value={selectedOptionId ?? ''}
-                                                        onChange={(e) => setSelectedOptionId(Number(e.target.value))}
-                                                    >
-                                                        {book.options.map(option => (
-                                                            <MenuItem key={option.id} value={option.id}>
-                                                                {option.type} (฿ {option.price})
-                                                            </MenuItem>
-                                                        ))}
+                                                        onChange={(e) =>
+                                                            setSelectedOptionIds((prev) => ({
+                                                                ...prev,
+                                                                [book.id]: Number(e.target.value),
+                                                            }))
+                                                        }>
+                                                        {book.options.map(option => {
+                                                            return (
+                                                                <MenuItem key={option.id} value={option.id}>
+                                                                    {option.type} (฿ {option.price})
+                                                                </MenuItem>
+                                                            )
+                                                        })}
                                                     </Select>
                                                 </FormControl>
                                             </Box>
-                                            <Grid2 sx={{ width: '200px' }}>
-                                                <QuantityButton
-                                                    quantity={quantity}
-                                                    onIncrease={() => setQuantity(quantity + 1)}
-                                                    onDecrease={() => setQuantity(quantity - 1)}
-                                                />
+                                            <Grid2 className="d-flex align-items-center gap-4">
+                                                <Grid2 sx={{ width: '200px' }}>
+                                                    <QuantityButton
+                                                        quantity={quantity}
+                                                        onIncrease={() => setQuantity(prev => {
+                                                            if (prev >= availableStock) return prev
+                                                            return Math.min(availableStock, prev + 1)
+                                                        })}
+                                                        onDecrease={() => setQuantity(prev => Math.max(1, prev - 1))}
+                                                    />
+                                                </Grid2>
+                                                <Typography color="text.secondary">
+                                                    Stock: {selectedOptionStock}
+                                                    {selectedOptionStock === 0 && " (Out of stock)"}
+                                                </Typography>
                                             </Grid2>
                                             <Button
                                                 onClick={handleAddToCartClick}
                                                 variant="contained"
-                                                sx={{ width: '100%', height: '40px', borderRadius: '8px', textTransform: 'none' }}>
-                                                <Typography fontSize={14}>Add to cart</Typography>
+                                                disabled={availableStock === 0}
+                                                sx={{
+                                                    width: '350px',
+                                                    height: '40px',
+                                                    borderRadius: '8px',
+                                                    textTransform: 'none',
+                                                    backgroundColor: availableStock === 0 ? '#ccc' : undefined
+                                                }}>
+                                                <Typography fontSize={14}>{availableStock === 0 ? "Out of Stock" : "Add to cart"}</Typography>
                                             </Button>
                                         </Grid2>
                                     </Grid2>
@@ -159,7 +208,7 @@ export default function ItemPage() {
                 onClose={() => setOpenSnackbar(false)}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <Alert severity="success" onClose={() => setOpenSnackbar(false)}>
+                <Alert severity={snackbarSeverity} onClose={() => setOpenSnackbar(false)}>
                     {snackbarMessage}
                 </Alert>
             </Snackbar>

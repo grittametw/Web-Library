@@ -36,6 +36,7 @@ export default function HomePage() {
   const [sortType, setSortType] = useState<string>('Featured')
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
+  const [stockErrors, setStockErrors] = useState<{ [key: string]: string }>({})
   const { user } = useAuth()
   const {
     cart,
@@ -43,6 +44,7 @@ export default function HomePage() {
     handleIncrease,
     handleDecrease,
     getCartQuantity,
+    getAvailableStock,
     totalPrice,
     cartCount,
   } = useCart()
@@ -51,7 +53,7 @@ export default function HomePage() {
     fetch('/api/books')
       .then((response) => response.json())
       .then((data) => setBooks(data))
-      .catch((error) => console.error('Error fetching books:', error))
+      .catch((error) => console.error("Error fetching books:", error))
   }, [])
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function HomePage() {
     }
   }, [cart])
 
-  const filteredBooks = selectedCategory === 'All'
+  const filteredBooks = selectedCategory === "All"
     ? books
     : books.filter(book => book.genre === selectedCategory)
 
@@ -76,13 +78,13 @@ export default function HomePage() {
 
   const sortedBooks = [...searchedBooks].sort((a, b) => {
     switch (sortType) {
-      case 'Price: Low to High':
+      case "Price: Low to High":
         return a.options[0].price - b.options[0].price
-      case 'Price: High to Low':
+      case "Price: High to Low":
         return b.options[0].price - a.options[0].price
-      case 'Avg. Customer Review':
+      case "Avg. Customer Review":
         return b.rate - a.rate
-      case 'Featured':
+      case "Featured":
       default:
         return 0
     }
@@ -94,6 +96,32 @@ export default function HomePage() {
         ? prevFavorites.filter((id) => id !== bookId)
         : [...prevFavorites, bookId]
     )
+  }
+
+  const handleIncreaseWithStockCheck = (bookId: number, optionId: number) => {
+    const result = handleIncrease(bookId, optionId)
+    const errorKey = `${bookId}-${optionId}`
+
+    if (!result.success) {
+      setStockErrors(prev => ({
+        ...prev,
+        [errorKey]: result.error || "Cannot add more items"
+      }))
+
+      setTimeout(() => {
+        setStockErrors(prev => {
+          const newErrors = { ...prev }
+          delete newErrors[errorKey]
+          return newErrors
+        })
+      }, 3000)
+    } else {
+      setStockErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[errorKey]
+        return newErrors
+      })
+    }
   }
 
   return (
@@ -111,9 +139,9 @@ export default function HomePage() {
       <Grid2
         className="content-area d-flex flex-column"
         sx={{
-          marginLeft: '300px',
+          marginLeft: '280px',
           width: '100%',
-          paddingRight: isCartOpen ? '300px' : '0',
+          paddingRight: isCartOpen ? '280px' : '0',
           transition: 'padding-right 0.3s ease'
         }}
       >
@@ -132,7 +160,7 @@ export default function HomePage() {
                 )}
                 <Box sx={{ minWidth: '100px', backgroundColor: '#e7f1fe', borderRadius: '8px' }}>
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
+                    <InputLabel className="z-0" id="demo-simple-select-label">Sort by</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
@@ -166,10 +194,16 @@ export default function HomePage() {
                   </Button>
                 ))}
               </Grid2>
-              <Grid2 container className="d-flex gap-4 p-4" sx={{ overflow: 'auto' }}>
+              <Grid2 container spacing={4} rowSpacing={2} className="d-flex p-2" sx={{ overflow: 'auto' }}>
                 {sortedBooks.map((book) => {
                   const optionId = selectedOptionIds[book.id] ?? book.options[0]?.id
+                  const selectedOption = book.options.find(opt => opt.id === optionId)
+                  const selectedOptionPrice = selectedOption?.price ?? 0
+                  const selectedOptionStock = selectedOption?.stock ?? 0
+                  const availableStock = getAvailableStock(book.id, optionId, selectedOptionStock)
                   const quantity = optionId ? getCartQuantity(book.id, optionId) : 0
+                  const errorKey = `${book.id}-${optionId}`
+                  const hasStockError = stockErrors[errorKey]
                   return (
                     <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }} elevation={3}>
                       <Grid2 className="d-flex justify-content-end pt-2 px-2">
@@ -178,7 +212,7 @@ export default function HomePage() {
                         </IconButton>
                       </Grid2>
                       <Box className="d-flex gap-4 p-4 pt-0">
-                        <Image src={book.image} alt={book.name} width={130} height={180} />
+                        <Image src={book.image} alt={book.name} width={130} height={200} />
                         <Grid2 className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
                           <Grid2>
                             <Link
@@ -199,7 +233,7 @@ export default function HomePage() {
                             </Typography>
                             <Grid2 className="d-flex align-items-center gap-1">
                               <Typography fontSize={14}>Price:</Typography>
-                              <Typography fontSize={16}>฿{book.options.find(opt => opt.id === (selectedOptionIds[book.id] ?? book.options[0]?.id))?.price ?? '-'}</Typography>
+                              <Typography fontSize={16}>฿{selectedOptionPrice}</Typography>
                             </Grid2>
                             <Grid2 className="d-flex gap-1">
                               <Typography fontSize={14}>Format:</Typography>
@@ -207,13 +241,18 @@ export default function HomePage() {
                                 <Select
                                   labelId={`book-option-select-label-${book.id}`}
                                   id={`book-option-select-${book.id}`}
-                                  value={selectedOptionIds[book.id] ?? book.options[0]?.id ?? ''}
-                                  onChange={(e) =>
+                                  value={optionId ?? ''}
+                                  onChange={(e) => {
                                     setSelectedOptionIds((prev) => ({
                                       ...prev,
                                       [book.id]: Number(e.target.value),
                                     }))
-                                  }
+                                    setStockErrors(prev => {
+                                      const newErrors = { ...prev }
+                                      delete newErrors[errorKey]
+                                      return newErrors
+                                    })
+                                  }}
                                   sx={{ height: 24, fontSize: 14 }}
                                 >
                                   {book.options.map(option => (
@@ -224,16 +263,44 @@ export default function HomePage() {
                                 </Select>
                               </FormControl>
                             </Grid2>
+                            {hasStockError && (
+                              <Typography fontSize={12} color="error" sx={{ mt: 0.5 }}>
+                                Available stock: {availableStock}
+                              </Typography>
+                            )}
                           </Grid2>
                           <Grid2 className="d-flex align-items-center gap-3">
                             {quantity === 0 ? (
                               <Button
                                 onClick={() => {
-                                  if (optionId) handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1)
+                                  if (optionId) {
+                                    const result = handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1)
+                                    if (!result.success) {
+                                      setStockErrors(prev => ({
+                                        ...prev,
+                                        [errorKey]: result.error || "Cannot add to cart"
+                                      }))
+                                      setTimeout(() => {
+                                        setStockErrors(prev => {
+                                          const newErrors = { ...prev }
+                                          delete newErrors[errorKey]
+                                          return newErrors
+                                        })
+                                      }, 3000)
+                                    }
+                                  }
                                 }}
                                 variant="contained"
-                                sx={{ width: '100%', borderRadius: '8px', textTransform: 'none' }}>
-                                <Typography fontSize={14}>Add to cart</Typography>
+                                disabled={availableStock === 0}
+                                sx={{
+                                  width: '100%',
+                                  borderRadius: '8px',
+                                  textTransform: 'none',
+                                  backgroundColor: availableStock === 0 ? '#ccc' : undefined
+                                }}>
+                                <Typography fontSize={14}>
+                                  {availableStock === 0 ? "Out of Stock" : "Add to cart"}
+                                </Typography>
                               </Button>
                             ) : (
                               <>
@@ -245,9 +312,13 @@ export default function HomePage() {
                                 </Button>
                                 <Typography fontSize={14}>{quantity}</Typography>
                                 <Button
-                                  onClick={() => handleIncrease(book.id, optionId)}
+                                  onClick={() => handleIncreaseWithStockCheck(book.id, optionId)}
                                   variant="contained"
-                                  sx={{ width: 'auto', borderRadius: '8px' }}>
+                                  sx={{
+                                    width: 'auto',
+                                    borderRadius: '8px',
+                                    backgroundColor: availableStock === 0 ? '#ccc' : undefined
+                                  }}>
                                   <Typography fontSize={14}>+</Typography>
                                 </Button>
                               </>

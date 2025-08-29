@@ -81,7 +81,7 @@ export default function Cartbar({
                             return (
                                 <Box
                                     key={item.id + '-' + item.option_id}
-                                    className="d-flex flex-column align-items-center p-4"
+                                    className="d-flex flex-column align-items-center p-4 gap-4"
                                     sx={{ width: '100%', borderBottom: 'solid 1px #ccc', paddingBottom: '16px' }}
                                 >
                                     <Grid2 className="d-flex justify-content-between align-items-center gap-2" sx={{ width: '100%' }}>

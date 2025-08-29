@@ -21,10 +21,10 @@ export default function Sidebar({ cartCount }: SidebarProps) {
 
   return (
     <Box
-      className="sidebar d-flex flex-column p-4 shadow z-2"
+      className="sidebar d-flex flex-column p-2 py-4 shadow z-2"
       sx={{ 
         width: '100%', 
-        maxWidth: 300, 
+        maxWidth: 280, 
         height: '100vh', 
         backgroundColor: '#fff'
       }}

@@ -9,7 +9,7 @@ interface QuantityButtonProps {
 export default function QuantityButton({ quantity, onIncrease, onDecrease }: QuantityButtonProps) {
   return (
     <Box
-      className="d-flex justify-content-center align-items-center gap-4 mt-2"
+      className="d-flex justify-content-center align-items-center gap-4"
       sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
       <Button
         onClick={onDecrease}
@@ -19,7 +19,8 @@ export default function QuantityButton({ quantity, onIncrease, onDecrease }: Qua
       <Typography fontSize={14}>{quantity}</Typography>
       <Button
         onClick={onIncrease}
-        sx={{ width: '100%', borderRadius: '0px', borderLeft: '1px solid #ccc' }}>
+        sx={{ width: '100%', borderRadius: '0px', borderLeft: '1px solid #ccc' }}
+      >
         <Typography fontSize={14}>+</Typography>
       </Button>
     </Box>

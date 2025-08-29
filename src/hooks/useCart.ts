@@ -30,12 +30,32 @@ export interface CartItem {
   quantity: number
 }
 
+export interface AddToCartResult {
+  success: boolean
+  isUpdate: boolean
+  error?: string
+  maxStock?: number
+}
+
 export function useCart() {
   const { cart, setCart } = useCartContext()
 
-  const handleAddToCart = (book: Book, optionId: number, quantity: number): boolean => {
+  const handleAddToCart = (book: Book, optionId: number, quantity: number): AddToCartResult => {
     const option = book.options.find(o => o.id === optionId)
-    if (!option) return false
+    if (!option) return { success: false, isUpdate: false, error: "Option not found" }
+
+    const currentCartItem = cart.find(item => item.id === book.id && item.option_id === optionId)
+    const currentQuantity = currentCartItem ? currentCartItem.quantity : 0
+    const totalQuantity = currentQuantity + quantity
+
+    if (totalQuantity > option.stock) {
+      return {
+        success: false,
+        isUpdate: !!currentCartItem,
+        error: `Cannot add ${quantity} items. Only ${option.stock - currentQuantity} items available in stock.`,
+        maxStock: option.stock
+      }
+    }
 
     let isUpdate = false
 
@@ -48,8 +68,8 @@ export function useCart() {
         updatedCart[foundIndex] = {
           ...updatedCart[foundIndex],
           quantity: updatedCart[foundIndex].quantity + quantity
-        };
-        return updatedCart;
+        }
+        return updatedCart
       }
 
       return [
@@ -69,18 +89,31 @@ export function useCart() {
         }
       ]
     })
-
-    return isUpdate
+    return { success: true, isUpdate }
   }
 
-  const handleIncrease = (bookId: number, optionId: number) => {
+  const handleIncrease = (bookId: number, optionId: number): AddToCartResult => {
+    const currentItem = cart.find(item => item.id === bookId && item.option_id === optionId)
+    if (!currentItem) return { success: false, isUpdate: false, error: "Item not found in cart" }
+
+    if (currentItem.quantity >= currentItem.stock) {
+      return {
+        success: false,
+        isUpdate: true,
+        error: `Cannot add more items. Maximum stock is ${currentItem.stock}.`,
+        maxStock: currentItem.stock
+      }
+    }
+
     setCart((prevCart) =>
       prevCart.map(item =>
-        item.id === bookId && item.option_id === optionId
+        item.id === bookId && item.option_id === optionId 
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     )
+
+    return { success: true, isUpdate: true }
   }
 
   const handleDecrease = (bookId: number, optionId: number) => {
@@ -100,6 +133,11 @@ export function useCart() {
     return found ? found.quantity : 0
   }
 
+  const getAvailableStock = (bookId: number, optionId: number, totalStock: number) => {
+    const currentQuantity = getCartQuantity(bookId, optionId)
+    return Math.max(0, totalStock - currentQuantity)
+  }
+
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -109,6 +147,7 @@ export function useCart() {
     handleIncrease,
     handleDecrease,
     getCartQuantity,
+    getAvailableStock,
     totalPrice,
     cartCount,
     setCart,
