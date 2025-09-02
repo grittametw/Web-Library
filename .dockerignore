@@ -2,5 +2,7 @@ node_modules
 dist
 *.log
 *.env
-Dockerfile
-docker-compose.yaml
+.git
+.gitignore
+Dockerfile.prod
+docker-compose.override.yaml
