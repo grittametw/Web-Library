@@ -1,4 +1,4 @@
-import { Box, Grid2, Typography, Button } from '@mui/material';
+import { Box, Grid2, Typography } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import QuantityButton from './QuantityButton';
@@ -32,10 +32,10 @@ export default function Cartbar({
     handleDecrease,
 }: CartbarProps) {
     return (
-        <Box 
+        <Box
             className={`Cartbar ${isCartOpen ? 'cart-open' : ''}`}
-            sx={{ 
-                height: '100vh', 
+            sx={{
+                height: '100vh',
                 backgroundColor: '#fff',
                 position: 'fixed',
                 right: 0,
@@ -50,11 +50,11 @@ export default function Cartbar({
         >
             {isCartOpen && (
                 <>
-                    <Box 
-                        className="d-flex flex-column align-items-center p-4 gap-2" 
-                        sx={{ 
-                            width: '100%', 
-                            borderBottom: 'solid 1px #ccc', 
+                    <Box
+                        className="d-flex flex-column align-items-center p-4 gap-2"
+                        sx={{
+                            width: '100%',
+                            borderBottom: 'solid 1px #ccc',
                             paddingBottom: '16px',
                             flexShrink: 0
                         }}
@@ -68,10 +68,10 @@ export default function Cartbar({
                             <Typography fontSize={14} color='#000'>Go to cart</Typography>
                         </Link>
                     </Box>
-                    <Box 
-                        className="d-flex flex-column align-items-center" 
-                        sx={{ 
-                            width: '100%', 
+                    <Box
+                        className="d-flex flex-column align-items-center"
+                        sx={{
+                            width: '100%',
                             flex: 1,
                             overflowY: 'auto'
                         }}

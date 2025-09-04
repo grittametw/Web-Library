@@ -1,21 +1,18 @@
-'use client'
-
 import { useState } from 'react';
 import { Box, Grid2, Typography, InputBase, Paper, List, ListItemButton, Avatar } from '@mui/material';
 import { NotificationsOutlined, Person } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
+import { useBooks } from '@/context/ฺBooksContext';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import SearchIcon from '@mui/icons-material/Search';
 
-interface NavbarProps {
-    onSearch: (value: string) => void
-    books: { image: string; name: string; author: string; genre: string }[]
-}
-
-export default function Navbar({ onSearch, books }: NavbarProps) {
+export default function Navbar() {
     const [search, setSearch] = useState('')
-    const { user } = useAuth()
     const [showSuggestions, setShowSuggestions] = useState(false)
+    const { user } = useAuth()
+    const { books } = useBooks()
+    const router = useRouter()
 
     const suggestions = search
         ? books.filter(
@@ -32,8 +29,13 @@ export default function Navbar({ onSearch, books }: NavbarProps) {
     }
 
     const handleSearch = () => {
-        onSearch(search)
-        setShowSuggestions(false)
+        if (search.trim()) {
+            router.push(`/?search=${encodeURIComponent(search.trim())}`)
+            setShowSuggestions(false)
+        } else {
+            setSearch('')
+            window.location.href = '/'
+        }
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -42,9 +44,9 @@ export default function Navbar({ onSearch, books }: NavbarProps) {
         }
     }
 
-    const handleSuggestionClick = (text: string) => {
-        setSearch(text)
-        onSearch(text)
+    const handleSuggestionClick = (bookName: string) => {
+        setSearch(bookName)
+        router.push(`/?search=${encodeURIComponent(bookName)}`)
         setShowSuggestions(false)
     }
 

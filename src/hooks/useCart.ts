@@ -1,20 +1,5 @@
 import { useCartContext } from '@/context/CartContext';
-
-interface Book {
-  id: number
-  name: string
-  author: string
-  image: string
-  rate: number
-  genre: string
-  description: string
-  options: {
-    id: number
-    type: string
-    price: number
-    stock: number
-  }[]
-}
+import { Book } from '@/types/book';
 
 export interface CartItem {
   id: number
@@ -150,6 +135,6 @@ export function useCart() {
     getAvailableStock,
     totalPrice,
     cartCount,
-    setCart,
+    setCart
   }
 }

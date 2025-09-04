@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Box, Grid2, Typography } from '@mui/material';
 import { useCart } from '@/hooks/useCart';
 import Image from 'next/image';
@@ -11,16 +10,15 @@ import QuantityButton from '@/view/components/QuantityButton';
 import '@/styles/mycart.css';
 
 export default function MycartPage() {
-  const [search, setSearch] = useState('')
   const { cart, totalPrice, cartCount, handleIncrease, handleDecrease } = useCart()
 
   return (
     <Box className="d-flex">
       <Sidebar cartCount={cartCount} />
       <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
-        <Navbar onSearch={setSearch} books={[]} />
-        <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
-          <Grid2 className="d-flex my-4 mx-4 gap-4" sx={{ width: '100%' }}>
+        <Navbar />
+        <Grid2 className="d-flex" sx={{ overflowY: 'auto' }}>
+          <Grid2 className="d-flex m-4 gap-4" sx={{ width: '100%' }}>
             <Box className="d-flex flex-column p-4" sx={{ width: '100%', backgroundColor: '#fff', borderRadius: '8px' }}>
               <Box sx={{ borderBottom: '2px solid #ccc' }}>
                 <Typography fontWeight={600} fontSize={20}>Shopping Cart</Typography>

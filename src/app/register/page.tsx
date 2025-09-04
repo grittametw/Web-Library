@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Typography, FormControl, TextField, Button, Grid2, Checkbox } from '@mui/material';
 import { CheckCircle, Visibility, VisibilityOff } from '@mui/icons-material';

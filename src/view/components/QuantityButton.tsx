@@ -24,5 +24,5 @@ export default function QuantityButton({ quantity, onIncrease, onDecrease }: Qua
         <Typography fontSize={14}>+</Typography>
       </Button>
     </Box>
-  );
+  )
 }

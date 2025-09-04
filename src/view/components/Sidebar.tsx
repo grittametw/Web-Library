@@ -1,5 +1,3 @@
-'use client'
-
 import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
 import {
   HomeOutlined, ShoppingCartOutlined, FavoriteBorder,
@@ -16,21 +14,25 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ cartCount }: SidebarProps) {
-  const currentPath = usePathname()
   const { user, logout } = useAuth()
+  const currentPath = usePathname()
 
   return (
     <Box
       className="sidebar d-flex flex-column p-2 py-4 shadow z-2"
-      sx={{ 
-        width: '100%', 
-        maxWidth: 280, 
-        height: '100vh', 
+      sx={{
+        width: '100%',
+        maxWidth: 280,
+        height: '100vh',
         backgroundColor: '#fff'
       }}
     >
       <Grid2 className="d-flex justify-content-center align-items-center p-2 pb-4">
-        <Link href="/" className="d-flex align-items-center gap-3 text-decoration-none text-dark">
+        <Link
+          href="#"
+          onClick={() => window.location.href = '/'}
+          className="d-flex align-items-center gap-3 text-decoration-none text-dark"
+        >
           <Image src="/favicon.ico" alt="" width={48} height={48} />
           <Typography fontWeight={600} fontSize={20}>Web - Library</Typography>
         </Link>
@@ -39,9 +41,11 @@ export default function Sidebar({ cartCount }: SidebarProps) {
         <List className="nav pb-4" sx={{ borderBottom: '1px solid #ccc' }}>
           <ListItem className="nav-item">
             <Link
-              href="/"
+              href="#"
+              onClick={() => window.location.href = '/'}
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/' ? 'active' : ''}`}
-              style={{ width: '100%' }}>
+              style={{ width: '100%' }}
+            >
               <HomeOutlined />
               <Typography fontSize={22}>Home</Typography>
             </Link>
@@ -51,7 +55,8 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/mycart"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/mycart' ? 'active' : ''}`}
-              style={{ width: '100%' }}>
+              style={{ width: '100%' }}
+            >
               <ShoppingCartOutlined />
               <Grid2 className="d-flex justify-content-between align-items-center w-100">
                 <Typography fontSize={22}>My Cart</Typography>
@@ -76,7 +81,8 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/favorite"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/favorite' ? 'active' : ''}`}
-              style={{ width: '100%' }}>
+              style={{ width: '100%' }}
+            >
               <FavoriteBorder />
               <Typography fontSize={22}>Favorite</Typography>
             </Link>
@@ -87,7 +93,8 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/account"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/account' ? 'active' : ''}`}
-              style={{ width: '100%' }}>
+              style={{ width: '100%' }}
+            >
               <AssignmentIndOutlined />
               <Typography fontSize={22}>Your Account</Typography>
             </Link>
@@ -96,7 +103,8 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/support"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/support' ? 'active' : ''}`}
-              style={{ width: '100%' }}>
+              style={{ width: '100%' }}
+            >
               <SupportAgentOutlined />
               <Typography fontSize={22}>Support</Typography>
             </Link>
@@ -111,19 +119,21 @@ export default function Sidebar({ cartCount }: SidebarProps) {
                   window.location.href = '/login'
                 }}
                 className={"nav-link d-flex align-items-center gap-4"}
-                style={{ width: '100%' }}>
+                style={{ width: '100%' }}
+              >
                 <LogoutOutlined />
                 <Typography fontSize={22}>Logout</Typography>
               </Link>
             ) : (
               <Link
-                href="/#"
+                href="#"
                 onClick={e => {
                   e.preventDefault()
                   window.location.href = '/login'
                 }}
                 className={"nav-link d-flex align-items-center gap-4"}
-                style={{ width: '100%' }}>
+                style={{ width: '100%' }}
+              >
                 <LogoutOutlined />
                 <Typography fontSize={22}>Login</Typography>
               </Link>
@@ -132,5 +142,5 @@ export default function Sidebar({ cartCount }: SidebarProps) {
         </List>
       </Grid2>
     </Box>
-  );
+  )
 }

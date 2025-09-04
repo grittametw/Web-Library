@@ -4,30 +4,13 @@ import { useEffect, useState } from 'react';
 import { Box, Grid2, Typography, Rating, FormControl, Select, MenuItem, Button, Snackbar, Alert } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
+import { Book } from '@/types/book'
 import Image from 'next/image';
 import Navbar from '@/view/components/Navbar';
 import Sidebar from '@/view/components/Sidebar';
 import QuantityButton from '@/view/components/QuantityButton';
 
-interface Book {
-    id: number
-    name: string
-    author: string
-    image: string
-    rate: number
-    genre: string
-    description: string
-    options: {
-        id: number
-        type: string
-        price: number
-        stock: number
-    }[]
-}
-
 export default function ItemPage() {
-    const [search, setSearch] = useState('')
-    const [books, setBooks] = useState<Book[]>([])
     const [book, setBook] = useState<Book | null>(null)
     const [loading, setLoading] = useState(true)
     const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
@@ -108,8 +91,8 @@ export default function ItemPage() {
         <Box className="d-flex">
             <Sidebar cartCount={cartCount} />
             <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
-                <Navbar onSearch={setSearch} books={books} />
-                <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
+                <Navbar />
+                <Grid2 className="d-flex" sx={{ overflowY: 'auto' }}>
                     <Grid2 className="d-flex flex-column gap-4" sx={{ width: '100%' }}>
                         <Box className="d-flex flex-column m-4 p-4 gap-2" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
                             {loading ? (

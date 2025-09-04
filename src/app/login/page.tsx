@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material';
 import { useAuth } from '@/hooks/useAuth';
 import Image from 'next/image';

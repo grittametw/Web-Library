@@ -1,18 +1,9 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { BooksProvider } from '@/context/ฺBooksContext';
+import { FavoriteProvider } from '@/context/FavoriteContext';
 import { CartProvider } from '@/context/CartContext';
 import '@/styles/globals.css';
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Web-Library",
@@ -28,9 +19,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AppRouterCacheProvider>
-          <CartProvider>
-            {children}
-          </CartProvider>
+          <BooksProvider>
+            <FavoriteProvider>
+              <CartProvider>
+                {children}
+              </CartProvider>
+            </FavoriteProvider>
+          </BooksProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

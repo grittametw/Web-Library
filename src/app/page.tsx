@@ -1,43 +1,30 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material';
 import { FavoriteBorder, Favorite } from '@mui/icons-material';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { useFavorite } from '@/hooks/useFavorite';
+import { useBooks } from '@/context/ฺBooksContext';  
+import { Book } from '@/types/book';
 import Sidebar from '@/view/components/Sidebar';
 import Navbar from '@/view/components/Navbar';
 import Image from 'next/image';
 import Link from 'next/link';
 import Cartbar from '@/view/components/Cartbar';
 
-interface Book {
-  id: number
-  name: string
-  author: string
-  image: string
-  rate: number
-  genre: string
-  description: string
-  options: {
-    id: number
-    type: string
-    price: number
-    stock: number
-  }[]
-}
-
 export default function HomePage() {
-
   const [search, setSearch] = useState('')
-  const [books, setBooks] = useState<Book[]>([])
-  const [favorites, setFavorites] = useState<number[]>([])
   const [isCartOpen, setCartOpen] = useState(false)
   const [sortType, setSortType] = useState<string>('Featured')
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
   const [stockErrors, setStockErrors] = useState<{ [key: string]: string }>({})
   const { user } = useAuth()
+  const { toggleFavorite, isFavorite } = useFavorite()
+  const { books } = useBooks()
   const {
     cart,
     handleAddToCart,
@@ -48,13 +35,16 @@ export default function HomePage() {
     totalPrice,
     cartCount,
   } = useCart()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    fetch('/api/books')
-      .then((response) => response.json())
-      .then((data) => setBooks(data))
-      .catch((error) => console.error("Error fetching books:", error))
-  }, [])
+    const searchParam = searchParams.get('search')
+    if (searchParam) {
+      setSearch(searchParam)
+    } else {
+      setSearch('')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (cart.length > 0) {
@@ -90,12 +80,8 @@ export default function HomePage() {
     }
   })
 
-  const toggleFavorite = (bookId: number) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.includes(bookId)
-        ? prevFavorites.filter((id) => id !== bookId)
-        : [...prevFavorites, bookId]
-    )
+  const handleToggleFavorite = (bookId: number, book: Book) => {
+    toggleFavorite(bookId, book)
   }
 
   const handleIncreaseWithStockCheck = (bookId: number, optionId: number) => {
@@ -145,9 +131,16 @@ export default function HomePage() {
           transition: 'padding-right 0.3s ease'
         }}
       >
-        <Navbar onSearch={setSearch} books={books} />
+        <Navbar />
         <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
           <Grid2 className="d-flex flex-column gap-4 my-4" sx={{ width: '100%' }}>
+            {search && (
+              <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
+                <Typography fontWeight={600} fontSize={18}>
+                  Search results for: "{search}" ({sortedBooks.length} books found)
+                </Typography>
+              </Box>
+            )}
             {/* // Recommended feature under development
             <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               <Typography fontWeight={600} fontSize={20}>Recommended</Typography>
@@ -207,8 +200,8 @@ export default function HomePage() {
                   return (
                     <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }} elevation={3}>
                       <Grid2 className="d-flex justify-content-end pt-2 px-2">
-                        <IconButton disableRipple onClick={() => toggleFavorite(book.id)}>
-                          {favorites.includes(book.id) ? <Favorite color="error" /> : <FavoriteBorder />}
+                        <IconButton disableRipple onClick={() => handleToggleFavorite(book.id, book)}>
+                          {isFavorite(book.id) ? <Favorite color="error" /> : <FavoriteBorder />}
                         </IconButton>
                       </Grid2>
                       <Box className="d-flex gap-4 p-4 pt-0">
