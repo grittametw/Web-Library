@@ -65,7 +65,7 @@ export default function LoginPage() {
         const result = await res.json()
         setLoginError(result.error || 'Login failed')
       }
-    } catch (_err) {
+    } catch {
       setLoginError('Network error')
     }
     setLoading(false)
