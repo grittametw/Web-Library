@@ -93,7 +93,7 @@ export default function LoginPage() {
                 const result = await res.json()
                 setRegisterError(result.error || 'Create account failed')
             }
-        } catch (err) {
+        } catch (_err) {
             setRegisterError('Network error')
         }
         setLoading(false)

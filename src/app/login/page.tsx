@@ -65,7 +65,7 @@ export default function LoginPage() {
         const result = await res.json()
         setLoginError(result.error || 'Login failed')
       }
-    } catch (err) {
+    } catch (_err) {
       setLoginError('Network error')
     }
     setLoading(false)
@@ -125,9 +125,9 @@ export default function LoginPage() {
               variant="outlined"
               color={emailError ? 'error' : 'primary'}
               onChange={() => {
-                setEmailError(false);
-                setEmailErrorMessage('');
-                setLoginError('');
+                setEmailError(false)
+                setEmailErrorMessage('')
+                setLoginError('')
               }}
             />
           </FormControl>
@@ -145,9 +145,9 @@ export default function LoginPage() {
               variant="outlined"
               color={passwordError ? 'error' : 'primary'}
               onChange={() => {
-                setPasswordError(false);
-                setPasswordErrorMessage('');
-                setLoginError('');
+                setPasswordError(false)
+                setPasswordErrorMessage('')
+                setLoginError('')
               }}
             />
           </FormControl>
