@@ -8,7 +8,7 @@ import { FavoriteBorder, Favorite } from '@mui/icons-material';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useFavorite } from '@/hooks/useFavorite';
-import { useBooks } from '@/context/ฺBooksContext';
+import { useBooks } from '@/context/BooksContext';
 import { Book } from '@/types/book';
 import Sidebar from '@/view/components/Sidebar';
 import Navbar from '@/view/components/Navbar';

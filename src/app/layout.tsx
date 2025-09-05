@@ -1,6 +1,6 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import type { Metadata } from 'next';
-import { BooksProvider } from '@/context/ฺBooksContext';
+import { BooksProvider } from '@/context/BooksContext';
 import { FavoriteProvider } from '@/context/FavoriteContext';
 import { CartProvider } from '@/context/CartContext';
 import '@/styles/globals.css';
