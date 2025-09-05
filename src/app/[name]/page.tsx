@@ -196,5 +196,5 @@ export default function ItemPage() {
                 </Alert>
             </Snackbar>
         </Box>
-    );
+    )
 }
