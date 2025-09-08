@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { dbConfig } from '@/database';
+import { dbConfig } from '@/config/db';
 import mysql from 'mysql2/promise';
 
 interface BookRow {
