@@ -45,13 +45,12 @@ function hasErrorCode(e: unknown): e is { code: string } {
 
 export async function GET(
   request: Request,
-  context: { params: { name: string } }
-): Promise<NextResponse<BookResponse | ErrorResponse>> {
+  { params }: { params: { name: string } }
+) {
   let connection: mysql.Connection | null = null
 
   try {
-    const { name } = context.params
-    const bookName = decodeURIComponent(name)
+    const bookName = decodeURIComponent(params.name)
 
     if (!bookName || bookName.trim().length === 0) {
       return NextResponse.json(
