@@ -39,17 +39,22 @@ interface ErrorResponse {
   details?: string
 }
 
+interface RouteContext {
+  params: Promise<{ name: string }>
+}
+
 function hasErrorCode(e: unknown): e is { code: string } {
   return typeof e === 'object' && e !== null && 'code' in e
 }
 
 export async function GET(
   request: Request,
-  { params }: { params: { name: string } }
+  context: RouteContext
 ) {
   let connection: mysql.Connection | null = null
 
   try {
+    const params = await context.params
     const bookName = decodeURIComponent(params.name)
 
     if (!bookName || bookName.trim().length === 0) {
