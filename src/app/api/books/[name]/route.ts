@@ -39,17 +39,13 @@ interface ErrorResponse {
   details?: string
 }
 
-interface RouteContext {
-  params: { name: string }
-}
-
 function hasErrorCode(e: unknown): e is { code: string } {
   return typeof e === 'object' && e !== null && 'code' in e
 }
 
 export async function GET(
   request: Request,
-  context: RouteContext
+  context: { params: { name: string } }
 ): Promise<NextResponse<BookResponse | ErrorResponse>> {
   let connection: mysql.Connection | null = null
 
