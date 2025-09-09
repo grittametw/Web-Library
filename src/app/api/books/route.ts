@@ -39,6 +39,10 @@ interface ErrorResponse {
   details?: string
 }
 
+function hasErrorCode(e: unknown): e is { code: string } {
+  return typeof e === 'object' && e !== null && 'code' in e;
+}
+
 export async function GET(): Promise<NextResponse<Book[] | ErrorResponse>> {
   try {
     const pool = getPool()
@@ -87,12 +91,12 @@ export async function GET(): Promise<NextResponse<Book[] | ErrorResponse>> {
 
     return NextResponse.json(Array.from(bookMap.values()));
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching books:', error)
 
     let errorMessage = 'Unknown error occurred while fetching books'
-    if (error instanceof Error && 'code' in error) {
-      switch ((error as any).code) {
+    if (error instanceof Error && hasErrorCode(error)) {
+      switch (error.code) {
         case 'ER_ACCESS_DENIED_ERROR':
           errorMessage = 'Database access denied'
           break

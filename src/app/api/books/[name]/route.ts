@@ -40,19 +40,23 @@ interface ErrorResponse {
 }
 
 interface RouteContext {
-  params: Promise<{ name: string }>
+  params: { name: string }
+}
+
+function hasErrorCode(e: unknown): e is { code: string } {
+  return typeof e === 'object' && e !== null && 'code' in e
 }
 
 export async function GET(
-  request: Request, 
+  request: Request,
   context: RouteContext
 ): Promise<NextResponse<BookResponse | ErrorResponse>> {
   let connection: mysql.Connection | null = null
 
   try {
-    const params = await context.params
-    const bookName = decodeURIComponent(params.name)
-    
+    const { name } = context.params
+    const bookName = decodeURIComponent(name)
+
     if (!bookName || bookName.trim().length === 0) {
       return NextResponse.json(
         { error: 'Book name is required' } as ErrorResponse,
@@ -83,7 +87,7 @@ export async function GET(
     }
 
     const firstRow = rows[0]
-    
+
     const options: BookOption[] = rows
       .filter(row => row.option_id !== null)
       .map(row => ({
@@ -92,7 +96,7 @@ export async function GET(
         price: row.price as number,
         stock: row.stock as number,
       }))
-      .filter((option, index, self) => 
+      .filter((option, index, self) =>
         index === self.findIndex(o => o.id === option.id)
       )
 
@@ -109,32 +113,30 @@ export async function GET(
 
     return NextResponse.json(book)
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching book:', error)
 
     let errorMessage = 'Unknown error occurred while fetching book'
-    
-    if (error instanceof Error) {
-      errorMessage = error.message
-      
-      if ('code' in error) {
-        switch (error.code) {
-          case 'ER_ACCESS_DENIED_ERROR':
-            errorMessage = 'Database access denied'
-            break
-          case 'ECONNREFUSED':
-            errorMessage = 'Database connection refused'
-            break
-          case 'ER_BAD_DB_ERROR':
-            errorMessage = 'Database does not exist'
-            break
-          case 'ER_NO_SUCH_TABLE':
-            errorMessage = 'Required table does not exist'
-            break
-          default:
-            errorMessage = 'Database query error'
-        }
+
+    if (error instanceof Error && hasErrorCode(error)) {
+      switch (error.code) {
+        case 'ER_ACCESS_DENIED_ERROR':
+          errorMessage = 'Database access denied'
+          break
+        case 'ECONNREFUSED':
+          errorMessage = 'Database connection refused'
+          break
+        case 'ER_BAD_DB_ERROR':
+          errorMessage = 'Database does not exist'
+          break
+        case 'ER_NO_SUCH_TABLE':
+          errorMessage = 'Required table does not exist'
+          break
+        default:
+          errorMessage = 'Database query error'
       }
+    } else if (error instanceof Error) {
+      errorMessage = error.message
     }
 
     const errorResponse: ErrorResponse = {
