@@ -1,7 +1,7 @@
-import { Box, Grid2, Typography } from '@mui/material';
-import Image from 'next/image';
-import Link from 'next/link';
-import QuantityButton from './QuantityButton';
+import { Box, Grid2, Typography } from '@mui/material'
+import Image from 'next/image'
+import Link from 'next/link'
+import QuantityButton from './QuantityButton'
 
 interface CartItem {
     id: number
@@ -69,7 +69,7 @@ export default function Cartbar({
                         </Link>
                     </Box>
                     <Box
-                        className="d-flex flex-column align-items-center"
+                        className="d-flex flex-column align-items-center pb-4"
                         sx={{
                             width: '100%',
                             flex: 1,

@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
-import { getPool } from '@/config/db';
-import mysql from 'mysql2/promise';
+import { NextResponse } from 'next/server'
+import { getPool } from '@/config/db'
+import { Book } from '@/types/book'
+import mysql from 'mysql2/promise'
 
 interface BookRow {
   id: number
@@ -16,31 +17,13 @@ interface BookRow {
   stock: number | null
 }
 
-interface BookOption {
-  id: number
-  type: string
-  price: number
-  stock: number
-}
-
-interface Book {
-  id: number
-  name: string
-  author: string
-  image: string
-  rate: number
-  genre: string
-  description: string
-  options: BookOption[]
-}
-
 interface ErrorResponse {
   error: string
   details?: string
 }
 
 function hasErrorCode(e: unknown): e is { code: string } {
-  return typeof e === 'object' && e !== null && 'code' in e;
+  return typeof e === 'object' && e !== null && 'code' in e
 }
 
 export async function GET(): Promise<NextResponse<Book[] | ErrorResponse>> {
@@ -76,7 +59,7 @@ export async function GET(): Promise<NextResponse<Book[] | ErrorResponse>> {
 
       if (row.option_id !== null && row.option_type !== null &&
           row.price !== null && row.stock !== null) {
-        const book = bookMap.get(row.id)!;
+        const book = bookMap.get(row.id)!
 
         if (!book.options.find(opt => opt.id === row.option_id)) {
           book.options.push({
@@ -89,7 +72,7 @@ export async function GET(): Promise<NextResponse<Book[] | ErrorResponse>> {
       }
     })
 
-    return NextResponse.json(Array.from(bookMap.values()));
+    return NextResponse.json(Array.from(bookMap.values()))
 
   } catch (error: unknown) {
     console.error('Error fetching books:', error)

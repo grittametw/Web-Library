@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react';
-import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material';
-import { useAuth } from '@/hooks/useAuth';
-import Image from 'next/image';
-import Link from 'next/link';
-import '@/styles/login.css';
+import { useState } from 'react'
+import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material'
+import { useAuth } from '@/hooks/useAuth'
+import Image from 'next/image'
+import Link from 'next/link'
+import '@/styles/login.css'
 
 export default function LoginPage() {
   const [emailError, setEmailError] = useState(false)
@@ -13,9 +13,8 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState(false)
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
   const [loginError, setLoginError] = useState('')
-  const { login } = useAuth()
-
   const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
 
   const validateInputs = (email: string, password: string) => {
     let isValid = true
@@ -202,5 +201,5 @@ export default function LoginPage() {
         </Grid2>
       </Box>
     </Box>
-  );
+  )
 }

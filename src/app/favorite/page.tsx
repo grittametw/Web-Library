@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import { Box, Grid2, Typography } from '@mui/material';
-import { useCart } from '@/hooks/useCart';
-import Navbar from '@/view/components/Navbar';
-import Sidebar from '@/view/components/Sidebar';
-import Cartbar from '@/view/components/Cartbar';
-import FavoriteComponent from '@/view/components/Favorite';
+import { useEffect, useState } from 'react'
+import { Box, Grid2, Typography } from '@mui/material'
+import { useCart } from '@/hooks/useCart'
+import Navbar from '@/view/components/Navbar'
+import Sidebar from '@/view/components/Sidebar'
+import Cartbar from '@/view/components/Cartbar'
+import FavoriteComponent from '@/view/components/Favorite'
 
 export default function FavoritePage() {
   const [isCartOpen, setCartOpen] = useState(false)
@@ -64,5 +64,5 @@ export default function FavoritePage() {
         </Grid2>
       </Grid2>
     </Box>
-  );
+  )
 }

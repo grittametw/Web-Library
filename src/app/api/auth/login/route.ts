@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getPool } from '@/config/db';
-import mysql from 'mysql2/promise';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from 'next/server'
+import { getPool } from '@/config/db'
+import mysql from 'mysql2/promise'
+import bcrypt from 'bcryptjs'
 
 interface AdminRow {
   id: number

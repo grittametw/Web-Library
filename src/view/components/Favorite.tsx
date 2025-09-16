@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, FormControl, Select, MenuItem } from '@mui/material'
 import { Favorite, Delete } from '@mui/icons-material'

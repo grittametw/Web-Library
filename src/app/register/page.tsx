@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Box, Typography, FormControl, TextField, Button, Grid2, Checkbox } from '@mui/material';
-import { CheckCircle, Visibility, VisibilityOff } from '@mui/icons-material';
-import Image from 'next/image';
-import Link from 'next/link';
-import '@/styles/register.css';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Box, Typography, FormControl, TextField, Button, Grid2, Checkbox } from '@mui/material'
+import { CheckCircle, Visibility, VisibilityOff } from '@mui/icons-material'
+import Image from 'next/image'
+import Link from 'next/link'
+import '@/styles/register.css'
 
 export default function LoginPage() {
     const [emailError, setEmailError] = useState(false)
@@ -80,13 +80,13 @@ export default function LoginPage() {
 
         if (!validateInputs(email, password, confirmPassword)) return
 
-        setLoading(true);
+        setLoading(true)
         try {
             const res = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
-            });
+            })
             if (res.ok) {
                 router.push('/login')
             } else {
@@ -267,5 +267,5 @@ export default function LoginPage() {
                 </Box>
             </Box>
         </Box>
-    );
+    )
 }

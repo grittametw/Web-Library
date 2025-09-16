@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 export interface AuthUser {
   id: number
@@ -9,15 +9,20 @@ export interface AuthUser {
 
 export function useAuth() {
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const stored = localStorage.getItem('authUser')
-    if (stored) setUser(JSON.parse(stored))
+    if (stored) {
+      setUser(JSON.parse(stored))
+    }
+    setLoading(false)
   }, [])
 
   const login = (user: AuthUser) => {
     setUser(user)
     localStorage.setItem('authUser', JSON.stringify(user))
+    localStorage.removeItem('guest_shipping_address')
   }
 
   const logout = () => {
@@ -25,5 +30,11 @@ export function useAuth() {
     localStorage.removeItem('authUser')
   }
 
-  return { user, login, logout }
+  return { 
+    user,
+    isLoggedIn: !!user,
+    login,
+    logout,
+    loading
+  }
 }

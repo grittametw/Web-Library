@@ -1,20 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material';
-import { FavoriteBorder, Favorite } from '@mui/icons-material';
-import { useCart } from '@/hooks/useCart';
-import { useAuth } from '@/hooks/useAuth';
-import { useFavorite } from '@/hooks/useFavorite';
-import { useBooks } from '@/context/BooksContext';
-import { Book } from '@/types/book';
-import Sidebar from '@/view/components/Sidebar';
-import Navbar from '@/view/components/Navbar';
-import Image from 'next/image';
-import Link from 'next/link';
-import Cartbar from '@/view/components/Cartbar';
+import { useEffect, useState } from 'react'
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material'
+import { FavoriteBorder, Favorite } from '@mui/icons-material'
+import { useCart } from '@/hooks/useCart'
+import { useAuth } from '@/hooks/useAuth'
+import { useFavorite } from '@/hooks/useFavorite'
+import { useBooks } from '@/context/BooksContext'
+import { Book } from '@/types/book'
+import Sidebar from '@/view/components/Sidebar'
+import Navbar from '@/view/components/Navbar'
+import Image from 'next/image'
+import Link from 'next/link'
+import Cartbar from '@/view/components/Cartbar'
 
 function SearchHandler({ setSearch }: { setSearch: (search: string) => void }) {
   const searchParams = useSearchParams()

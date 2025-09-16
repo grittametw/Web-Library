@@ -1,9 +1,9 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material'
 
 interface QuantityButtonProps {
-  quantity: number;
-  onIncrease: () => void;
-  onDecrease: () => void;
+  quantity: number
+  onIncrease: () => void
+  onDecrease: () => void
 }
 
 export default function QuantityButton({ quantity, onIncrease, onDecrease }: QuantityButtonProps) {

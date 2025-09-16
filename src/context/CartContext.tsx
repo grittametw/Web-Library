@@ -1,8 +1,8 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { CartItem } from '@/hooks/useCart';
-import { useAuth } from '@/hooks/useAuth';
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import { CartItem } from '@/hooks/useCart'
+import { useAuth } from '@/hooks/useAuth'
 
 interface CartContextType {
   cart: CartItem[]

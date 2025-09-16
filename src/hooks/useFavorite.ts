@@ -1,5 +1,5 @@
-import { useFavoriteContext } from '@/context/FavoriteContext';
-import { Book } from '@/types/book';
+import { useFavoriteContext } from '@/context/FavoriteContext'
+import { Book } from '@/types/book'
 
 export function useFavorite() {
     const { favorites, setFavorites } = useFavoriteContext()

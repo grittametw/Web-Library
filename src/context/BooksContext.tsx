@@ -1,7 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Book } from '@/types/book';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { Book } from '@/types/book'
 
 interface BooksContextType {
   books: Book[]

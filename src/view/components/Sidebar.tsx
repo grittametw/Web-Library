@@ -1,13 +1,13 @@
-import { Box, Grid2, Typography, List, ListItem } from '@mui/material';
+import { Box, Grid2, Typography, List, ListItem } from '@mui/material'
 import {
-  HomeOutlined, ShoppingCartOutlined, FavoriteBorder,
-  AssignmentIndOutlined, SupportAgentOutlined, LogoutOutlined
-} from '@mui/icons-material';
-import { usePathname } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import Link from 'next/link';
-import Image from 'next/image';
-import '@/styles/Sidebar.css';
+  HomeOutlined, ShoppingCartOutlined, FavoriteBorder, AssignmentIndOutlined,
+  SupportAgentOutlined, LogoutOutlined
+} from '@mui/icons-material'
+import { usePathname } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
+import Link from 'next/link'
+import Image from 'next/image'
+import '@/styles/Sidebar.css'
 
 interface SidebarProps {
   cartCount?: number

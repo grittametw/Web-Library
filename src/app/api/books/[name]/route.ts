@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
-import { dbConfig } from '@/config/db';
-import mysql from 'mysql2/promise';
+import { NextResponse } from 'next/server'
+import { dbConfig } from '@/config/db'
+import { Book } from '@/types/book'
+import mysql from 'mysql2/promise'
 
 interface BookRow {
   id: number
@@ -14,24 +15,6 @@ interface BookRow {
   option_type: string | null
   price: number | null
   stock: number | null
-}
-
-interface BookOption {
-  id: number
-  type: string
-  price: number
-  stock: number
-}
-
-interface BookResponse {
-  id: number
-  name: string
-  author: string
-  image: string
-  rate: number
-  genre: string
-  description: string
-  options: BookOption[]
 }
 
 interface ErrorResponse {
@@ -64,7 +47,7 @@ export async function GET(
       )
     }
 
-    connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig)
 
     const [results] = await connection.execute<mysql.RowDataPacket[]>(
       `SELECT 
@@ -88,7 +71,7 @@ export async function GET(
 
     const firstRow = rows[0]
 
-    const options: BookOption[] = rows
+    const options: Book['options'] = rows
       .filter(row => row.option_id !== null)
       .map(row => ({
         id: row.option_id as number,
@@ -100,7 +83,7 @@ export async function GET(
         index === self.findIndex(o => o.id === option.id)
       )
 
-    const book: BookResponse = {
+    const book: Book = {
       id: firstRow.id,
       name: firstRow.name,
       author: firstRow.author,

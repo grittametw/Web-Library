@@ -1,5 +1,5 @@
-import { useCartContext } from '@/context/CartContext';
-import { Book } from '@/types/book';
+import { useCartContext } from '@/context/CartContext'
+import { Book } from '@/types/book'
 
 export interface CartItem {
   id: number

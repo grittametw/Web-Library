@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getPool } from '@/config/db';
-import mysql from 'mysql2/promise';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from 'next/server'
+import { getPool } from '@/config/db'
+import mysql from 'mysql2/promise'
+import bcrypt from 'bcryptjs'
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 function isValidPassword(password: string) {
-  return password.length >= 6;
+  return password.length >= 6
 }
 
 export async function POST(req: NextRequest) {
