@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import mysql from 'mysql2/promise'
 
 export const dbConfig = {
   host: process.env.DB_HOST,
@@ -7,7 +7,7 @@ export const dbConfig = {
   database: process.env.DB_DATABASE,
   port: Number(process.env.DB_PORT) || 3306,
   ssl: {
-    rejectUnauthorized: true,
+    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
   },
   waitForConnections: true,
   connectionLimit: 10,
