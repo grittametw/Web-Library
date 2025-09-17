@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server"
 import omise from "@/lib/omise"
 
+interface RouteContext {
+  params: { id: string }
+}
+
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
-    const charge = await omise.charges.retrieve(params.id)
+    const charge = await omise.charges.retrieve(context.params.id)
 
     return NextResponse.json({
       id: charge.id,
