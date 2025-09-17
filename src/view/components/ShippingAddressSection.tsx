@@ -6,12 +6,13 @@ import { ShippingAddress, DbUserAddress } from '@/types/address'
 interface Props {
   isLoggedIn?: boolean
   userId?: number
+  userEmail?: string
   onAddressChange?: (address: ShippingAddress | null) => void
 }
 
 const GUEST_ADDRESS_KEY = 'guest_shipping_address'
 
-export default function ShippingAddressSection({ isLoggedIn = false, userId, onAddressChange }: Props) {
+export default function ShippingAddressSection({ isLoggedIn = false, userId, userEmail, onAddressChange }: Props) {
   const [showAddressForm, setShowAddressForm] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null)
   const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([])
@@ -33,9 +34,7 @@ export default function ShippingAddressSection({ isLoggedIn = false, userId, onA
   })
 
   useEffect(() => {
-    if (isLoggedIn && userId) {
-      loadAddresses()
-    }
+    loadAddresses()
   }, [isLoggedIn, userId])
 
   const dbToFormAddress = (dbAddr: DbUserAddress & { email: string }): ShippingAddress => ({
@@ -94,12 +93,14 @@ export default function ShippingAddressSection({ isLoggedIn = false, userId, onA
             onAddressChange?.(defaultAddress)
           } else {
             setSelectedAddress(null)
+            setFormData(prev => ({ ...prev, email: userEmail || '', label: 'Default' }))
             onAddressChange?.(null)
           }
         } else {
           console.error('Failed to load addresses:', response.statusText)
           setSavedAddresses([])
           setSelectedAddress(null)
+          setFormData(prev => ({ ...prev, email: userEmail || '', label: 'Default' }))
           onAddressChange?.(null)
         }
       } else {
@@ -231,7 +232,7 @@ export default function ShippingAddressSection({ isLoggedIn = false, userId, onA
       setFormData(address)
       setIsNewAddress(false)
     } else {
-      resetForm()
+      setFormData(prev => ({ ...prev, email: isLoggedIn ? userEmail || '' : '', label: 'Default' }))
       setIsNewAddress(true)
     }
     setShowAddressForm(true)

@@ -23,6 +23,7 @@ export default function MycartPage() {
   }
 
   const userId = user?.id
+  const userEmail = user?.email
   const canProceedToCheckout = cart.length > 0 && shippingAddress
 
   return (
@@ -120,6 +121,7 @@ export default function MycartPage() {
               <ShippingAddressSection
                 isLoggedIn={isLoggedIn}
                 userId={userId}
+                userEmail={userEmail}
                 onAddressChange={handleAddressChange}
               />
             </Box>
