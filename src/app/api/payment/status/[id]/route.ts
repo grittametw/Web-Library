@@ -15,10 +15,12 @@ export async function GET(
       amount: charge.amount,
       currency: charge.currency,
     })
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    )
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      )
+    }
   }
 }
