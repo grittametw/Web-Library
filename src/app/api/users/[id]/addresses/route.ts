@@ -25,7 +25,7 @@ interface ErrorResponse {
 }
 
 interface RouteContext {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }
 
 function hasErrorCode(e: unknown): e is { code: string } {
