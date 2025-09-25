@@ -95,7 +95,7 @@ export default function ItemPage() {
 
             setSnackbarMessage(currentItem ? "Updated quantity in cart" : "Added to cart")
             setSnackbarSeverity('success')
-        } catch (err) {
+        } catch {
             setSnackbarMessage("Failed to add to cart")
             setSnackbarSeverity('error')
         }
