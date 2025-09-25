@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import { Box, Grid2, Typography, Rating, FormControl, Select, MenuItem, Button, Snackbar, Alert } from '@mui/material';
-import { useParams } from 'next/navigation';
-import { useCart } from '@/hooks/useCart';
+import { useEffect, useState } from 'react'
+import { Box, Grid2, Typography, Rating, FormControl, Select, MenuItem, Button, Snackbar, Alert } from '@mui/material'
+import { useParams } from 'next/navigation'
+import { useCart } from '@/hooks/useCart'
+import { useAuth } from '@/hooks/useAuth'
+import { useCartContext } from '@/context/CartContext'
 import { Book } from '@/types/book'
-import Image from 'next/image';
-import Navbar from '@/view/components/Navbar';
-import Sidebar from '@/view/components/Sidebar';
-import QuantityButton from '@/view/components/QuantityButton';
+import Image from 'next/image'
+import Navbar from '@/view/components/Navbar'
+import Sidebar from '@/view/components/Sidebar'
+import QuantityButton from '@/view/components/QuantityButton'
 
 export default function ItemPage() {
     const [book, setBook] = useState<Book | null>(null)
@@ -19,6 +21,8 @@ export default function ItemPage() {
     const [snackbarMessage, setSnackbarMessage] = useState('')
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
     const { name } = useParams()
+    const { user } = useAuth()
+    const { refreshCart } = useCartContext()
     const {
         cart,
         handleAddToCart,
@@ -58,20 +62,45 @@ export default function ItemPage() {
         }
     }, [book, selectedOptionIds, cart])
 
-    const handleAddToCartClick = () => {
-        if (book && selectedOptionId) {
-            const result = handleAddToCart(book, selectedOptionId, quantity)
+    const handleAddToCartClick = async () => {
+        if (!book || !selectedOptionId) return
 
-            if (result.success) {
-                setSnackbarMessage(result.isUpdate ? "Updated quantity in cart" : "Added to cart")
-                setSnackbarSeverity('success')
+        const currentItem = cart.find(
+            item => item.book_id === book.id && item.book_option_id === selectedOptionId
+        )
+
+        try {
+            if (user?.id) {
+                if (currentItem) {
+                    await fetch(`/api/users/${user.id}/carts`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: currentItem.id, quantity: currentItem.quantity + quantity }),
+                    })
+                } else {
+                    await fetch(`/api/users/${user.id}/carts`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            book_id: book.id,
+                            book_option_id: selectedOptionId,
+                            quantity,
+                        }),
+                    })
+                }
+                await refreshCart()
             } else {
-                setSnackbarMessage(result.error || "Failed to add to cart")
-                setSnackbarSeverity('error')
+                await handleAddToCart(book, selectedOptionId, quantity)
             }
 
-            setOpenSnackbar(true)
+            setSnackbarMessage(currentItem ? "Updated quantity in cart" : "Added to cart")
+            setSnackbarSeverity('success')
+        } catch (err) {
+            setSnackbarMessage("Failed to add to cart")
+            setSnackbarSeverity('error')
         }
+
+        setOpenSnackbar(true)
     }
 
     const getSelectedOptionAvailableStock = () => {
