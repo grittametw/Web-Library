@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth'
 interface CartContextType {
   cart: CartItem[]
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>
+  refreshCart: () => Promise<void>
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -15,24 +16,33 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth()
   const [cart, setCart] = useState<CartItem[]>([])
 
-  const getCartKey = () => {
-    if (user?.id && user?.role) return `cart_${user.role}_${user.id}`
-    return 'cart_guest'
+  const isLoggedIn = !!user?.id
+
+  const refreshCart = async () => {
+    if (isLoggedIn) {
+      // ดึงจาก server
+      const res = await fetch(`/api/users/${user!.id}/carts`)
+      const data = await res.json()
+      setCart(data.cart || [])
+    } else {
+      // ดึงจาก localStorage
+      const saved = localStorage.getItem('cart_guest')
+      setCart(saved ? JSON.parse(saved) : [])
+    }
   }
 
   useEffect(() => {
-    const key = getCartKey()
-    const saved = localStorage.getItem(key)
-    setCart(saved ? JSON.parse(saved) : [])
-  }, [user?.id, user?.role])
+    refreshCart()
+  }, [isLoggedIn])
 
   useEffect(() => {
-    const key = getCartKey()
-    localStorage.setItem(key, JSON.stringify(cart))
-  }, [cart, user?.id, user?.role])
+    if (!isLoggedIn) {
+      localStorage.setItem('cart_guest', JSON.stringify(cart))
+    }
+  }, [cart, isLoggedIn])
 
   return (
-    <CartContext.Provider value={{ cart, setCart }}>
+    <CartContext.Provider value={{ cart, setCart, refreshCart }}>
       {children}
     </CartContext.Provider>
   )

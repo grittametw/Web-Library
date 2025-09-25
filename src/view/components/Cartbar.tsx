@@ -1,18 +1,8 @@
 import { Box, Grid2, Typography } from '@mui/material'
+import { CartItem, useCart } from '@/hooks/useCart'
 import Image from 'next/image'
 import Link from 'next/link'
 import QuantityButton from './QuantityButton'
-
-interface CartItem {
-    id: number
-    name: string
-    image: string
-    price: number
-    quantity: number
-    option_id: number
-    option_type: string
-    stock: number
-}
 
 interface CartbarProps {
     cart: CartItem[]
@@ -31,6 +21,8 @@ export default function Cartbar({
     handleIncrease,
     handleDecrease,
 }: CartbarProps) {
+    const { getAvailableStock } = useCart()
+
     return (
         <Box
             className={`Cartbar ${isCartOpen ? 'cart-open' : ''}`}
@@ -77,22 +69,35 @@ export default function Cartbar({
                         }}
                     >
                         {cart.map(item => {
-                            const quantity = getCartQuantity(item.id, item.option_id)
+                            const quantity = getCartQuantity(item.book_id, item.book_option_id)
+                            const availableStock = getAvailableStock(item.book_id, item.book_option_id, item.stock)
                             return (
                                 <Box
-                                    key={item.id + '-' + item.option_id}
+                                    key={item.id + '-' + item.book_option_id}
                                     className="d-flex flex-column align-items-center p-4 gap-4"
                                     sx={{ width: '100%', borderBottom: 'solid 1px #ccc', paddingBottom: '16px' }}
                                 >
-                                    <Grid2 className="d-flex justify-content-between align-items-center gap-2" sx={{ width: '100%' }}>
+                                    <Grid2 className="d-flex justify-content-center align-items-center gap-2" sx={{ width: '100%' }}>
                                         <Image src={item.image} alt={item.name} width={48} height={72} />
-                                        <Typography fontSize={14}>{item.name}</Typography>
-                                        <Typography fontSize={14}>{item.option_type} (฿{item.price})</Typography>
+                                        <Grid2 className="d-flex flex-column">
+                                            <Grid2 className="d-flex gap-4">
+                                                <Typography fontSize={14} width={80}>{item.name}</Typography>
+                                                <Grid2 className="d-flex flex-column">
+                                                    <Typography fontSize={14}>{item.option_type}</Typography>
+                                                    <Typography fontSize={14}>(฿{item.price})</Typography>
+                                                </Grid2>
+                                            </Grid2>
+                                            {availableStock === 0 && (
+                                                <Typography fontSize={12} color="error" sx={{ mt: 0.5 }}>
+                                                    Available stock: {availableStock}
+                                                </Typography>
+                                            )}
+                                        </Grid2>
                                     </Grid2>
                                     <QuantityButton
                                         quantity={quantity}
-                                        onIncrease={() => handleIncrease(item.id, item.option_id)}
-                                        onDecrease={() => handleDecrease(item.id, item.option_id)}
+                                        onIncrease={() => handleIncrease(item.book_id, item.book_option_id)}
+                                        onDecrease={() => handleDecrease(item.book_id, item.book_option_id)}
                                     />
                                 </Box>
                             )

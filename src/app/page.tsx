@@ -37,7 +37,6 @@ function HomePageContent() {
   const [sortType, setSortType] = useState<string>('Featured')
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
-  const [stockErrors, setStockErrors] = useState<{ [key: string]: string }>({})
   const { user } = useAuth()
   const { toggleFavorite, isFavorite } = useFavorite()
   const { books } = useBooks()
@@ -90,38 +89,12 @@ function HomePageContent() {
     toggleFavorite(bookId, book)
   }
 
-  const handleIncreaseWithStockCheck = (bookId: number, optionId: number) => {
-    const result = handleIncrease(bookId, optionId)
-    const errorKey = `${bookId}-${optionId}`
-
-    if (!result.success) {
-      setStockErrors(prev => ({
-        ...prev,
-        [errorKey]: result.error || "Cannot add more items"
-      }))
-
-      setTimeout(() => {
-        setStockErrors(prev => {
-          const newErrors = { ...prev }
-          delete newErrors[errorKey]
-          return newErrors
-        })
-      }, 3000)
-    } else {
-      setStockErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors[errorKey]
-        return newErrors
-      })
-    }
-  }
-
   return (
     <Box className="d-flex" sx={{ height: '100vh' }}>
       <Suspense fallback={null}>
         <SearchHandler setSearch={setSearch} />
       </Suspense>
-      
+
       <Box sx={{
         position: 'fixed',
         left: 0,
@@ -201,8 +174,6 @@ function HomePageContent() {
                   const selectedOptionStock = selectedOption?.stock ?? 0
                   const availableStock = getAvailableStock(book.id, optionId, selectedOptionStock)
                   const quantity = optionId ? getCartQuantity(book.id, optionId) : 0
-                  const errorKey = `${book.id}-${optionId}`
-                  const hasStockError = stockErrors[errorKey]
                   return (
                     <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }} elevation={3}>
                       <Grid2 className="d-flex justify-content-end pt-2 px-2">
@@ -246,11 +217,6 @@ function HomePageContent() {
                                       ...prev,
                                       [book.id]: Number(e.target.value),
                                     }))
-                                    setStockErrors(prev => {
-                                      const newErrors = { ...prev }
-                                      delete newErrors[errorKey]
-                                      return newErrors
-                                    })
                                   }}
                                   sx={{ height: 24, fontSize: 14 }}
                                 >
@@ -262,7 +228,7 @@ function HomePageContent() {
                                 </Select>
                               </FormControl>
                             </Grid2>
-                            {hasStockError && (
+                            {availableStock === 0 && (
                               <Typography fontSize={12} color="error" sx={{ mt: 0.5 }}>
                                 Available stock: {availableStock}
                               </Typography>
@@ -271,24 +237,7 @@ function HomePageContent() {
                           <Grid2 className="d-flex align-items-center gap-3">
                             {quantity === 0 ? (
                               <Button
-                                onClick={() => {
-                                  if (optionId) {
-                                    const result = handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1)
-                                    if (!result.success) {
-                                      setStockErrors(prev => ({
-                                        ...prev,
-                                        [errorKey]: result.error || "Cannot add to cart"
-                                      }))
-                                      setTimeout(() => {
-                                        setStockErrors(prev => {
-                                          const newErrors = { ...prev }
-                                          delete newErrors[errorKey]
-                                          return newErrors
-                                        })
-                                      }, 3000)
-                                    }
-                                  }
-                                }}
+                                onClick={() => { handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1) }}
                                 variant="contained"
                                 disabled={availableStock === 0}
                                 sx={{
@@ -311,7 +260,7 @@ function HomePageContent() {
                                 </Button>
                                 <Typography fontSize={14}>{quantity}</Typography>
                                 <Button
-                                  onClick={() => handleIncreaseWithStockCheck(book.id, optionId)}
+                                  onClick={() => handleIncrease(book.id, optionId)}
                                   variant="contained"
                                   sx={{
                                     width: 'auto',

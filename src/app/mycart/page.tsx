@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Grid2, Typography } from '@mui/material'
 import { useCart } from '@/hooks/useCart'
 import { useAuth } from '@/hooks/useAuth'
@@ -16,7 +16,7 @@ import '@/styles/mycart.css'
 export default function MycartPage() {
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress | null>(null)
   const { user, isLoggedIn } = useAuth()
-  const { cart, totalPrice, cartCount, handleIncrease, handleDecrease, getAvailableStock } = useCart()
+  const { cart, totalPrice, cartCount, handleIncrease, handleDecrease, getAvailableStock, setCart } = useCart()
 
   const handleAddressChange = (address: ShippingAddress | null) => {
     setShippingAddress(address)
@@ -25,6 +25,17 @@ export default function MycartPage() {
   const userId = user?.id
   const userEmail = user?.email
   const canProceedToCheckout = cart.length > 0 && shippingAddress
+
+  useEffect(() => {
+    if (!isLoggedIn || !userId) return
+
+    fetch(`/api/users/${userId}/carts`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setCart(data.cart)
+      })
+      .catch(err => console.error('Failed to fetch cart', err))
+  }, [isLoggedIn, userId])
 
   return (
     <Box className="d-flex">
@@ -43,7 +54,7 @@ export default function MycartPage() {
                   <Typography color="text.secondary">No items in cart.</Typography>
                 ) : (
                   cart.map((item) => {
-                    const availableStock = getAvailableStock(item.id, item.option_id, item.stock)
+                    const availableStock = getAvailableStock(item.book_id, item.book_option_id, item.stock)
                     return (
                       <Box
                         key={item.id}
@@ -69,8 +80,8 @@ export default function MycartPage() {
                             <Grid2 sx={{ width: '200px' }}>
                               <QuantityButton
                                 quantity={item.quantity}
-                                onIncrease={() => handleIncrease(item.id, item.option_id)}
-                                onDecrease={() => handleDecrease(item.id, item.option_id)}
+                                onIncrease={() => handleIncrease(item.book_id, item.book_option_id)}
+                                onDecrease={() => handleDecrease(item.book_id, item.book_option_id)}
                               />
                             </Grid2>
                           </Grid2>

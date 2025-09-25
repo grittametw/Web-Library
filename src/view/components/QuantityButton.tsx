@@ -1,4 +1,5 @@
-import { Box, Button, Typography } from '@mui/material'
+import { useState } from 'react'
+import { Box, Button, Typography, CircularProgress } from '@mui/material'
 
 interface QuantityButtonProps {
   quantity: number
@@ -7,21 +8,38 @@ interface QuantityButtonProps {
 }
 
 export default function QuantityButton({ quantity, onIncrease, onDecrease }: QuantityButtonProps) {
+  const [loadingDecrease, setLoadingDecrease] = useState(false)
+  const [loadingIncrease, setLoadingIncrease] = useState(false)
+
+  const handleDecrease = async () => {
+    setLoadingDecrease(true)
+    await onDecrease()
+    setLoadingDecrease(false)
+  }
+
+  const handleIncrease = async () => {
+    setLoadingIncrease(true)
+    await onIncrease()
+    setLoadingIncrease(false)
+  }
+
   return (
     <Box
       className="d-flex justify-content-center align-items-center gap-4"
       sx={{ border: 'solid 1px #ccc', borderRadius: '8px' }}>
       <Button
-        onClick={onDecrease}
+        onClick={handleDecrease}
+        disabled={loadingDecrease}
         sx={{ width: '100%', borderRadius: '0px', borderRight: '1px solid #ccc' }}>
-        <Typography fontSize={14}>-</Typography>
+        {loadingDecrease ? <CircularProgress size={14} /> : <Typography fontSize={14}>-</Typography>}
       </Button>
       <Typography fontSize={14}>{quantity}</Typography>
       <Button
-        onClick={onIncrease}
+        onClick={handleIncrease}
+        disabled={loadingIncrease}
         sx={{ width: '100%', borderRadius: '0px', borderLeft: '1px solid #ccc' }}
       >
-        <Typography fontSize={14}>+</Typography>
+        {loadingIncrease ? <CircularProgress size={14} /> : <Typography fontSize={14}>+</Typography>}
       </Button>
     </Box>
   )
