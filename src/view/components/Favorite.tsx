@@ -12,7 +12,6 @@ interface FavoriteProps {
 
 export default function FavoriteComponent({ search = '' }: FavoriteProps) {
   const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
-  const [stockErrors, setStockErrors] = useState<{ [key: string]: string }>({})
   const { favoriteBooks, toggleFavorite, clearFavorites } = useFavorite()
   const {
     handleAddToCart,
@@ -29,32 +28,6 @@ export default function FavoriteComponent({ search = '' }: FavoriteProps) {
       book.genre.toLowerCase().includes(search.toLowerCase())
     )
     : favoriteBooks
-
-  const handleIncreaseWithStockCheck = (bookId: number, optionId: number) => {
-    const result = handleIncrease(bookId, optionId)
-    const errorKey = `${bookId}-${optionId}`
-
-    if (!result.success) {
-      setStockErrors(prev => ({
-        ...prev,
-        [errorKey]: result.error || "Cannot add more items"
-      }))
-
-      setTimeout(() => {
-        setStockErrors(prev => {
-          const newErrors = { ...prev }
-          delete newErrors[errorKey]
-          return newErrors
-        })
-      }, 3000)
-    } else {
-      setStockErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors[errorKey]
-        return newErrors
-      })
-    }
-  }
 
   if (favoriteBooks.length === 0) {
     return (
@@ -110,8 +83,6 @@ export default function FavoriteComponent({ search = '' }: FavoriteProps) {
           const selectedOptionStock = selectedOption?.stock ?? 0
           const availableStock = getAvailableStock(book.id, optionId, selectedOptionStock)
           const quantity = optionId ? getCartQuantity(book.id, optionId) : 0
-          const errorKey = `${book.id}-${optionId}`
-          const hasStockError = stockErrors[errorKey]
 
           return (
             <Paper
@@ -173,11 +144,6 @@ export default function FavoriteComponent({ search = '' }: FavoriteProps) {
                               ...prev,
                               [book.id]: Number(e.target.value),
                             }))
-                            setStockErrors(prev => {
-                              const newErrors = { ...prev }
-                              delete newErrors[errorKey]
-                              return newErrors
-                            })
                           }}
                           sx={{ height: 24, fontSize: 14 }}
                         >
@@ -190,7 +156,7 @@ export default function FavoriteComponent({ search = '' }: FavoriteProps) {
                       </FormControl>
                     </Grid2>
 
-                    {hasStockError && (
+                    {availableStock === 0 && (
                       <Typography fontSize={12} color="error" sx={{ mt: 0.5 }}>
                         Available stock: {availableStock}
                       </Typography>
@@ -200,28 +166,7 @@ export default function FavoriteComponent({ search = '' }: FavoriteProps) {
                   <Grid2 className="d-flex align-items-center gap-3">
                     {quantity === 0 ? (
                       <Button
-                        onClick={() => {
-                          if (optionId) {
-                            const result = handleAddToCart(
-                              { ...book, description: book.description ?? '' },
-                              optionId,
-                              1
-                            )
-                            if (!result.success) {
-                              setStockErrors(prev => ({
-                                ...prev,
-                                [errorKey]: result.error || "Cannot add to cart"
-                              }))
-                              setTimeout(() => {
-                                setStockErrors(prev => {
-                                  const newErrors = { ...prev }
-                                  delete newErrors[errorKey]
-                                  return newErrors
-                                })
-                              }, 3000)
-                            }
-                          }
-                        }}
+                        onClick={() => handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1)}
                         variant="contained"
                         disabled={availableStock === 0}
                         sx={{
@@ -246,7 +191,7 @@ export default function FavoriteComponent({ search = '' }: FavoriteProps) {
                         </Button>
                         <Typography fontSize={14}>{quantity}</Typography>
                         <Button
-                          onClick={() => handleIncreaseWithStockCheck(book.id, optionId)}
+                          onClick={() => handleIncrease(book.id, optionId)}
                           variant="contained"
                           sx={{
                             width: 'auto',

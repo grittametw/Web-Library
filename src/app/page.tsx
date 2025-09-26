@@ -237,7 +237,7 @@ function HomePageContent() {
                           <Grid2 className="d-flex align-items-center gap-3">
                             {quantity === 0 ? (
                               <Button
-                                onClick={() => { handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1) }}
+                                onClick={() => handleAddToCart({ ...book, description: book.description ?? '' }, optionId, 1)}
                                 variant="contained"
                                 disabled={availableStock === 0}
                                 sx={{
