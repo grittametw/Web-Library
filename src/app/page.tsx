@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material'
 import { FavoriteBorder, Favorite } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
@@ -9,26 +8,12 @@ import { useAuth } from '@/hooks/useAuth'
 import { useFavorite } from '@/hooks/useFavorite'
 import { useBooks } from '@/context/BooksContext'
 import { Book } from '@/types/book'
+import { SearchHandler } from '@/view/components/SearchHandler'
 import Sidebar from '@/view/components/Sidebar'
 import Navbar from '@/view/components/Navbar'
 import Image from 'next/image'
 import Link from 'next/link'
 import Cartbar from '@/view/components/Cartbar'
-
-export function SearchHandler({ setSearch }: { setSearch: (search: string) => void }) {
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    const searchParam = searchParams.get('search')
-    if (searchParam) {
-      setSearch(searchParam)
-    } else {
-      setSearch('')
-    }
-  }, [searchParams, setSearch])
-
-  return null
-}
 
 function HomePageContent() {
   const [search, setSearch] = useState('')
@@ -119,7 +104,7 @@ function HomePageContent() {
             {search && (
               <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
                 <Typography fontWeight={600} fontSize={18}>
-                  Search results for: "{search}" ({sortedBooks.length} books found)
+                  Search results for: "{search}" ({sortedBooks.length} book{searchedBooks.length !== 1 ? 's' : ''} found)
                 </Typography>
               </Box>
             )}
