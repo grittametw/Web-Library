@@ -17,21 +17,12 @@ interface BookRow {
   stock: number | null
 }
 
-interface ErrorResponse {
-  error: string
-  details?: string
-}
-
 interface RouteContext {
   params: Promise<{ name: string }>
 }
 
-function hasErrorCode(e: unknown): e is { code: string } {
-  return typeof e === 'object' && e !== null && 'code' in e
-}
-
 export async function GET(
-  request: Request,
+  req: Request,
   context: RouteContext
 ) {
   let connection: mysql.Connection | null = null
@@ -42,7 +33,7 @@ export async function GET(
 
     if (!bookName || bookName.trim().length === 0) {
       return NextResponse.json(
-        { error: 'Book name is required' } as ErrorResponse,
+        { error: 'Book name is required' },
         { status: 400 }
       )
     }
@@ -64,7 +55,7 @@ export async function GET(
 
     if (rows.length === 0) {
       return NextResponse.json(
-        { error: 'Book not found' } as ErrorResponse,
+        { error: 'Book not found' },
         { status: 404 }
       )
     }
@@ -95,40 +86,12 @@ export async function GET(
     }
 
     return NextResponse.json(book)
-
   } catch (error: unknown) {
     console.error('Error fetching book:', error)
-
-    let errorMessage = 'Unknown error occurred while fetching book'
-
-    if (error instanceof Error && hasErrorCode(error)) {
-      switch (error.code) {
-        case 'ER_ACCESS_DENIED_ERROR':
-          errorMessage = 'Database access denied'
-          break
-        case 'ECONNREFUSED':
-          errorMessage = 'Database connection refused'
-          break
-        case 'ER_BAD_DB_ERROR':
-          errorMessage = 'Database does not exist'
-          break
-        case 'ER_NO_SUCH_TABLE':
-          errorMessage = 'Required table does not exist'
-          break
-        default:
-          errorMessage = 'Database query error'
-      }
-    } else if (error instanceof Error) {
-      errorMessage = error.message
-    }
-
-    const errorResponse: ErrorResponse = {
-      error: 'Error fetching book',
-      details: errorMessage,
-    }
-
-    return NextResponse.json(errorResponse, { status: 500 })
-
+    return NextResponse.json(
+      { error: 'Failed to fetch book' },
+      { status: 500 }
+    )
   } finally {
     if (connection) {
       try {

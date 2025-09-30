@@ -17,16 +17,7 @@ interface BookRow {
   stock: number | null
 }
 
-interface ErrorResponse {
-  error: string
-  details?: string
-}
-
-function hasErrorCode(e: unknown): e is { code: string } {
-  return typeof e === 'object' && e !== null && 'code' in e
-}
-
-export async function GET(): Promise<NextResponse<Book[] | ErrorResponse>> {
+export async function GET(): Promise<NextResponse<Book[] | { error: string }>> {
   try {
     const pool = getPool()
 
@@ -53,52 +44,33 @@ export async function GET(): Promise<NextResponse<Book[] | ErrorResponse>> {
           rate: row.rate,
           genre: row.genre,
           description: row.description,
-          options: []
+          options: [],
         })
       }
 
-      if (row.option_id !== null && row.option_type !== null &&
-          row.price !== null && row.stock !== null) {
+      if (
+        row.option_id !== null &&
+        row.option_type !== null &&
+        row.price !== null &&
+        row.stock !== null
+      ) {
         const book = bookMap.get(row.id)!
-
         if (!book.options.find(opt => opt.id === row.option_id)) {
           book.options.push({
             id: row.option_id,
             type: row.option_type,
             price: row.price,
-            stock: row.stock
+            stock: row.stock,
           })
         }
       }
     })
 
     return NextResponse.json(Array.from(bookMap.values()))
-
   } catch (error: unknown) {
     console.error('Error fetching books:', error)
-
-    let errorMessage = 'Unknown error occurred while fetching books'
-    if (error instanceof Error && hasErrorCode(error)) {
-      switch (error.code) {
-        case 'ER_ACCESS_DENIED_ERROR':
-          errorMessage = 'Database access denied'
-          break
-        case 'ECONNREFUSED':
-          errorMessage = 'Database connection refused'
-          break
-        case 'ER_BAD_DB_ERROR':
-          errorMessage = 'Database does not exist'
-          break
-        case 'ER_NO_SUCH_TABLE':
-          errorMessage = 'Required table does not exist'
-          break
-        default:
-          errorMessage = 'Database query error'
-      }
-    }
-
     return NextResponse.json(
-      { error: 'Error fetching books', details: errorMessage },
+      { error: 'Failed to fetch books' },
       { status: 500 }
     )
   }

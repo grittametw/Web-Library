@@ -6,7 +6,7 @@ interface RouteContext {
 }
 
 export async function GET(
-  request: Request,
+  req: Request,
   context: RouteContext
 ) {
   try {
@@ -21,11 +21,10 @@ export async function GET(
       currency: charge.currency,
     })
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      )
-    }
+    console.error("Error fetching status:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch status" },
+      { status: 500 }
+    )
   }
 }

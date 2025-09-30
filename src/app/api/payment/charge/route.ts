@@ -31,10 +31,10 @@ export async function POST(req: Request) {
         })
 
     } catch (error: unknown) {
-        console.error("Payment error:", error)
-        return NextResponse.json(
-            { success: false, message: (error as Error).message },
-            { status: 500 }
-        )
-    }
+    console.error("Error creating payment:", error)
+    return NextResponse.json(
+      { error: "Failed to create payment" },
+      { status: 500 }
+    )
+  }
 }

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         id: admin.id,
         email: admin.email,
         name: admin.name,
-        role: 'admin'
+        role: 'admin',
       })
     }
 
@@ -62,15 +62,10 @@ export async function POST(req: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: 'user'
+      role: 'user',
     })
-
   } catch (error: unknown) {
     console.error('Login error:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json(
-      { error: 'Login failed', details: errorMessage },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Login failed' }, { status: 500 })
   }
 }

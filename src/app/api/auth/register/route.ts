@@ -41,17 +41,15 @@ export async function POST(req: NextRequest) {
     )
 
     const userData = newUser[0]
-    return NextResponse.json({
-      message: 'User registered successfully',
-      user: { id: userData.id, email: userData.email, name: userData.name || undefined }
-    }, { status: 201 })
-
+    return NextResponse.json(
+      {
+        message: 'User registered successfully',
+        user: { id: userData.id, email: userData.email, name: userData.name || undefined },
+      },
+      { status: 201 }
+    )
   } catch (error: unknown) {
     console.error('Registration error:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json(
-      { error: 'Registration failed', details: errorMessage },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Registration failed' }, { status: 500 })
   }
 }
