@@ -1,36 +1,49 @@
 import { useFavoriteContext } from '@/context/FavoriteContext'
 import { Book } from '@/types/book'
+import { useAuth } from '@/hooks/useAuth'
 
 export function useFavorite() {
-    const { favorites, setFavorites } = useFavoriteContext()
-    const { favoriteBooks, setFavoriteBooks } = useFavoriteContext()
+    const { favorites, setFavorites, favoriteBooks, setFavoriteBooks } = useFavoriteContext()
+    const { user } = useAuth()
 
-    const toggleFavorite = (bookId: number, book?: Book) => {
-        setFavorites((prevFavorites) => {
-            if (prevFavorites.includes(bookId)) {
-                setFavoriteBooks(prev => prev.filter(b => b.id !== bookId))
-                return prevFavorites.filter((id) => id !== bookId)
-            } else {
-                if (book) {
-                    setFavoriteBooks(prev => {
-                        if (!prev.find(b => b.id === bookId)) {
-                            return [...prev, book]
-                        }
-                        return prev
-                    })
-                }
-                return [...prevFavorites, bookId]
-            }
+    const syncWithServer = async (method: 'POST' | 'DELETE', bookId: number) => {
+        if (!user?.id) return
+        await fetch(`/api/users/${user.id}/favorites`, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book_id: bookId }),
         })
     }
 
-    const isFavorite = (bookId: number) => {
-        return favorites.includes(bookId)
+    const toggleFavorite = async (bookId: number, book?: Book) => {
+        if (favorites.includes(bookId)) {
+            setFavorites((prev) => prev.filter((id) => id !== bookId))
+            setFavoriteBooks((prev) => prev.filter((b) => b.id !== bookId))
+            if (user) await syncWithServer('DELETE', bookId)
+        } else {
+            if (book) {
+                setFavoriteBooks((prev) => {
+                    if (!prev.find((b) => b.id === bookId)) {
+                        return [...prev, book]
+                    }
+                    return prev
+                })
+            }
+            setFavorites((prev) => [...prev, bookId])
+            if (user) await syncWithServer('POST', bookId)
+        }
     }
 
-    const clearFavorites = () => {
+    const isFavorite = (bookId: number) => favorites.includes(bookId)
+
+    const clearFavorites = async () => {
         setFavorites([])
         setFavoriteBooks([])
+        if (user) {
+            for (const fav of favorites) {
+                await syncWithServer('DELETE', fav)
+            }
+        }
     }
 
     return {
@@ -40,6 +53,6 @@ export function useFavorite() {
         setFavoriteBooks,
         toggleFavorite,
         isFavorite,
-        clearFavorites
+        clearFavorites,
     }
 }

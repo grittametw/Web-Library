@@ -18,38 +18,37 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
   const [favorites, setFavorites] = useState<number[]>([])
   const [favoriteBooks, setFavoriteBooks] = useState<Book[]>([])
 
-  const getFavoriteKeys = () => {
-    if (user?.id && user?.role) {
-      return {
-        favoritesKey: `favorites_${user.role}_${user.id}`,
-        favoriteBooksKey: `favorite_books_${user.role}_${user.id}`
-      }
+  useEffect(() => {
+    if (!user?.id) {
+      const savedFavorites = localStorage.getItem('favorites_guest')
+      const savedFavoriteBooks = localStorage.getItem('favorite_books_guest')
+
+      setFavorites(savedFavorites ? JSON.parse(savedFavorites) : [])
+      setFavoriteBooks(savedFavoriteBooks ? JSON.parse(savedFavoriteBooks) : [])
+    } else {
+      fetch(`/api/users/${user.id}/favorites`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const favs = data.favorites.map((f: Book) => f.id)
+            setFavorites(favs)
+            setFavoriteBooks(data.favorites)
+          }
+        })
     }
-    return {
-      favoritesKey: 'favorites_guest',
-      favoriteBooksKey: 'favorite_books_guest'
+  }, [user?.id])
+
+  useEffect(() => {
+    if (!user?.id) {
+      localStorage.setItem('favorites_guest', JSON.stringify(favorites))
     }
-  }
+  }, [favorites, user?.id])
 
   useEffect(() => {
-    const { favoritesKey, favoriteBooksKey } = getFavoriteKeys()
-    
-    const savedFavorites = localStorage.getItem(favoritesKey)
-    const savedFavoriteBooks = localStorage.getItem(favoriteBooksKey)
-    
-    setFavorites(savedFavorites ? JSON.parse(savedFavorites) : [])
-    setFavoriteBooks(savedFavoriteBooks ? JSON.parse(savedFavoriteBooks) : [])
-  }, [user?.id, user?.role])
-
-  useEffect(() => {
-    const { favoritesKey } = getFavoriteKeys()
-    localStorage.setItem(favoritesKey, JSON.stringify(favorites))
-  }, [favorites, user?.id, user?.role])
-
-  useEffect(() => {
-    const { favoriteBooksKey } = getFavoriteKeys()
-    localStorage.setItem(favoriteBooksKey, JSON.stringify(favoriteBooks))
-  }, [favoriteBooks, user?.id, user?.role])
+    if (!user?.id) {
+      localStorage.setItem('favorite_books_guest', JSON.stringify(favoriteBooks))
+    }
+  }, [favoriteBooks, user?.id])
 
   const value: FavoriteContextType = {
     favorites,
