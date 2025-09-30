@@ -101,7 +101,7 @@ export default function MycartPage() {
                 className="d-flex justify-content-center align-items-center flex-column p-4 gap-2"
                 sx={{ width: '350px', height: '200px', backgroundColor: '#fff', borderRadius: '8px' }}
               >
-                <Typography fontWeight={600} fontSize={18}>Total ({cartCount} items): ฿{totalPrice}</Typography>
+                <Typography fontWeight={600} fontSize={18}>Total ({cartCount} item{cartCount !== 1 ? 's' : ''}): ฿{totalPrice}</Typography>
                 <Link
                   href={canProceedToCheckout ? "/checkout" : "#"}
                   className={`checkoutButton d-flex justify-content-center p-2 text-decoration-none ${!canProceedToCheckout ? 'disabled' : ''}`}

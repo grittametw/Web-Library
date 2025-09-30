@@ -6,13 +6,14 @@ import { Favorite, Delete } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
 import { useFavorite } from '@/hooks/useFavorite'
 import { Book } from '@/types/book'
+import { useSearchParams } from 'next/navigation'
 import Navbar from '@/view/components/Navbar'
 import Sidebar from '@/view/components/Sidebar'
 import Cartbar from '@/view/components/Cartbar'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function FavoritePage({ search = '' }) {
+export default function FavoritePage() {
   const [isCartOpen, setCartOpen] = useState(false)
   const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
   const { favoriteBooks, toggleFavorite, clearFavorites } = useFavorite()
@@ -26,6 +27,9 @@ export default function FavoritePage({ search = '' }) {
     handleAddToCart,
     getAvailableStock
   } = useCart()
+
+  const searchParams = useSearchParams()
+  const search = searchParams.get('search') || ''
 
   useEffect(() => {
     setCartOpen(cart.length > 0)

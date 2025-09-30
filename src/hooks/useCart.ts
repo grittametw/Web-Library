@@ -27,7 +27,7 @@ export interface AddToCartResult {
 export function useCart() {
   const { cart, setCart, refreshCart } = useCartContext()
   const { user } = useAuth()
-  
+
   const isLoggedIn = !!user?.id
 
   const handleAddToCart = async (book: Book, optionId: number, quantity: number): Promise<AddToCartResult> => {

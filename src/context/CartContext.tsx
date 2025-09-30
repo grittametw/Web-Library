@@ -20,12 +20,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshCart = async () => {
     if (isLoggedIn) {
-      // ดึงจาก server
       const res = await fetch(`/api/users/${user!.id}/carts`)
       const data = await res.json()
       setCart(data.cart || [])
     } else {
-      // ดึงจาก localStorage
       const saved = localStorage.getItem('cart_guest')
       setCart(saved ? JSON.parse(saved) : [])
     }
