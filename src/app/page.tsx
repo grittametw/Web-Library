@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material'
 import { FavoriteBorder, Favorite } from '@mui/icons-material'
@@ -16,7 +15,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Cartbar from '@/view/components/Cartbar'
 
-function SearchHandler({ setSearch }: { setSearch: (search: string) => void }) {
+export function SearchHandler({ setSearch }: { setSearch: (search: string) => void }) {
   const searchParams = useSearchParams()
 
   useEffect(() => {

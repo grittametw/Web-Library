@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, FormControl, Select, MenuItem } from '@mui/material'
 import { Favorite, Delete } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
 import { useFavorite } from '@/hooks/useFavorite'
 import { Book } from '@/types/book'
-import { useSearchParams } from 'next/navigation'
+import { SearchHandler } from '../page'
 import Navbar from '@/view/components/Navbar'
 import Sidebar from '@/view/components/Sidebar'
 import Cartbar from '@/view/components/Cartbar'
@@ -14,6 +14,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function FavoritePage() {
+  const [search, setSearch] = useState('')
   const [isCartOpen, setCartOpen] = useState(false)
   const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
   const { favoriteBooks, toggleFavorite, clearFavorites } = useFavorite()
@@ -27,9 +28,6 @@ export default function FavoritePage() {
     handleAddToCart,
     getAvailableStock
   } = useCart()
-
-  const searchParams = useSearchParams()
-  const search = searchParams.get('search') || ''
 
   useEffect(() => {
     setCartOpen(cart.length > 0)
@@ -46,6 +44,10 @@ export default function FavoritePage() {
 
   return (
     <Box className="d-flex">
+      <Suspense fallback={null}>
+        <SearchHandler setSearch={setSearch} />
+      </Suspense>
+
       <Box sx={{
         position: 'fixed',
         left: 0,
