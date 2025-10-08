@@ -18,10 +18,6 @@ export default function MycartPage() {
   const { user, isLoggedIn } = useAuth()
   const { cart, totalPrice, cartCount, handleIncrease, handleDecrease, getAvailableStock, setCart } = useCart()
 
-  const handleAddressChange = (address: ShippingAddress | null) => {
-    setShippingAddress(address)
-  }
-
   const userId = user?.id
   const userEmail = user?.email
   const canProceedToCheckout = cart.length > 0 && shippingAddress
@@ -37,18 +33,32 @@ export default function MycartPage() {
       .catch(err => console.error('Failed to fetch cart', err))
   }, [isLoggedIn, userId])
 
+  const handleAddressChange = (address: ShippingAddress | null) => {
+    setShippingAddress(address)
+
+    if (address?.id) {
+      localStorage.setItem('selected_address_id', address.id.toString())
+    } else {
+      localStorage.removeItem('selected_address_id')
+    }
+  }
+
   return (
-    <Box className="d-flex">
+    <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
       <Sidebar cartCount={cartCount} />
-      <Grid2 className="content-area d-flex flex-column" sx={{ width: '100%', overflow: 'hidden' }}>
+      <Box className="content-area d-flex flex-column" sx={{ width: '100%' }}>
         <Navbar />
-        <Grid2 className="d-flex" sx={{ overflowY: 'auto' }}>
-          <Grid2 className="d-flex m-4 gap-4" sx={{ width: '100%' }}>
-            <Box className="d-flex flex-column p-4" sx={{ width: '100%', height: 'fit-content', backgroundColor: '#fff', borderRadius: '8px' }}>
-              <Box sx={{ borderBottom: '2px solid #ccc' }}>
+        <Box className="scrollbar" sx={{ overflowY: 'auto' }}>
+          <Box className="d-flex m-4 gap-4">
+            <Box
+              className="d-flex flex-column p-4"
+              sx={{ width: '100%', height: 'fit-content', backgroundColor: '#fff', borderRadius: '8px' }}
+            >
+              <Grid2 sx={{ borderBottom: '2px solid #ccc' }}>
                 <Typography fontWeight={600} fontSize={20}>Shopping Cart</Typography>
                 <Typography fontWeight={600} fontSize={16} className="text-secondary d-flex justify-content-end">Price</Typography>
-              </Box>
+              </Grid2>
+
               <Box className="d-flex flex-column">
                 {cart.length === 0 ? (
                   <Typography color="text.secondary">No items in cart.</Typography>
@@ -67,7 +77,8 @@ export default function MycartPage() {
                             <Grid2>
                               <Link
                                 href={`/${item.name}`}
-                                className="text-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+                                className="text-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                              >
                                 <Typography fontWeight={600} fontSize={16}>{item.name}</Typography>
                               </Link>
                               <Typography>Format: {item.option_type}</Typography>
@@ -92,16 +103,20 @@ export default function MycartPage() {
                   })
                 )}
               </Box>
-              <Box className="d-flex justify-content-end mt-4">
+
+              <Grid2 className="d-flex justify-content-end mt-4">
                 <Typography fontWeight={600} fontSize={18}>Total: ฿{totalPrice}</Typography>
-              </Box>
+              </Grid2>
             </Box>
+
             <Box className="d-flex flex-column gap-4">
               <Box
                 className="d-flex justify-content-center align-items-center flex-column p-4 gap-2"
                 sx={{ width: '350px', height: '200px', backgroundColor: '#fff', borderRadius: '8px' }}
               >
-                <Typography fontWeight={600} fontSize={18}>Total ({cartCount} item{cartCount !== 1 ? 's' : ''}): ฿{totalPrice}</Typography>
+                <Typography fontWeight={600} fontSize={18}>
+                  Total ({cartCount} item{cartCount !== 1 ? 's' : ''}): ฿{totalPrice}
+                </Typography>
                 <Link
                   href={canProceedToCheckout ? "/checkout" : "#"}
                   className={`checkoutButton d-flex justify-content-center p-2 text-decoration-none ${!canProceedToCheckout ? 'disabled' : ''}`}
@@ -136,9 +151,9 @@ export default function MycartPage() {
                 onAddressChange={handleAddressChange}
               />
             </Box>
-          </Grid2>
-        </Grid2>
-      </Grid2>
-    </Box >
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   )
 }
