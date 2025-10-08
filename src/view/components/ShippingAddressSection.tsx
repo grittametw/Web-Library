@@ -19,7 +19,6 @@ export default function ShippingAddressSection({ isLoggedIn = false, userId, use
   const [isNewAddress, setIsNewAddress] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
-
   const [formData, setFormData] = useState<ShippingAddress>({
     firstName: '',
     lastName: '',
@@ -377,7 +376,7 @@ export default function ShippingAddressSection({ isLoggedIn = false, userId, use
             <Typography fontWeight={600} fontSize={20} sx={{ mb: 2 }}>
               {isNewAddress ? 'Add New Address' : 'Shipping Address'}
             </Typography>
-            <Typography color='text.secondary'>
+            <Typography color="text.secondary">
               Please enter your shipping details. All fields are required.
             </Typography>
 

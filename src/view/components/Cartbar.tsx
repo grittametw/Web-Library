@@ -1,5 +1,6 @@
 import { Box, Grid2, Typography } from '@mui/material'
-import { CartItem, useCart } from '@/hooks/useCart'
+import { useCart } from '@/hooks/useCart'
+import { CartItem } from '@/types/cart'
 import Image from 'next/image'
 import Link from 'next/link'
 import QuantityButton from './QuantityButton'
@@ -57,7 +58,7 @@ export default function Cartbar({
                             href="/mycart"
                             className="cartButton d-flex justify-content-center align-items-center p-2"
                             style={{ width: '160px', textDecoration: 'none', border: 'solid 1px #000', borderRadius: '8px' }}>
-                            <Typography fontSize={14} color='#000'>Go to cart</Typography>
+                            <Typography fontSize={14} color="#000">Go to cart</Typography>
                         </Link>
                     </Box>
                     <Box

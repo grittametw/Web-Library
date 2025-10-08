@@ -74,7 +74,7 @@ function HomePageContent() {
   }
 
   return (
-    <Box className="d-flex" sx={{ height: '100vh' }}>
+    <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
       <Suspense fallback={null}>
         <SearchHandler setSearch={setSearch} />
       </Suspense>
@@ -89,7 +89,8 @@ function HomePageContent() {
       }}>
         <Sidebar cartCount={cartCount} />
       </Box>
-      <Grid2
+      
+      <Box
         className="content-area d-flex flex-column"
         sx={{
           marginLeft: '280px',
@@ -99,16 +100,16 @@ function HomePageContent() {
         }}
       >
         <Navbar />
-        <Grid2 className="home-area d-flex" sx={{ overflowY: 'auto' }}>
-          <Grid2 className="d-flex flex-column gap-4 my-4" sx={{ width: '100%' }}>
+        <Box className="scrollbar" sx={{ overflowY: 'auto' }}>
+          <Box className="d-flex flex-column m-4 gap-4">
             {search && (
-              <Box className="d-flex flex-column mx-4 p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
+              <Box className="d-flex flex-column p-2 px-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
                 <Typography fontWeight={600} fontSize={18}>
                   Search results for: "{search}" ({sortedBooks.length} book{searchedBooks.length !== 1 ? 's' : ''} found)
                 </Typography>
               </Box>
             )}
-            <Box className="d-flex flex-column mx-4 p-2 px-4 gap-2" sx={{ height: '100%', backgroundColor: '#fff', borderRadius: '8px' }}>
+            <Box className="d-flex flex-column p-2 px-4 gap-2" sx={{ height: 'auto', backgroundColor: '#fff', borderRadius: '8px' }}>
               <Grid2 className="d-flex justify-content-between align-items-center">
                 <Typography fontWeight={600} fontSize={20}>Categories</Typography>
                 {user?.role === 'admin' && (
@@ -150,7 +151,7 @@ function HomePageContent() {
                   </Button>
                 ))}
               </Grid2>
-              <Grid2 container spacing={4} rowSpacing={2} className="d-flex p-2" sx={{ overflow: 'auto' }}>
+              <Grid2 container spacing={4} rowSpacing={2} className="d-flex pt-2">
                 {sortedBooks.map((book) => {
                   const optionId = selectedOptionIds[book.id] ?? book.options[0]?.id
                   const selectedOption = book.options.find(opt => opt.id === optionId)
@@ -263,7 +264,8 @@ function HomePageContent() {
                 })}
               </Grid2>
             </Box>
-          </Grid2>
+          </Box>
+
           <Cartbar
             cart={cart}
             isCartOpen={isCartOpen}
@@ -272,8 +274,8 @@ function HomePageContent() {
             handleIncrease={handleIncrease}
             handleDecrease={handleDecrease}
           />
-        </Grid2>
-      </Grid2>
+        </Box>
+      </Box>
     </Box>
   )
 }

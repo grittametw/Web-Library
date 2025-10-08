@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getPool } from "@/config/db"
+import { CartItem } from "@/types/cart"
 import mysql from "mysql2/promise"
-
-interface CartItem {
-  id?: number
-  user_id: number
-  book_id: number
-  book_option_id: number
-  quantity: number
-}
 
 interface RouteContext {
   params: Promise<{ id: string }>

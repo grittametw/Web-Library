@@ -100,7 +100,7 @@ export default function LoginPage() {
 
         <Grid2 className="d-flex flex-column align-items-center">
           <Typography fontFamily='Arial' fontWeight={600} fontSize={40}>Welcome</Typography>
-          <Typography color='#999'>Please login to your account</Typography>
+          <Typography color="#999">Please login to your account</Typography>
         </Grid2>
 
         <Box

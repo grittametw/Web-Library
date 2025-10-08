@@ -20,14 +20,13 @@ export default function LoginPage() {
     const [confirmPasswordValue, setConfirmPasswordValue] = useState('')
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [registerError, setRegisterError] = useState('')
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
 
     const isLengthValid = passwordValue.length >= 6
     const isUppercaseValid = /[A-Z]/.test(passwordValue)
     const isNumberValid = /\d/.test(passwordValue)
     const isPasswordMatch = passwordValue === confirmPasswordValue && passwordValue.length > 0
-
-    const [loading, setLoading] = useState(false)
 
     const handleClickShowPassword = () => setShowPassword((show) => !show)
     const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show)
@@ -245,7 +244,7 @@ export default function LoginPage() {
 
                     <Grid2 className="d-flex align-content-start gap-2 my-2">
                         <Checkbox sx={{ width: 0, height: 0 }} required/>
-                        <Typography fontWeight={600} fontSize={14} color='#1a5276'>
+                        <Typography fontWeight={600} fontSize={14} color="#1a5276">
                             By creating an account you agree to our Terms of Service
                             and Privacy Policy, and confirm you are authorized to create this
                             account on behalf of the company.

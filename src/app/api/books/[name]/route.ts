@@ -1,21 +1,7 @@
 import { NextResponse } from 'next/server'
 import { dbConfig } from '@/config/db'
-import { Book } from '@/types/book'
+import { Book, BookRow } from '@/types/book'
 import mysql from 'mysql2/promise'
-
-interface BookRow {
-  id: number
-  name: string
-  author: string
-  image: string
-  rate: number
-  genre: string
-  description: string
-  option_id: number | null
-  option_type: string | null
-  price: number | null
-  stock: number | null
-}
 
 interface RouteContext {
   params: Promise<{ name: string }>
