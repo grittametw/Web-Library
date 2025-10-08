@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Box, Typography, Grid2, Stepper, Step, StepLabel, CircularProgress, Button } from '@mui/material'
 import { ReceiptOutlined, PaidOutlined, LocalShippingOutlined, ArchiveOutlined, ArrowBackIos } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
@@ -15,27 +15,16 @@ import Navbar from '@/view/components/Navbar'
 import Sidebar from '@/view/components/Sidebar'
 import ConfirmDialog from '@/view/components/ConfirmDialog'
 
-interface RouteParams {
-    params: { id: string }
-}
-
-export default function OrderDetailPage({ params }: RouteParams) {
+export default function OrderDetailPage() {
     const [order, setOrder] = useState<Order | null>(null)
     const [loading, setLoading] = useState(true)
-    const [orderId, setOrderId] = useState<string | null>(null)
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
     const [completing, setCompleting] = useState(false)
     const { cartCount } = useCart()
     const { user, isLoggedIn, loading: authLoading } = useAuth()
     const router = useRouter()
-
-    useEffect(() => {
-        const fetchParams = async () => {
-            const resolvedParams = await params
-            setOrderId(resolvedParams.id)
-        }
-        fetchParams()
-    }, [params])
+    const params = useParams()
+    const orderId = params.id as string
 
     useEffect(() => {
         if (authLoading) return
