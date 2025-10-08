@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Box, Typography, Button, CircularProgress, Alert, Snackbar } from '@mui/material'
-import { useRouter } from 'next/navigation'
 import { useCart } from '@/hooks/useCart'
 import { useAuth } from '@/hooks/useAuth'
 import { Order } from '@/types/order'
@@ -25,7 +24,6 @@ export default function OrderHistoryPage() {
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const { cartCount } = useCart()
   const { user, isLoggedIn } = useAuth()
-  const router = useRouter()
 
   useEffect(() => {
     if (isLoggedIn && user?.id) {
