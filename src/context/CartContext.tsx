@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { CartItem } from '@/hooks/useCart'
+import { CartItem } from '@/types/cart'
 import { useAuth } from '@/hooks/useAuth'
 
 interface CartContextType {
