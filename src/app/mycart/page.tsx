@@ -144,12 +144,21 @@ export default function MycartPage() {
                 )}
               </Box>
 
-              <ShippingAddressSection
-                isLoggedIn={isLoggedIn}
-                userId={userId}
-                userEmail={userEmail}
-                onAddressChange={handleAddressChange}
-              />
+              <Box
+                className="d-flex justify-content-center align-items-center flex-column p-4 gap-4"
+                sx={{ width: '350px', height: 'auto', backgroundColor: '#fff', borderRadius: '8px' }}
+              >
+
+                <Typography fontWeight={600} fontSize={18}>
+                  Shipping Address {!isLoggedIn && <Typography component="span" variant="body2" color="text.secondary">(Guest)</Typography>}
+                </Typography>
+                <ShippingAddressSection
+                  isLoggedIn={isLoggedIn}
+                  userId={userId}
+                  userEmail={userEmail}
+                  onAddressChange={handleAddressChange}
+                />
+              </Box>
             </Box>
           </Box>
         </Box>

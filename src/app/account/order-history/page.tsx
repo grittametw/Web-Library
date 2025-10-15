@@ -48,7 +48,7 @@ export default function OrderHistoryPage() {
       setLoading(false)
     }
   }
-  
+
   const handleCompleteClick = (orderId: number) => {
     setSelectedOrderId(orderId)
     setConfirmDialogOpen(true)
@@ -127,8 +127,8 @@ export default function OrderHistoryPage() {
       <Box className="content-area d-flex flex-column" sx={{ width: '100%' }}>
         <Navbar />
         <Box className="scrollbar" sx={{ overflowY: 'auto' }}>
-          <Box className="m-4">
-            <Box className="d-flex align-items-center" sx={{ backgroundColor: '#fff', borderRadius: '8px', mb: 3 }}>
+          <Box className="d-flex flex-column m-4 gap-3">
+            <Box className="d-flex align-items-center" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
               {(['All', 'To Pay', 'To Ship', 'To Receive', 'Completed', 'Cancelled'] as OrderFilter[]).map(filter => (
                 <Button
                   key={filter}
@@ -191,10 +191,9 @@ export default function OrderHistoryPage() {
                     sx={{
                       backgroundColor: '#fff',
                       borderRadius: '8px',
-                      border: '1px solid #e0e0e0'
                     }}
                   >
-                    <Box className="d-flex justify-content-between align-items-center pb-3" sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                    <Box className="d-flex justify-content-between align-items-center pb-3" sx={{ borderBottom: '1px solid #ccc' }}>
                       <Box className="d-flex align-items-center gap-3">
                         <Typography fontWeight={600} fontSize={16}>
                           Order #{order.id}
@@ -227,7 +226,7 @@ export default function OrderHistoryPage() {
                         <Box
                           key={`${item.book_id}-${item.book_option_id}-${index}`}
                           className="d-flex gap-4 py-2"
-                          sx={{ borderBottom: '1px solid #e0e0e0' }}
+                          sx={{ borderBottom: '1px solid #ccc' }}
                         >
                           <Image
                             src={item.image}
@@ -262,7 +261,7 @@ export default function OrderHistoryPage() {
                       <Button
                         variant="contained"
                         color="success"
-                        sx={{ mt: 2 }}
+                        sx={{ width: 'fit-content', alignSelf: 'end', mt: 2 }}
                         onClick={() => handleCompleteClick(order.id)}
                       >
                         Item received

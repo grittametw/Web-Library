@@ -89,7 +89,7 @@ function HomePageContent() {
       }}>
         <Sidebar cartCount={cartCount} />
       </Box>
-      
+
       <Box
         className="content-area d-flex flex-column"
         sx={{
@@ -160,7 +160,12 @@ function HomePageContent() {
                   const availableStock = getAvailableStock(book.id, optionId, selectedOptionStock)
                   const quantity = optionId ? getCartQuantity(book.id, optionId) : 0
                   return (
-                    <Paper key={book.id} className="d-flex flex-column" sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }} elevation={3}>
+                    <Paper
+                      key={book.id}
+                      className="d-flex flex-column"
+                      sx={{ width: 'auto', marginBottom: '16px', borderRadius: '8px' }}
+                      elevation={3}
+                    >
                       <Grid2 className="d-flex justify-content-end pt-2 px-2">
                         <IconButton disableRipple onClick={() => handleToggleFavorite(book.id, book)}>
                           {isFavorite(book.id) ? <Favorite color="error" /> : <FavoriteBorder />}

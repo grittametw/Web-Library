@@ -186,7 +186,7 @@ export default function OrderDetailPage() {
                         <Box className="d-flex align-items-center p-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
                             <Grid2 className="d-flex justify-content-between align-items-center" sx={{ width: '100%' }}>
                                 <Link href="/account/order-history" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <Box className="d-flex align-items-center gap-1" sx={{ cursor: 'pointer', '&:hover': { color: '#1976d2' } }}>
+                                    <Box className="d-flex align-items-center" sx={{ '&:hover': { color: '#1976d2' } }}>
                                         <ArrowBackIos sx={{ fontSize: 16 }} />
                                         <Typography>Back</Typography>
                                     </Box>
@@ -284,7 +284,7 @@ export default function OrderDetailPage() {
                                 <Typography
                                     fontWeight={600}
                                     fontSize={20}
-                                    sx={{ borderBottom: '1px solid #e0e0e0', pb: 1 }}
+                                    sx={{ borderBottom: '1px solid #ccc', pb: 1 }}
                                 >
                                     Item{order.items.length !== 1 ? 's' : ''}
                                 </Typography>
@@ -293,7 +293,7 @@ export default function OrderDetailPage() {
                                     <Box
                                         key={`${item.book_id}-${item.book_option_id}-${index}`}
                                         className="d-flex gap-4 py-2"
-                                        sx={{ borderBottom: index < order.items.length - 1 ? '1px solid #e0e0e0' : 'none' }}
+                                        sx={{ borderBottom: index < order.items.length - 1 ? '1px solid #ccc' : 'none' }}
                                     >
                                         <Image
                                             src={item.image}
@@ -327,7 +327,7 @@ export default function OrderDetailPage() {
                                     </Box>
                                 ))}
 
-                                <Box className="d-flex flex-column pt-4 gap-2" borderTop={"1px solid #e0e0e0"}>
+                                <Box className="d-flex flex-column pt-4 gap-2" borderTop={"1px solid #ccc"}>
                                     <Box className="d-flex align-items-center">
                                         <Typography
                                             color="text.secondary"
