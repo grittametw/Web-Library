@@ -79,8 +79,6 @@ export default function ProfilePage() {
 
             if (!response.ok) throw new Error('Failed to update profile')
 
-            const result = await response.json()
-
             updateUser({
                 name: userData.username,
                 email: userData.email
