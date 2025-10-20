@@ -5,6 +5,7 @@ export interface AuthUser {
   email: string
   name: string
   role: 'user' | 'admin'
+  profilePicture?: string | null
 }
 
 export function useAuth() {
@@ -30,11 +31,20 @@ export function useAuth() {
     localStorage.removeItem('authUser')
   }
 
-  return { 
+  const updateUser = (updatedData: Partial<AuthUser>) => {
+    if (user) {
+      const newUser = { ...user, ...updatedData }
+      setUser(newUser)
+      localStorage.setItem('authUser', JSON.stringify(newUser))
+    }
+  }
+
+  return {
     user,
     isLoggedIn: !!user,
     login,
     logout,
+    updateUser,
     loading
   }
 }

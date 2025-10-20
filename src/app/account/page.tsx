@@ -1,7 +1,7 @@
 'use client'
 
 import { Box, Typography, Grid2 } from '@mui/material'
-import { Inventory, Business, Person } from '@mui/icons-material';
+import { Inventory, Business, Person } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
 import Link from 'next/link'
 import Navbar from '@/view/components/Navbar'
@@ -66,7 +66,6 @@ export default function AccountPage() {
                             </Grid2>
                         </Box>
                     </Box>
-
                 </Box>
             </Box>
         </Box >

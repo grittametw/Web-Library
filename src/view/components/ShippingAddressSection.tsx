@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Box, Typography, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { EditOutlined, Add } from '@mui/icons-material'
 import { ShippingAddress, DbUserAddress } from '@/types/address'
+import { useAuth } from '@/hooks/useAuth'
 import AddressFormModal from '@/view/components/AddressFormModal'
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 const GUEST_ADDRESS_KEY = 'guest_shipping_address'
 
 export default function ShippingAddressSection({ isLoggedIn = false, userId, userEmail, onAddressChange }: Props) {
+  const { user } = useAuth()
   const [showAddressForm, setShowAddressForm] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null)
   const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([])
@@ -51,7 +53,7 @@ export default function ShippingAddressSection({ isLoggedIn = false, userId, use
     setLoading(true)
 
     try {
-      if (isLoggedIn && userId) {
+      if (isLoggedIn && userId && user?.role === 'user') {
         clearGuestData()
 
         const response = await fetch(`/api/users/${userId}/addresses`)

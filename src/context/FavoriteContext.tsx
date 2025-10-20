@@ -25,8 +25,8 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
 
       setFavorites(savedFavorites ? JSON.parse(savedFavorites) : [])
       setFavoriteBooks(savedFavoriteBooks ? JSON.parse(savedFavoriteBooks) : [])
-    } else {
-      fetch(`/api/users/${user.id}/favorites`)
+    } else if (user?.role === 'user') {
+      fetch(`/api/users/${user!.id}/favorites`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {

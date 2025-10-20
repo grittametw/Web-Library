@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Box, Typography, Button, CircularProgress, Alert, Snackbar } from '@mui/material'
+import { Box, Typography, Button, CircularProgress, Alert, Snackbar, Grid2 } from '@mui/material'
 import { useCart } from '@/hooks/useCart'
 import { useAuth } from '@/hooks/useAuth'
 import { Order } from '@/types/order'
@@ -26,7 +26,7 @@ export default function OrderHistoryPage() {
   const { user, isLoggedIn } = useAuth()
 
   useEffect(() => {
-    if (isLoggedIn && user?.id) {
+    if (isLoggedIn && user?.id && user?.role === 'user') {
       fetchOrders()
     } else {
       setLoading(false)
@@ -127,64 +127,64 @@ export default function OrderHistoryPage() {
       <Box className="content-area d-flex flex-column" sx={{ width: '100%' }}>
         <Navbar />
         <Box className="scrollbar" sx={{ overflowY: 'auto' }}>
-          <Box className="d-flex flex-column m-4 gap-3">
-            <Box className="d-flex align-items-center" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
-              {(['All', 'To Pay', 'To Ship', 'To Receive', 'Completed', 'Cancelled'] as OrderFilter[]).map(filter => (
-                <Button
-                  key={filter}
-                  sx={{
-                    width: '100%',
-                    height: '50px',
-                    color: '#000',
-                    borderBottom: '2px solid',
-                    borderColor: selectedFilter === filter ? '#1976d2' : '#999',
-                    borderRadius: '0',
-                    textTransform: 'none',
-                    fontWeight: selectedFilter === filter ? 600 : 400
+          <Box className="d-flex flex-column m-4">
+            {!isLoggedIn ? (
+              <Box
+                className="d-flex flex-column justify-content-center align-items-center p-5"
+                sx={{ backgroundColor: '#fff', borderRadius: '8px', minHeight: '400px', gap: 3 }}
+              >
+                <Typography fontSize={20} fontWeight={600} color="text.secondary">
+                  Please log in to view your order history.
+                </Typography>
+                <Link
+                  href="#"
+                  onClick={e => {
+                    e.preventDefault()
+                    window.location.href = '/login'
                   }}
-                  onClick={() => setSelectedFilter(filter)}
-                >
-                  <Typography>{filter}</Typography>
-                </Button>
-              ))}
-            </Box>
-
-            <Box className="d-flex flex-column gap-3">
-              {!isLoggedIn ? (
-                <Box
-                  className="d-flex flex-column justify-content-center align-items-center p-5"
-                  sx={{ backgroundColor: '#fff', borderRadius: '8px', minHeight: '400px', gap: 3 }}
-                >
-                  <Typography fontSize={20} fontWeight={600} color="text.secondary">
-                    Please log in to view your order history.
-                  </Typography>
-                  <Link
-                    href="#"
-                    onClick={e => {
-                      e.preventDefault()
-                      window.location.href = '/login'
-                    }}
-                    style={{ textDecoration: 'none' }}>
-                    <Button variant="contained" size="large">
-                      Go to Login
+                  style={{ textDecoration: 'none' }}>
+                  <Button variant="contained" size="large">
+                    Go to Login
+                  </Button>
+                </Link>
+              </Box>
+            ) : loading ? (
+              <Box className="d-flex justify-content-center align-items-center p-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
+                <CircularProgress />
+              </Box>
+            ) : filteredOrders.length === 0 ? (
+              <Box
+                className="d-flex justify-content-center align-items-center p-4"
+                sx={{ backgroundColor: '#fff', borderRadius: '8px', minHeight: '200px' }}
+              >
+                <Typography color="text.secondary" fontSize={18}>
+                  {selectedFilter === 'All' ? 'No orders yet' : `No orders in "${selectedFilter}"`}
+                </Typography>
+              </Box>
+            ) : (
+              <Grid2 className="d-flex flex-column gap-3">
+                <Box className="d-flex align-items-center" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
+                  {(['All', 'To Pay', 'To Ship', 'To Receive', 'Completed', 'Cancelled'] as OrderFilter[]).map(filter => (
+                    <Button
+                      key={filter}
+                      sx={{
+                        width: '100%',
+                        height: '50px',
+                        color: '#000',
+                        borderBottom: '2px solid',
+                        borderColor: selectedFilter === filter ? '#1976d2' : '#999',
+                        borderRadius: '0',
+                        textTransform: 'none',
+                        fontWeight: selectedFilter === filter ? 600 : 400
+                      }}
+                      onClick={() => setSelectedFilter(filter)}
+                    >
+                      <Typography>{filter}</Typography>
                     </Button>
-                  </Link>
+                  ))}
                 </Box>
-              ) : loading ? (
-                <Box className="d-flex justify-content-center align-items-center p-4" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
-                  <CircularProgress />
-                </Box>
-              ) : filteredOrders.length === 0 ? (
-                <Box
-                  className="d-flex justify-content-center align-items-center p-4"
-                  sx={{ backgroundColor: '#fff', borderRadius: '8px', minHeight: '200px' }}
-                >
-                  <Typography color="text.secondary" fontSize={18}>
-                    {selectedFilter === 'All' ? 'No orders yet' : `No orders in "${selectedFilter}"`}
-                  </Typography>
-                </Box>
-              ) : (
-                filteredOrders.map(order => (
+
+                {filteredOrders.map(order => (
                   <Box
                     key={order.id}
                     className="d-flex flex-column p-4"
@@ -268,9 +268,9 @@ export default function OrderHistoryPage() {
                       </Button>
                     )}
                   </Box>
-                ))
-              )}
-            </Box>
+                ))}
+              </Grid2>
+            )}
           </Box>
         </Box>
       </Box>

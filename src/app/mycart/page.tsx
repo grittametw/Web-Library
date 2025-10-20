@@ -23,8 +23,7 @@ export default function MycartPage() {
   const canProceedToCheckout = cart.length > 0 && shippingAddress
 
   useEffect(() => {
-    if (!isLoggedIn || !userId) return
-
+    if (!isLoggedIn || !userId || user?.role !== 'user') return
     fetch(`/api/users/${userId}/carts`)
       .then(res => res.json())
       .then(data => {

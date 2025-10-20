@@ -93,8 +93,12 @@ export default function Navbar() {
             <Grid2 className="d-flex align-items-center gap-4 px-4">
                 <NotificationsOutlined />
                 <Grid2 className="d-flex align-items-center gap-2">
-                    <Avatar >
-                        <Person />
+                    <Avatar 
+                        src={user?.profilePicture || undefined}
+                        alt={user?.name || "Guest"}
+                        sx={{ width: 40, height: 40 }}
+                    >
+                        {!user?.profilePicture && <Person />}
                     </Avatar>
                     <Typography>{user?.name || "Guest"}</Typography>
                 </Grid2>

@@ -12,19 +12,22 @@ import Link from 'next/link'
 import AddressFormModal from '@/view/components/AddressFormModal'
 
 export default function AddressesPage() {
-    const { cartCount } = useCart()
-    const { user, isLoggedIn } = useAuth()
     const [addresses, setAddresses] = useState<ShippingAddress[]>([])
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [showAddressForm, setShowAddressForm] = useState(false)
     const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null)
+    const { cartCount } = useCart()
+    const { user, isLoggedIn } = useAuth()
 
     const userId = user?.id
     const userEmail = user?.email
 
     useEffect(() => {
-        if (!isLoggedIn || !userId) return
-        loadAddresses()
+        if (isLoggedIn && userId && user?.role === 'user') {
+            loadAddresses()
+        } else {
+            setLoading(false)
+        }
     }, [isLoggedIn, userId])
 
     const dbToFormAddress = (dbAddr: DbUserAddress & { email: string }): ShippingAddress => ({
@@ -115,13 +118,17 @@ export default function AddressesPage() {
                                     </Button>
                                 </Link>
                             </Box>
+                        ) : loading ? (
+                            <Box className="d-flex justify-content-center align-items-center p-4">
+                                <CircularProgress />
+                            </Box>
                         ) : (
                             <Box
                                 className="d-flex flex-column p-4"
                                 sx={{ width: '100%', backgroundColor: '#fff', borderRadius: '8px' }}
                             >
                                 <Grid2
-                                    className="d-flex justify-content-between align-items-center pb-4"
+                                    className="d-flex justify-content-between pb-4"
                                     sx={{ borderBottom: '2px solid #ccc' }}
                                 >
                                     <Typography fontWeight={600} fontSize={20}>My Addresses</Typography>
@@ -136,11 +143,7 @@ export default function AddressesPage() {
                                     </Button>
                                 </Grid2>
 
-                                {loading ? (
-                                    <Box className="d-flex justify-content-center align-items-center p-4">
-                                        <CircularProgress />
-                                    </Box>
-                                ) : addresses.length === 0 ? (
+                                {addresses.length === 0 ? (
                                     <Typography
                                         fontSize={16}
                                         color="text.secondary"

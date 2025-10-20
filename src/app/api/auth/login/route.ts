@@ -9,6 +9,7 @@ interface AdminRow {
   name: string
   role: string
   password: string
+  profile_picture: string | null
 }
 
 interface UserRow {
@@ -17,6 +18,7 @@ interface UserRow {
   name: string
   role: string
   password: string
+  profile_picture: string | null
 }
 
 export async function POST(req: NextRequest) {
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
     const pool = getPool()
 
     const [adminRows] = await pool.execute<mysql.RowDataPacket[]>(
-      'SELECT id, email, name, role, password FROM admins WHERE email = ? LIMIT 1',
+      'SELECT id, email, name, role, password, profile_picture FROM admins WHERE email = ? LIMIT 1',
       [email]
     )
 
@@ -44,11 +46,12 @@ export async function POST(req: NextRequest) {
         email: admin.email,
         name: admin.name,
         role: 'admin',
+        profilePicture: admin.profile_picture
       })
     }
 
     const [userRows] = await pool.execute<mysql.RowDataPacket[]>(
-      'SELECT id, email, name, role, password FROM users WHERE email = ? LIMIT 1',
+      'SELECT id, email, name, role, password, profile_picture FROM users WHERE email = ? LIMIT 1',
       [email]
     )
 
@@ -63,6 +66,7 @@ export async function POST(req: NextRequest) {
       email: user.email,
       name: user.name,
       role: 'user',
+      profilePicture: user.profile_picture
     })
   } catch (error: unknown) {
     console.error('Login error:', error)

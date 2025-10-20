@@ -19,7 +19,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = !!user?.id
 
   const refreshCart = async () => {
-    if (isLoggedIn) {
+    if (isLoggedIn && user?.role === 'user') {
       const res = await fetch(`/api/users/${user!.id}/carts`)
       const data = await res.json()
       setCart(data.cart || [])
