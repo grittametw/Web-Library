@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { 
     Box, Typography, Grid2, Paper, Avatar, Button, IconButton, 
     Chip, TextField, Dialog, DialogTitle, DialogContent, DialogActions,
-    Select, MenuItem, FormControl, InputLabel, Tabs, Tab
+    Select, MenuItem, FormControl, InputLabel, Tabs, Tab, SelectChangeEvent
 } from '@mui/material'
 import { ThumbUp, ChatBubbleOutline, Share, Create, TrendingUp, Close, EmojiEvents } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
@@ -37,13 +37,15 @@ interface Comment {
     timestamp: string
 }
 
+type PostType = 'discussion' | 'review' | 'event'
+
 export default function CommunityPage() {
     const { cartCount } = useCart()
     const [activeTab, setActiveTab] = useState(0)
     const [createPostOpen, setCreatePostOpen] = useState(false)
     const [postDetailOpen, setPostDetailOpen] = useState(false)
     const [selectedPost, setSelectedPost] = useState<Post | null>(null)
-    const [newPostType, setNewPostType] = useState<'discussion' | 'review' | 'event'>('discussion')
+    const [newPostType, setNewPostType] = useState<PostType>('discussion')
     const [newPostContent, setNewPostContent] = useState('')
     const [newPostTitle, setNewPostTitle] = useState('')
 
@@ -188,6 +190,10 @@ export default function CommunityPage() {
         setNewPostTitle('')
         setNewPostContent('')
         setNewPostType('discussion')
+    }
+
+    const handlePostTypeChange = (event: SelectChangeEvent<PostType>) => {
+        setNewPostType(event.target.value as PostType)
     }
 
     const getPostIcon = (type: string) => {
@@ -467,7 +473,7 @@ export default function CommunityPage() {
                             <Select
                                 value={newPostType}
                                 label="Post Type"
-                                onChange={(e) => setNewPostType(e.target.value as any)}
+                                onChange={handlePostTypeChange}
                             >
                                 <MenuItem value="discussion">💬 Discussion</MenuItem>
                                 <MenuItem value="review">⭐ Book Review</MenuItem>
