@@ -37,6 +37,9 @@ interface Reply {
     timestamp: string
 }
 
+type StatusColor = 'primary' | 'warning' | 'success' | 'default'
+type PriorityColor = 'error' | 'warning' | 'info' | 'default'
+
 export default function TicketPage() {
     const [createTicketOpen, setCreateTicketOpen] = useState(false)
     const [ticketDetailOpen, setTicketDetailOpen] = useState(false)
@@ -176,7 +179,7 @@ export default function TicketPage() {
         }
     ]
 
-    const getStatusColor = (status: string) => {
+    const getStatusColor = (status: string): StatusColor => {
         switch(status) {
             case 'Open': return 'primary'
             case 'In Progress': return 'warning'
@@ -186,7 +189,7 @@ export default function TicketPage() {
         }
     }
 
-    const getPriorityColor = (priority: string) => {
+    const getPriorityColor = (priority: string): PriorityColor => {
         switch(priority) {
             case 'Urgent': return 'error'
             case 'High': return 'warning'
@@ -404,7 +407,7 @@ export default function TicketPage() {
                                                         <Chip
                                                             label={ticket.priority}
                                                             size="small"
-                                                            color={getPriorityColor(ticket.priority) as any}
+                                                            color={getPriorityColor(ticket.priority)}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -412,7 +415,7 @@ export default function TicketPage() {
                                                             icon={getStatusIcon(ticket.status)}
                                                             label={ticket.status}
                                                             size="small"
-                                                            color={getStatusColor(ticket.status) as any}
+                                                            color={getStatusColor(ticket.status)}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -481,7 +484,7 @@ export default function TicketPage() {
                             <Select
                                 value={newTicketPriority}
                                 label="Priority"
-                                onChange={(e) => setNewTicketPriority(e.target.value as any)}
+                                onChange={(e) => setNewTicketPriority(e.target.value as 'Low' | 'Medium' | 'High' | 'Urgent')}
                             >
                                 <MenuItem value="Low">Low</MenuItem>
                                 <MenuItem value="Medium">Medium</MenuItem>
@@ -545,13 +548,13 @@ export default function TicketPage() {
                                         <Chip
                                             label={selectedTicket.priority}
                                             size="small"
-                                            color={getPriorityColor(selectedTicket.priority) as any}
+                                            color={getPriorityColor(selectedTicket.priority)}
                                         />
                                         <Chip
                                             icon={getStatusIcon(selectedTicket.status)}
                                             label={selectedTicket.status}
                                             size="small"
-                                            color={getStatusColor(selectedTicket.status) as any}
+                                            color={getStatusColor(selectedTicket.status)}
                                         />
                                     </Box>
                                 </Box>
