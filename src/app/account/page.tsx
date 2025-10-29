@@ -24,45 +24,34 @@ export default function AccountPage() {
                         >
                             <Typography fontWeight={600} fontSize={20}>My Account</Typography>
                             <Grid2 className="d-flex justify-content-center gap-4">
-                                <Link
-                                    href="/account/order-history"
-                                    className="account-link d-flex justify-content-center align-items-center p-4 gap-3"
-                                    style={{
-                                        width: '250px',
-                                        color: '#000',
-                                        textDecoration: 'none',
-                                        border: '1px solid #ccc',
-                                        borderRadius: '8px'
-                                    }}>
-                                    <Inventory sx={{ fontSize: '48px', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />
-                                    <Typography>Your Orders</Typography>
-                                </Link>
-                                <Link
-                                    href="/account/addresses"
-                                    className="account-link d-flex justify-content-center align-items-center p-4 gap-3"
-                                    style={{
-                                        width: '250px',
-                                        color: '#000',
-                                        textDecoration: 'none',
-                                        border: '1px solid #ccc',
-                                        borderRadius: '8px',
-                                    }}>
-                                    <Business sx={{ fontSize: '48px', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />
-                                    <Typography>Your Addresses</Typography>
-                                </Link>
-                                <Link
-                                    href="/account/profile"
-                                    className="account-link d-flex justify-content-center align-items-center p-4 gap-3"
-                                    style={{
-                                        width: '250px',
-                                        color: '#000',
-                                        textDecoration: 'none',
-                                        border: '1px solid #ccc',
-                                        borderRadius: '8px'
-                                    }}>
-                                    <Person sx={{ fontSize: '48px', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />
-                                    <Typography>Your Profile</Typography>
-                                </Link>
+                                {[
+                                    {
+                                        icon: <Inventory sx={{ fontSize: '48px', color: '#1976d2', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />,
+                                        title: 'Your Orders',
+                                        href: 'order-history'
+                                    },
+                                    {
+                                        icon: <Business sx={{ fontSize: '48px', color: '#1976d2', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />,
+                                        title: 'Your Addresses',
+                                        href: 'addresses'
+                                    },
+                                    {
+                                        icon: <Person sx={{ fontSize: '48px', color: '#1976d2', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />,
+                                        title: 'Your Profile',
+                                        href: 'profile'
+                                    }
+                                ].map((item, index) => (
+                                    <Link
+                                        key={index}
+                                        href={`/account/${item.href}`}
+                                        className="link-account d-flex flex-column justify-content-center align-items-center p-4 gap-3"
+                                    >
+                                        {item.icon}
+                                        <Typography fontWeight={600} fontSize={16}>
+                                            {item.title}
+                                        </Typography>
+                                    </Link>
+                                ))}
                             </Grid2>
                         </Box>
                     </Box>

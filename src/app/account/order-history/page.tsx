@@ -153,14 +153,37 @@ export default function OrderHistoryPage() {
                 <CircularProgress />
               </Box>
             ) : filteredOrders.length === 0 ? (
-              <Box
-                className="d-flex justify-content-center align-items-center p-4"
-                sx={{ backgroundColor: '#fff', borderRadius: '8px', minHeight: '200px' }}
-              >
-                <Typography color="text.secondary" fontSize={18}>
-                  {selectedFilter === 'All' ? 'No orders yet' : `No orders in "${selectedFilter}"`}
-                </Typography>
-              </Box>
+              <Grid2 className="d-flex flex-column gap-3">
+                <Box className="d-flex align-items-center" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>
+                  {(['All', 'To Pay', 'To Ship', 'To Receive', 'Completed', 'Cancelled'] as OrderFilter[]).map(filter => (
+                    <Button
+                      key={filter}
+                      sx={{
+                        width: '100%',
+                        height: '50px',
+                        color: '#000',
+                        borderBottom: '2px solid',
+                        borderColor: selectedFilter === filter ? '#1976d2' : '#999',
+                        borderRadius: '0',
+                        textTransform: 'none',
+                        fontWeight: selectedFilter === filter ? 600 : 400
+                      }}
+                      onClick={() => setSelectedFilter(filter)}
+                    >
+                      <Typography>{filter}</Typography>
+                    </Button>
+                  ))}
+                </Box>
+                
+                <Box
+                  className="d-flex justify-content-center align-items-center p-4"
+                  sx={{ backgroundColor: '#fff', borderRadius: '8px', minHeight: '200px' }}
+                >
+                  <Typography color="text.secondary" fontSize={18}>
+                    {selectedFilter === 'All' ? 'No orders yet' : `No orders in "${selectedFilter}"`}
+                  </Typography>
+                </Box>
+              </Grid2>
             ) : (
               <Grid2 className="d-flex flex-column gap-3">
                 <Box className="d-flex align-items-center" sx={{ backgroundColor: '#fff', borderRadius: '8px' }}>

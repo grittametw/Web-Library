@@ -1,5 +1,6 @@
-.link-account {
-    width: 250px;
+.link-support {
+    width: 200px;
+    height: 180px;
     color: #000;
     text-decoration: none;
     border: 1px solid #e0e0e0;
@@ -7,7 +8,7 @@
     transition: all 0.3s ease;
 }
 
-.link-account:hover {
+.link-support:hover {
     border-color: #1976d2;
     box-shadow: 0 4px 12px rgba(25 118 210 0.15);
     transform: translateY(-4px);

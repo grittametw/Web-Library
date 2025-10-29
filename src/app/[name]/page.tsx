@@ -149,7 +149,7 @@ export default function ItemPage() {
                                         <Typography fontWeight={600} fontSize={26} className="my-2" sx={{ color: '#ff2a00' }}>
                                             ฿{selectedOptionPrice}
                                         </Typography>
-                                        <Box sx={{ width: '350px', border: 'solid 1px #000', borderRadius: '8px' }}>
+                                        <Box sx={{ width: '350px', borderRadius: '8px' }}>
                                             <FormControl fullWidth>
                                                 <Select
                                                     labelId="book-option-select-label"

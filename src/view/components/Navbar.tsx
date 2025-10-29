@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Box, Grid2, Typography, InputBase, Paper, List, ListItemButton, Avatar } from '@mui/material'
-import { NotificationsOutlined, Person } from '@mui/icons-material'
+import { NotificationsOutlined, Person, Search } from '@mui/icons-material'
 import { useAuth } from '@/hooks/useAuth'
 import { useBooks } from '@/context/BooksContext'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import SearchIcon from '@mui/icons-material/Search'
 
 export default function Navbar() {
     const [search, setSearch] = useState('')
@@ -58,7 +57,7 @@ export default function Navbar() {
                 className="d-flex align-items-center"
                 sx={{ width: 800, backgroundColor: '#f0f5ff', borderRadius: '8px' }}
             >
-                <SearchIcon
+                <Search
                     sx={{ margin: '10px', cursor: 'pointer' }}
                     onClick={handleSearch}
                 />

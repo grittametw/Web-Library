@@ -44,7 +44,6 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               href="#"
               onClick={() => window.location.href = '/'}
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/' ? 'active' : ''}`}
-              style={{ width: '100%' }}
             >
               <HomeOutlined />
               <Typography fontSize={22}>Home</Typography>
@@ -55,7 +54,6 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/mycart"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/mycart' ? 'active' : ''}`}
-              style={{ width: '100%' }}
             >
               <ShoppingCartOutlined />
               <Grid2 className="d-flex justify-content-between align-items-center w-100">
@@ -81,7 +79,6 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/favorite"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/favorite' ? 'active' : ''}`}
-              style={{ width: '100%' }}
             >
               <FavoriteBorder />
               <Typography fontSize={22}>Favorite</Typography>
@@ -93,7 +90,6 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/account"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/account' ? 'active' : ''}`}
-              style={{ width: '100%' }}
             >
               <AssignmentIndOutlined />
               <Typography fontSize={22}>Your Account</Typography>
@@ -103,7 +99,6 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             <Link
               href="/support"
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/support' ? 'active' : ''}`}
-              style={{ width: '100%' }}
             >
               <SupportAgentOutlined />
               <Typography fontSize={22}>Support</Typography>
@@ -119,7 +114,6 @@ export default function Sidebar({ cartCount }: SidebarProps) {
                   window.location.href = '/login'
                 }}
                 className={"nav-link d-flex align-items-center gap-4"}
-                style={{ width: '100%' }}
               >
                 <LogoutOutlined />
                 <Typography fontSize={22}>Logout</Typography>
@@ -132,7 +126,6 @@ export default function Sidebar({ cartCount }: SidebarProps) {
                   window.location.href = '/login'
                 }}
                 className={"nav-link d-flex align-items-center gap-4"}
-                style={{ width: '100%' }}
               >
                 <LogoutOutlined />
                 <Typography fontSize={22}>Login</Typography>
