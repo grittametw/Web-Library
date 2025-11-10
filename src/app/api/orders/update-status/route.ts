@@ -20,31 +20,34 @@ export async function PUT(req: Request) {
         }
 
         const pool = getPool()
-        const connection = await pool.getConnection()
 
-        try {
-            let orderStatus = 'pending'
-            if (paymentStatus === 'successful') {
-                orderStatus = 'processing'
-            } else if (paymentStatus === 'failed') {
-                orderStatus = 'pending'
-            }
-
-            await connection.query(
-                `UPDATE user_orders 
-            SET charge_id = ?, payment_status = ?, order_status = ?, updated_at = NOW() 
-            WHERE id = ?`,
-                [chargeId, paymentStatus, orderStatus, orderId]
-            )
-
-            return NextResponse.json({
-                success: true,
-                message: "Order status updated successfully"
-            })
-
-        } finally {
-            connection.release()
+        let orderStatus = 'pending'
+        if (paymentStatus === 'successful') {
+            orderStatus = 'processing'
+        } else if (paymentStatus === 'failed') {
+            orderStatus = 'pending'
         }
+
+        const result = await pool.query(
+            `UPDATE user_orders 
+             SET charge_id = $1, payment_status = $2, order_status = $3, updated_at = NOW() 
+             WHERE id = $4`,
+            [chargeId, paymentStatus, orderStatus, orderId]
+        )
+
+        console.log(`Order ${orderId} updated: payment=${paymentStatus}, order=${orderStatus}, rows affected: ${result.rowCount}`)
+
+        if (result.rowCount === 0) {
+            return NextResponse.json(
+                { error: "Order not found" },
+                { status: 404 }
+            )
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: "Order status updated successfully"
+        })
 
     } catch (error: unknown) {
         console.error("Error updating order status:", error)

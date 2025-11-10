@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPool } from '@/config/db'
-import mysql from 'mysql2/promise'
 import bcrypt from 'bcryptjs'
 
 interface AdminRow {
@@ -31,13 +30,13 @@ export async function POST(req: NextRequest) {
 
     const pool = getPool()
 
-    const [adminRows] = await pool.execute<mysql.RowDataPacket[]>(
-      'SELECT id, email, name, role, password, profile_picture FROM admins WHERE email = ? LIMIT 1',
+    const adminResult = await pool.query(
+      'SELECT id, email, name, role, password, profile_picture FROM admins WHERE email = $1 LIMIT 1',
       [email]
     )
 
-    if (adminRows.length > 0) {
-      const admin = adminRows[0] as AdminRow
+    if (adminResult.rows.length > 0) {
+      const admin = adminResult.rows[0] as AdminRow
       const isMatch = await bcrypt.compare(password, admin.password)
       if (!isMatch) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
 
@@ -50,14 +49,16 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    const [userRows] = await pool.execute<mysql.RowDataPacket[]>(
-      'SELECT id, email, name, role, password, profile_picture FROM users WHERE email = ? LIMIT 1',
+    const userResult = await pool.query(
+      'SELECT id, email, name, role, password, profile_picture FROM users WHERE email = $1 LIMIT 1',
       [email]
     )
 
-    if (userRows.length === 0) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    if (userResult.rows.length === 0) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
 
-    const user = userRows[0] as UserRow
+    const user = userResult.rows[0] as UserRow
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
 

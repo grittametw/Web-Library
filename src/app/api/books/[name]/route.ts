@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import { dbConfig } from '@/config/db'
+import { getPool } from '@/config/db'
 import { Book, BookRow } from '@/types/book'
-import mysql from 'mysql2/promise'
 
 interface RouteContext {
   params: Promise<{ name: string }>
@@ -11,8 +10,6 @@ export async function GET(
   req: Request,
   context: RouteContext
 ) {
-  let connection: mysql.Connection | null = null
-
   try {
     const params = await context.params
     const bookName = decodeURIComponent(params.name)
@@ -24,20 +21,20 @@ export async function GET(
       )
     }
 
-    connection = await mysql.createConnection(dbConfig)
+    const pool = getPool()
 
-    const [results] = await connection.execute<mysql.RowDataPacket[]>(
+    const result = await pool.query(
       `SELECT 
         b.id, b.name, b.author, b.image, b.rate, b.genre, b.description,
         o.id as option_id, o.type as option_type, o.price, o.stock
       FROM books b
       LEFT JOIN book_options o ON b.id = o.book_id
-      WHERE b.name = ?
+      WHERE b.name = $1
       ORDER BY o.id ASC`,
       [bookName]
     )
 
-    const rows = results as BookRow[]
+    const rows = result.rows as BookRow[]
 
     if (rows.length === 0) {
       return NextResponse.json(
@@ -78,13 +75,5 @@ export async function GET(
       { error: 'Failed to fetch book' },
       { status: 500 }
     )
-  } finally {
-    if (connection) {
-      try {
-        await connection.end()
-      } catch (closeError) {
-        console.error('Error closing database connection:', closeError)
-      }
-    }
   }
 }

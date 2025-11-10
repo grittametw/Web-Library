@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPool } from '@/config/db'
 import { UserProfile } from '@/types/user'
-import mysql from 'mysql2/promise'
 
 interface RouteContext {
     params: Promise<{ id: string }>
@@ -19,16 +18,19 @@ export async function GET(
 
     try {
         const pool = getPool()
-        const [rows] = await pool.execute<mysql.RowDataPacket[]>(
-            `SELECT id, name, email, profile_picture, created_at, updated_at FROM users WHERE id = ?`,
+        
+        const result = await pool.query(
+            `SELECT id, name, email, profile_picture, created_at, updated_at 
+             FROM users 
+             WHERE id = $1`,
             [userId]
         )
 
-        if (rows.length === 0) {
+        if (result.rows.length === 0) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 })
         }
 
-        const user = rows[0]
+        const user = result.rows[0]
         const userProfile: UserProfile = {
             id: user.id,
             username: user.name,
@@ -70,15 +72,18 @@ export async function PUT(
         const pool = getPool()
 
         const updates: string[] = []
-        const values: (string | number | null)[] = []
+        const values: (string | number)[] = []
+        let paramIndex = 1
 
         if (username !== undefined) {
-            updates.push('name = ?')
+            updates.push(`name = $${paramIndex}`)
             values.push(username)
+            paramIndex++
         }
         if (email !== undefined) {
-            updates.push('email = ?')
+            updates.push(`email = $${paramIndex}`)
             values.push(email)
+            paramIndex++
         }
 
         if (updates.length === 0) {
@@ -88,8 +93,9 @@ export async function PUT(
         updates.push('updated_at = NOW()')
         values.push(userId)
 
-        const query = `UPDATE users SET ${updates.join(', ')} WHERE id = ?`
-        await pool.execute(query, values)
+        const query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${paramIndex}`
+        
+        await pool.query(query, values)
 
         return NextResponse.json({
             success: true,

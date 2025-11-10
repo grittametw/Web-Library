@@ -1,18 +1,6 @@
 import { NextResponse } from "next/server"
 import { getPool } from "@/config/db"
-import { OrderItem, OrderRow, OrderItemRow } from "@/types/order"
-import mysql from "mysql2/promise"
-
-interface AddressRow extends mysql.RowDataPacket {
-  first_name: string
-  last_name: string
-  address: string
-  city: string
-  state: string
-  postal_code: string
-  country: string
-  phone_number: string
-}
+import { OrderItem, OrderRow, OrderItemRow, AddressRow } from "@/types/order"
 
 interface OrderShippingAddress {
   first_name: string
@@ -44,8 +32,6 @@ export async function GET(
   req: Request,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const params = await context.params
     const userId = parseInt(params.id, 10)
@@ -59,9 +45,8 @@ export async function GET(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    const [orders] = await connection.execute<OrderRow[]>(
+    const orderResult = await pool.query(
       `SELECT 
         id,
         user_id,
@@ -72,20 +57,20 @@ export async function GET(
         created_at,
         updated_at
        FROM user_orders
-       WHERE id = ? AND user_id = ?`,
+       WHERE id = $1 AND user_id = $2`,
       [orderId, userId]
     )
 
-    if (orders.length === 0) {
+    if (orderResult.rows.length === 0) {
       return NextResponse.json(
         { error: "Order not found" },
         { status: 404 }
       )
     }
 
-    const order = orders[0]
+    const order = orderResult.rows[0] as OrderRow
 
-    const [orderItems] = await connection.execute<OrderItemRow[]>(
+    const itemsResult = await pool.query(
       `SELECT 
         oi.book_id,
         oi.book_option_id,
@@ -97,14 +82,16 @@ export async function GET(
        FROM user_order_items oi
        JOIN books b ON oi.book_id = b.id
        JOIN book_options bo ON oi.book_option_id = bo.id
-       WHERE oi.order_id = ?
+       WHERE oi.order_id = $1
        ORDER BY oi.id`,
       [orderId]
     )
 
+    const orderItems = itemsResult.rows as OrderItemRow[]
+
     let shippingAddress: OrderShippingAddress | null = null
     if (order.address_id) {
-      const [addresses] = await connection.execute<AddressRow[]>(
+      const addressResult = await pool.query(
         `SELECT 
           first_name,
           last_name,
@@ -115,12 +102,12 @@ export async function GET(
           country,
           phone_number
          FROM user_addresses
-         WHERE id = ?`,
+         WHERE id = $1`,
         [order.address_id]
       )
 
-      if (addresses.length > 0) {
-        shippingAddress = addresses[0]
+      if (addressResult.rows.length > 0) {
+        shippingAddress = addressResult.rows[0] as AddressRow
       }
     }
 
@@ -154,7 +141,5 @@ export async function GET(
       { error: "Failed to fetch order detail" },
       { status: 500 }
     )
-  } finally {
-    if (connection) connection.release()
   }
 }

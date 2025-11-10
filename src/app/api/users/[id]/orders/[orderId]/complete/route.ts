@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { getPool } from "@/config/db"
-import mysql from "mysql2/promise"
 
 interface RouteContext {
   params: Promise<{ id: string; orderId: string }>
@@ -10,8 +9,6 @@ export async function PUT(
   req: Request,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const params = await context.params
     const userId = parseInt(params.id, 10)
@@ -25,21 +22,20 @@ export async function PUT(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    const [orders] = await connection.execute<mysql.RowDataPacket[]>(
-      `SELECT id, order_status FROM user_orders WHERE id = ? AND user_id = ?`,
+    const orderResult = await pool.query(
+      `SELECT id, order_status FROM user_orders WHERE id = $1 AND user_id = $2`,
       [orderId, userId]
     )
 
-    if (orders.length === 0) {
+    if (orderResult.rows.length === 0) {
       return NextResponse.json(
         { error: "Order not found" },
         { status: 404 }
       )
     }
 
-    const order = orders[0]
+    const order = orderResult.rows[0]
 
     if (order.order_status !== 'shipped') {
       return NextResponse.json(
@@ -48,10 +44,14 @@ export async function PUT(
       )
     }
 
-    await connection.execute(
-      `UPDATE user_orders SET order_status = 'delivered', updated_at = NOW() WHERE id = ?`,
+    const updateResult = await pool.query(
+      `UPDATE user_orders 
+       SET order_status = 'delivered', updated_at = NOW() 
+       WHERE id = $1`,
       [orderId]
     )
+
+    console.log(`Order ${orderId} marked as delivered. Rows affected: ${updateResult.rowCount}`)
 
     return NextResponse.json({
       success: true,
@@ -64,7 +64,5 @@ export async function PUT(
       { error: "Failed to complete order" },
       { status: 500 }
     )
-  } finally {
-    if (connection) connection.release()
   }
 }

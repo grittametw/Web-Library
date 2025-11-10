@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { DbUserAddress } from '@/types/address'
 import { getPool } from '@/config/db'
-import mysql from 'mysql2/promise'
 
 interface CreateAddressRequest {
   first_name: string
@@ -27,8 +26,6 @@ export async function GET(
   req: NextRequest,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const params = await context.params
     const userId = parseInt(params.id, 10)
@@ -37,18 +34,17 @@ export async function GET(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    const [results] = await connection.execute<mysql.RowDataPacket[]>(
+    const result = await pool.query(
       `SELECT ua.*, u.email 
        FROM user_addresses ua
        JOIN users u ON ua.user_id = u.id
-       WHERE ua.user_id = ?
+       WHERE ua.user_id = $1
        ORDER BY ua.is_default DESC, ua.created_at DESC`,
       [userId]
     )
 
-    const addresses = results as (DbUserAddress & { email: string })[]
+    const addresses = result.rows as (DbUserAddress & { email: string })[]
 
     return NextResponse.json({
       success: true,
@@ -60,8 +56,6 @@ export async function GET(
       { error: "Failed to fetch addresses" },
       { status: 500 }
     )
-  } finally {
-    if (connection) connection.release()
   }
 }
 
@@ -69,8 +63,6 @@ export async function POST(
   req: NextRequest,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const body: CreateAddressRequest = await req.json()
     const params = await context.params
@@ -99,53 +91,54 @@ export async function POST(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    if (is_default) {
-      await connection.execute(
-        'UPDATE user_addresses SET is_default = FALSE WHERE user_id = ?',
-        [userId]
-      )
-    } else {
-      const [existingResults] = await connection.execute<mysql.RowDataPacket[]>(
-        'SELECT id FROM user_addresses WHERE user_id = ? AND is_default = TRUE',
-        [userId]
-      )
+    const client = await pool.connect()
+    try {
+      await client.query('BEGIN')
 
-      const existingAddresses = existingResults as DbUserAddress[]
+      if (is_default) {
+        await client.query(
+          'UPDATE user_addresses SET is_default = FALSE WHERE user_id = $1',
+          [userId]
+        )
+      } else {
+        const existingResult = await client.query(
+          'SELECT id FROM user_addresses WHERE user_id = $1 AND is_default = TRUE',
+          [userId]
+        )
 
-      if (!existingAddresses || existingAddresses.length === 0) {
-        body.is_default = true
+        if (existingResult.rows.length === 0) {
+          body.is_default = true
+        }
       }
+
+      const insertResult = await client.query(
+        `INSERT INTO user_addresses 
+        (user_id, first_name, last_name, address, city, state, postal_code, country, phone_number, is_default, created_at, updated_at) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        RETURNING *`,
+        [userId, first_name, last_name, address, city, state, postal_code, country, phone_number, body.is_default]
+      )
+
+      await client.query('COMMIT')
+
+      return NextResponse.json({
+        success: true,
+        message: 'Address created successfully',
+        address: insertResult.rows[0] || null
+      }, { status: 201 })
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw error
+    } finally {
+      client.release()
     }
-
-    const [result] = await connection.execute<mysql.ResultSetHeader>(
-      `INSERT INTO user_addresses 
-      (user_id, first_name, last_name, address, city, state, postal_code, country, phone_number, is_default, created_at, updated_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-      [userId, first_name, last_name, address, city, state, postal_code, country, phone_number, body.is_default]
-    )
-
-    const [newAddressResults] = await connection.execute<mysql.RowDataPacket[]>(
-      'SELECT * FROM user_addresses WHERE id = ?',
-      [result.insertId]
-    )
-
-    const newAddresses = newAddressResults as DbUserAddress[]
-
-    return NextResponse.json({
-      success: true,
-      message: 'Address created successfully',
-      address: newAddresses?.[0] || null
-    }, { status: 201 })
   } catch (error: unknown) {
     console.error("Error creating address:", error)
     return NextResponse.json(
       { error: "Failed to create address" },
       { status: 500 }
     )
-  } finally {
-    if (connection) connection.release()
   }
 }
 
@@ -153,8 +146,6 @@ export async function PUT(
   req: NextRequest,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const body: UpdateAddressRequest = await req.json()
     const params = await context.params
@@ -184,57 +175,62 @@ export async function PUT(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
+    const client = await pool.connect()
 
-    const [existingResults] = await connection.execute<mysql.RowDataPacket[]>(
-      'SELECT * FROM user_addresses WHERE id = ? AND user_id = ?',
-      [addressId, userId]
-    )
+    try {
+      await client.query('BEGIN')
 
-    const existingAddress = existingResults as DbUserAddress[]
-
-    if (!existingAddress || existingAddress.length === 0) {
-      return NextResponse.json(
-        { error: 'Address not found or access denied' },
-        { status: 404 }
+      const existingResult = await client.query(
+        'SELECT * FROM user_addresses WHERE id = $1 AND user_id = $2',
+        [addressId, userId]
       )
-    }
 
-    if (is_default) {
-      await connection.execute(
-        'UPDATE user_addresses SET is_default = FALSE WHERE user_id = ? AND id != ?',
-        [userId, addressId]
+      if (existingResult.rows.length === 0) {
+        return NextResponse.json(
+          { error: 'Address not found or access denied' },
+          { status: 404 }
+        )
+      }
+
+      if (is_default) {
+        await client.query(
+          'UPDATE user_addresses SET is_default = FALSE WHERE user_id = $1 AND id != $2',
+          [userId, addressId]
+        )
+      }
+
+      await client.query(
+        `UPDATE user_addresses 
+         SET first_name = $1, last_name = $2, address = $3, city = $4, state = $5, 
+         postal_code = $6, country = $7, phone_number = $8, is_default = $9, updated_at = NOW()
+         WHERE id = $10 AND user_id = $11`,
+        [first_name, last_name, address, city, state, postal_code, country, phone_number, is_default, addressId, userId]
       )
+
+      const updatedResult = await client.query(
+        'SELECT * FROM user_addresses WHERE id = $1',
+        [addressId]
+      )
+
+      await client.query('COMMIT')
+
+      return NextResponse.json({
+        success: true,
+        message: 'Address updated successfully',
+        address: updatedResult.rows[0] || null
+      })
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw error
+    } finally {
+      client.release()
     }
-
-    await connection.execute(
-      `UPDATE user_addresses 
-       SET first_name = ?, last_name = ?, address = ?, city = ?, state = ?, 
-       postal_code = ?, country = ?, phone_number = ?, is_default = ?, updated_at = NOW()
-       WHERE id = ? AND user_id = ?`,
-      [first_name, last_name, address, city, state, postal_code, country, phone_number, is_default, addressId, userId]
-    )
-
-    const [updatedResults] = await connection.execute<mysql.RowDataPacket[]>(
-      'SELECT * FROM user_addresses WHERE id = ?',
-      [addressId]
-    )
-
-    const updatedAddress = updatedResults as DbUserAddress[]
-
-    return NextResponse.json({
-      success: true,
-      message: 'Address updated successfully',
-      address: updatedAddress?.[0] || null
-    })
   } catch (error: unknown) {
     console.error("Error updating address:", error)
     return NextResponse.json(
       { error: "Failed to update address" },
       { status: 500 }
     )
-  } finally {
-    if (connection) connection.release()
   }
 }
 
@@ -242,8 +238,6 @@ export async function DELETE(
   req: NextRequest,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const { searchParams } = new URL(req.url)
     const params = await context.params
@@ -258,56 +252,61 @@ export async function DELETE(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
+    const client = await pool.connect()
 
-    const [existingResults] = await connection.execute<mysql.RowDataPacket[]>(
-      'SELECT * FROM user_addresses WHERE id = ? AND user_id = ?',
-      [addressId, userId]
-    )
+    try {
+      await client.query('BEGIN')
 
-    const existingAddress = existingResults as DbUserAddress[]
-
-    if (!existingAddress || existingAddress.length === 0) {
-      return NextResponse.json(
-        { error: 'Address not found or access denied' },
-        { status: 404 }
-      )
-    }
-
-    const wasDefault = existingAddress[0].is_default
-
-    await connection.execute(
-      'DELETE FROM user_addresses WHERE id = ? AND user_id = ?',
-      [addressId, userId]
-    )
-
-    if (wasDefault) {
-      const [remainingResults] = await connection.execute<mysql.RowDataPacket[]>(
-        'SELECT id FROM user_addresses WHERE user_id = ? ORDER BY created_at ASC LIMIT 1',
-        [userId]
+      const existingResult = await client.query(
+        'SELECT * FROM user_addresses WHERE id = $1 AND user_id = $2',
+        [addressId, userId]
       )
 
-      const remainingAddresses = remainingResults as DbUserAddress[]
-
-      if (remainingAddresses && remainingAddresses.length > 0) {
-        await connection.execute(
-          'UPDATE user_addresses SET is_default = TRUE WHERE id = ?',
-          [remainingAddresses[0].id]
+      if (existingResult.rows.length === 0) {
+        return NextResponse.json(
+          { error: 'Address not found or access denied' },
+          { status: 404 }
         )
       }
-    }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Address deleted successfully'
-    })
+      const wasDefault = existingResult.rows[0].is_default
+
+      await client.query(
+        'DELETE FROM user_addresses WHERE id = $1 AND user_id = $2',
+        [addressId, userId]
+      )
+
+      if (wasDefault) {
+        const remainingResult = await client.query(
+          'SELECT id FROM user_addresses WHERE user_id = $1 ORDER BY created_at ASC LIMIT 1',
+          [userId]
+        )
+
+        if (remainingResult.rows.length > 0) {
+          await client.query(
+            'UPDATE user_addresses SET is_default = TRUE WHERE id = $1',
+            [remainingResult.rows[0].id]
+          )
+        }
+      }
+
+      await client.query('COMMIT')
+
+      return NextResponse.json({
+        success: true,
+        message: 'Address deleted successfully'
+      })
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw error
+    } finally {
+      client.release()
+    }
   } catch (error: unknown) {
     console.error("Error deleting address:", error)
     return NextResponse.json(
       { error: "Failed to delete address" },
       { status: 500 }
     )
-  } finally {
-    if (connection) connection.release()
   }
 }

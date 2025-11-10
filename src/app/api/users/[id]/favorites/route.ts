@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getPool } from "@/config/db"
-import mysql from "mysql2/promise"
 
 interface FavoriteItem {
   id?: number
@@ -8,7 +7,7 @@ interface FavoriteItem {
   book_id: number
 }
 
-interface FavoriteRow extends mysql.RowDataPacket {
+interface FavoriteRow {
   id: number
   user_id: number
   book_id: number
@@ -48,8 +47,6 @@ export async function GET(
   req: NextRequest,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const params = await context.params
     const userId = parseInt(params.id, 10)
@@ -58,20 +55,20 @@ export async function GET(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    const [rows] = await connection.execute<FavoriteRow[]>(
+    const result = await pool.query(
       `SELECT uf.id, uf.user_id, uf.book_id,
               b.name, b.author, b.image, b.rate, b.genre,
               o.id AS option_id, o.type AS option_type, o.price, o.stock
        FROM user_favorites uf
        JOIN books b ON uf.book_id = b.id
        LEFT JOIN book_options o ON o.book_id = b.id
-       WHERE uf.user_id = ?
+       WHERE uf.user_id = $1
        ORDER BY uf.id`,
       [userId]
     )
 
+    const rows = result.rows as FavoriteRow[]
     const booksMap = new Map<number, FavoriteBook>()
 
     rows.forEach(row => {
@@ -103,8 +100,6 @@ export async function GET(
   } catch (error: unknown) {
     console.error("Error fetching favorites:", error)
     return NextResponse.json({ error: "Failed to fetch favorites" }, { status: 500 })
-  } finally {
-    if (connection) connection.release()
   }
 }
 
@@ -112,7 +107,6 @@ export async function POST(
   req: NextRequest,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
   try {
     const body: FavoriteItem = await req.json()
     const params = await context.params
@@ -128,12 +122,12 @@ export async function POST(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    await connection.execute(
-      `INSERT INTO user_favorites (user_id, book_id)
-       VALUES (?, ?)
-       ON DUPLICATE KEY UPDATE created_at = NOW()`,
+    await pool.query(
+      `INSERT INTO user_favorites (user_id, book_id, created_at)
+       VALUES ($1, $2, NOW())
+       ON CONFLICT (user_id, book_id)
+       DO UPDATE SET created_at = NOW()`,
       [userId, book_id]
     )
 
@@ -141,8 +135,6 @@ export async function POST(
   } catch (error: unknown) {
     console.error("Error saving favorite:", error)
     return NextResponse.json({ error: "Failed to save favorite" }, { status: 500 })
-  } finally {
-    if (connection) connection.release()
   }
 }
 
@@ -150,7 +142,6 @@ export async function DELETE(
   req: NextRequest,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
   try {
     const body = await req.json()
     const params = await context.params
@@ -162,10 +153,9 @@ export async function DELETE(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    await connection.execute(
-      `DELETE FROM user_favorites WHERE user_id = ? AND book_id = ?`,
+    await pool.query(
+      `DELETE FROM user_favorites WHERE user_id = $1 AND book_id = $2`,
       [userId, bookId]
     )
 
@@ -173,7 +163,5 @@ export async function DELETE(
   } catch (error: unknown) {
     console.error("Error deleting favorite:", error)
     return NextResponse.json({ error: "Failed to delete favorite" }, { status: 500 })
-  } finally {
-    if (connection) connection.release()
   }
 }

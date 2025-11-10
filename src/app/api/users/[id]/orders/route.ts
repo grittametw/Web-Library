@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { getPool } from "@/config/db"
 import { OrderItem, OrderRow, OrderItemRow } from "@/types/order"
-import mysql from "mysql2/promise"
 
 interface OrderWithItems {
   id: number
@@ -21,8 +20,6 @@ export async function GET(
   req: Request,
   context: RouteContext
 ) {
-  let connection: mysql.PoolConnection | null = null
-
   try {
     const params = await context.params
     const userId = parseInt(params.id, 10)
@@ -35,9 +32,8 @@ export async function GET(
     }
 
     const pool = getPool()
-    connection = await pool.getConnection()
 
-    const [orders] = await connection.execute<OrderRow[]>(
+    const ordersResult = await pool.query(
       `SELECT 
         id,
         payment_status,
@@ -46,10 +42,12 @@ export async function GET(
         created_at,
         updated_at
        FROM user_orders
-       WHERE user_id = ?
+       WHERE user_id = $1
        ORDER BY created_at DESC`,
       [userId]
     )
+
+    const orders = ordersResult.rows as OrderRow[]
 
     if (orders.length === 0) {
       return NextResponse.json({
@@ -59,9 +57,8 @@ export async function GET(
     }
 
     const orderIds = orders.map((order) => order.id)
-    const placeholders = orderIds.map(() => '?').join(',')
     
-    const [orderItems] = await connection.execute<OrderItemRow[]>(
+    const itemsResult = await pool.query(
       `SELECT 
         oi.order_id,
         oi.book_id,
@@ -74,10 +71,12 @@ export async function GET(
        FROM user_order_items oi
        JOIN books b ON oi.book_id = b.id
        JOIN book_options bo ON oi.book_option_id = bo.id
-       WHERE oi.order_id IN (${placeholders})
+       WHERE oi.order_id = ANY($1)
        ORDER BY oi.order_id, oi.id`,
-      orderIds
+      [orderIds]
     )
+
+    const orderItems = itemsResult.rows as OrderItemRow[]
 
     const itemsByOrder: Record<number, OrderItem[]> = {}
     orderItems.forEach((item) => {
@@ -116,7 +115,5 @@ export async function GET(
       { error: "Failed to fetch orders" },
       { status: 500 }
     )
-  } finally {
-    if (connection) connection.release()
   }
 }

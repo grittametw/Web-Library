@@ -1,5 +1,4 @@
 import { ShippingAddress } from '@/types/address'
-import mysql from "mysql2/promise"
 
 interface Order {
   id: number
@@ -22,7 +21,7 @@ interface OrderItem {
   option_type: string
 }
 
-interface OrderRow extends mysql.RowDataPacket {
+interface OrderRow {
   id: number
   user_id: number
   address_id: number | null
@@ -33,7 +32,7 @@ interface OrderRow extends mysql.RowDataPacket {
   updated_at: Date
 }
 
-interface OrderItemRow extends mysql.RowDataPacket {
+interface OrderItemRow {
   order_id: number
   book_id: number
   book_option_id: number
@@ -44,4 +43,15 @@ interface OrderItemRow extends mysql.RowDataPacket {
   option_type: string
 }
 
-export type { Order, OrderItem, OrderRow, OrderItemRow }
+interface AddressRow {
+  first_name: string
+  last_name: string
+  address: string
+  city: string
+  state: string
+  postal_code: string
+  country: string
+  phone_number: string
+}
+
+export type { Order, OrderItem, OrderRow, OrderItemRow, AddressRow }

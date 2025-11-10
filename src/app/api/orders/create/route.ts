@@ -2,7 +2,6 @@ import { NextResponse } from "next/server"
 import { getPool } from '@/config/db'
 import { ShippingAddress } from "@/types/address"
 import { CartItem } from "@/types/cart"
-import mysql from "mysql2/promise"
 
 interface RequestBody {
     userId?: number
@@ -13,21 +12,16 @@ interface RequestBody {
     totalPrice: number
 }
 
-interface BookOptionRow extends mysql.RowDataPacket {
+interface BookOptionRow {
     stock: number
     price: number
 }
 
-interface OrderInsertResult extends mysql.ResultSetHeader {
-    insertId: number
-}
-
 export async function POST(req: Request) {
     const pool = getPool()
-    let connection: mysql.PoolConnection | null = null
+    const client = await pool.connect()
 
     try {
-        connection = await pool.getConnection()
         const body: RequestBody = await req.json()
         const { userId, addressId, guestEmail, guestAddress, cartItems, totalPrice } = body
 
@@ -52,26 +46,26 @@ export async function POST(req: Request) {
             )
         }
 
-        await connection.beginTransaction()
+        await client.query('BEGIN')
 
         for (const item of cartItems) {
-            const [rows] = await connection.execute<BookOptionRow[]>(
-                `SELECT stock, price FROM book_options WHERE id = ? AND book_id = ?`,
+            const result = await client.query(
+                `SELECT stock, price FROM book_options WHERE id = $1 AND book_id = $2`,
                 [item.book_option_id, item.book_id]
             )
 
-            if (rows.length === 0) {
-                await connection.rollback()
+            if (result.rows.length === 0) {
+                await client.query('ROLLBACK')
                 return NextResponse.json(
                     { error: `Book option ${item.book_option_id} not found` },
                     { status: 404 }
                 )
             }
 
-            const bookOption = rows[0]
+            const bookOption = result.rows[0] as BookOptionRow
 
             if (bookOption.stock < item.quantity) {
-                await connection.rollback()
+                await client.query('ROLLBACK')
                 return NextResponse.json(
                     { error: `Insufficient stock for ${item.name}. Available: ${bookOption.stock}` },
                     { status: 400 }
@@ -79,7 +73,7 @@ export async function POST(req: Request) {
             }
 
             if (Math.abs(bookOption.price - item.price) > 0.01) {
-                await connection.rollback()
+                await client.query('ROLLBACK')
                 return NextResponse.json(
                     { error: `Price mismatch for ${item.name}` },
                     { status: 400 }
@@ -87,10 +81,11 @@ export async function POST(req: Request) {
             }
         }
 
-        const [orderResult] = await connection.execute<OrderInsertResult>(
+        const orderResult = await client.query(
             `INSERT INTO user_orders 
-        (user_id, address_id, guest_email, guest_address, payment_status, order_status, total_price, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            (user_id, address_id, guest_email, guest_address, payment_status, order_status, total_price, created_at, updated_at) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+            RETURNING id`,
             [
                 userId || null,
                 addressId || null,
@@ -102,32 +97,32 @@ export async function POST(req: Request) {
             ]
         )
 
-        const orderId = orderResult.insertId
+        const orderId = orderResult.rows[0].id
 
         for (const item of cartItems) {
-            await connection.execute(
+            await client.query(
                 `INSERT INTO user_order_items 
-            (order_id, book_id, book_option_id, quantity, price) 
-            VALUES (?, ?, ?, ?, ?)`,
+                (order_id, book_id, book_option_id, quantity, price) 
+                VALUES ($1, $2, $3, $4, $5)`,
                 [orderId, item.book_id, item.book_option_id, item.quantity, item.price]
             )
 
-            await connection.execute(
+            await client.query(
                 `UPDATE book_options 
-            SET stock = stock - ? 
-            WHERE id = ? AND book_id = ?`,
+                SET stock = stock - $1 
+                WHERE id = $2 AND book_id = $3`,
                 [item.quantity, item.book_option_id, item.book_id]
             )
         }
 
         if (userId) {
-            await connection.execute(
-                `DELETE FROM user_cart WHERE user_id = ?`,
+            await client.query(
+                `DELETE FROM user_cart WHERE user_id = $1`,
                 [userId]
             )
         }
 
-        await connection.commit()
+        await client.query('COMMIT')
 
         return NextResponse.json({
             success: true,
@@ -136,17 +131,13 @@ export async function POST(req: Request) {
         })
 
     } catch (error: unknown) {
-        if (connection) {
-            await connection.rollback()
-        }
+        await client.query('ROLLBACK')
         console.error("Error creating order:", error)
         return NextResponse.json(
             { error: "Failed to create order" },
             { status: 500 }
         )
     } finally {
-        if (connection) {
-            connection.release()
-        }
+        client.release()
     }
 }

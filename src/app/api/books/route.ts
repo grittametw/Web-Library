@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getPool } from '@/config/db'
 import { Book, BookRow } from '@/types/book'
-import mysql from 'mysql2/promise'
 
 export async function GET(): Promise<NextResponse<Book[] | { error: string }>> {
   try {
     const pool = getPool()
 
-    const [results] = await pool.execute<mysql.RowDataPacket[]>(
+    const result = await pool.query(
       `SELECT 
         b.id, b.name, b.author, b.image, b.rate, b.genre, b.description,
         o.id as option_id, o.type as option_type, o.price, o.stock
@@ -16,7 +15,7 @@ export async function GET(): Promise<NextResponse<Book[] | { error: string }>> {
       ORDER BY b.id ASC, o.id ASC`
     )
 
-    const rows = results as BookRow[]
+    const rows = result.rows as BookRow[]
 
     const bookMap = new Map<number, Book>()
 
