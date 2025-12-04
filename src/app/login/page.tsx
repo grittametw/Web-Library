@@ -56,18 +56,28 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
+
+      const result = await res.json()
+
       if (res.ok) {
-        const user = await res.json()
-        login(user)
-        window.location.href = '/'
+        login(result.user, result.token)
+        
+        localStorage.setItem('refreshToken', result.refreshToken)
+        
+        if (result.user.role === 'admin') {
+          window.location.href = '/admin/dashboard'
+        } else {
+          window.location.href = '/'
+        }
       } else {
-        const result = await res.json()
         setLoginError(result.error || 'Login failed')
       }
-    } catch {
-      setLoginError('Network error')
+    } catch (error) {
+      console.error('Login error:', error)
+      setLoginError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
@@ -159,7 +169,9 @@ export default function LoginPage() {
             </Link>
           </Box>
           {loginError && (
-            <Typography color="error" fontSize={14}>{loginError}</Typography>
+            <Typography color="error" fontSize={14} textAlign="center" sx={{ mb: 1 }}>
+              {loginError}
+            </Typography>
           )}
           <Button
             variant="contained"

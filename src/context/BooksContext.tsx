@@ -24,9 +24,13 @@ export function BooksProvider({ children }: BooksProviderProps) {
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   useEffect(() => {
+    if (authLoading) {
+      return
+    }
+
     const isAdmin = user?.role === 'admin'
     const isHomePage = typeof window !== 'undefined' && window.location.pathname === '/'
 
@@ -46,8 +50,8 @@ export function BooksProvider({ children }: BooksProviderProps) {
         setError('Failed to fetch books')
         setLoading(false)
       })
-  }, [user])
-
+  }, [user, authLoading])
+  
   return (
     <BooksContext.Provider value={{ books, loading, error }}>
       {children}

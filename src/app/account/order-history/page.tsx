@@ -68,7 +68,7 @@ export default function OrderHistoryPage() {
       if (data.success) {
         setSnackbarMessage('Order completed successfully!')
         setSnackbarOpen(true)
-        await fetchOrders() // Refresh orders
+        await fetchOrders()
       } else {
         setSnackbarMessage(data.error || 'Failed to complete order')
         setSnackbarOpen(true)
@@ -161,9 +161,9 @@ export default function OrderHistoryPage() {
                       sx={{
                         width: '100%',
                         height: '50px',
-                        color: '#000',
+                        color: selectedFilter === filter ? 'active' : '#000',
                         borderBottom: '2px solid',
-                        borderColor: selectedFilter === filter ? '#1976d2' : '#999',
+                        borderColor: selectedFilter === filter ? 'active' : '#999',
                         borderRadius: '0',
                         textTransform: 'none',
                         fontWeight: selectedFilter === filter ? 600 : 400
@@ -193,9 +193,9 @@ export default function OrderHistoryPage() {
                       sx={{
                         width: '100%',
                         height: '50px',
-                        color: '#000',
+                        color: selectedFilter === filter ? 'active' : '#000',
                         borderBottom: '2px solid',
-                        borderColor: selectedFilter === filter ? '#1976d2' : '#999',
+                        borderColor: selectedFilter === filter ? 'active' : '#999',
                         borderRadius: '0',
                         textTransform: 'none',
                         fontWeight: selectedFilter === filter ? 600 : 400

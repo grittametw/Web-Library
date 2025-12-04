@@ -1,7 +1,7 @@
 'use client'
 
 import { Box, Typography, Grid2 } from '@mui/material'
-import { Inventory, Business, Person } from '@mui/icons-material'
+import { InventoryOutlined, Business, Person } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
 import Link from 'next/link'
 import Navbar from '@/view/components/Navbar'
@@ -26,7 +26,7 @@ export default function AccountPage() {
                             <Grid2 className="d-flex justify-content-center gap-4">
                                 {[
                                     {
-                                        icon: <Inventory sx={{ fontSize: '48px', color: '#1976d2', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />,
+                                        icon: <InventoryOutlined sx={{ fontSize: '48px', color: '#1976d2', backgroundColor: '#e7f1fe', borderRadius: '24px', p: 1 }} />,
                                         title: 'Your Orders',
                                         href: 'order-history'
                                     },
@@ -44,7 +44,7 @@ export default function AccountPage() {
                                     <Link
                                         key={index}
                                         href={`/account/${item.href}`}
-                                        className="link-account d-flex flex-column justify-content-center align-items-center p-4 gap-3"
+                                        className="link-account d-flex flex-column justify-content-center align-items-center p-4 gap-3 shadow"
                                     >
                                         {item.icon}
                                         <Typography fontWeight={600} fontSize={16}>

@@ -73,7 +73,6 @@ export default function OrderDetailPage() {
             const data = await response.json()
 
             if (data.success) {
-                // Refresh order detail
                 await fetchOrderDetail()
             }
         } catch (error) {

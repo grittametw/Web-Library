@@ -33,7 +33,7 @@ export default function ItemPage() {
     useEffect(() => {
         if (name) {
             setLoading(true)
-            fetch(`/api/books/${encodeURIComponent(name as string)}`)
+            fetch(`/api/books/by-name/${encodeURIComponent(name as string)}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data && !data.error) {

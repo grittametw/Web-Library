@@ -43,15 +43,4 @@ interface OrderItemRow {
   option_type: string
 }
 
-interface AddressRow {
-  first_name: string
-  last_name: string
-  address: string
-  city: string
-  state: string
-  postal_code: string
-  country: string
-  phone_number: string
-}
-
-export type { Order, OrderItem, OrderRow, OrderItemRow, AddressRow }
+export type { Order, OrderItem, OrderRow, OrderItemRow }

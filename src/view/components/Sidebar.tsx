@@ -1,7 +1,8 @@
 import { Box, Grid2, Typography, List, ListItem } from '@mui/material'
 import {
-  HomeOutlined, ShoppingCartOutlined, FavoriteBorder, AssignmentIndOutlined,
-  SupportAgentOutlined, LogoutOutlined
+  DashboardOutlined, InventoryOutlined, Inventory2Outlined, CategoryOutlined,
+  GroupsOutlined, HomeOutlined, ShoppingCartOutlined, FavoriteBorder,
+  AssignmentIndOutlined, SupportAgentOutlined, LogoutOutlined
 } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
@@ -37,7 +38,65 @@ export default function Sidebar({ cartCount }: SidebarProps) {
           <Typography fontWeight={600} fontSize={20}>Web - Library</Typography>
         </Link>
       </Grid2>
-      <Grid2 className="nav-pills flex-column mb-auto" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Grid2 className="nav-pills flex-column mb-auto" sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+        {user?.role === 'admin' && (
+          <List className="nav pb-4" sx={{ borderBottom: '1px solid #ccc' }}>
+            <ListItem className="nav-item">
+              <Link
+                href="/admin/dashboard"
+                className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/admin/dashboard' ? 'active' : ''}`}
+              >
+                <DashboardOutlined />
+                <Typography fontSize={22}>Dashboard</Typography>
+              </Link>
+            </ListItem>
+
+            <ListItem className="nav-item">
+              <Link
+                href="#"
+                onClick={() => window.location.href = '/admin/orders'}
+                className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/admin/orders' ? 'active' : ''}`}
+              >
+                <InventoryOutlined />
+                <Typography fontSize={22}>Orders</Typography>
+              </Link>
+            </ListItem>
+
+            <ListItem className="nav-item">
+              <Link
+                href="#"
+                onClick={() => window.location.href = '/admin/products'}
+                className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/admin/products' ? 'active' : ''}`}
+              >
+                <Inventory2Outlined />
+                <Typography fontSize={22}>Products</Typography>
+              </Link>
+            </ListItem>
+
+            <ListItem className="nav-item">
+              <Link
+                href="#"
+                onClick={() => window.location.href = '/admin/categories'}
+                className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/admin/categories' ? 'active' : ''}`}
+              >
+                <CategoryOutlined />
+                <Typography fontSize={22}>Categories</Typography>
+              </Link>
+            </ListItem>
+
+            <ListItem className="nav-item">
+              <Link
+                href="#"
+                onClick={() => window.location.href = '/admin/customers'}
+                className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/admin/customers' ? 'active' : ''}`}
+              >
+                <GroupsOutlined />
+                <Typography fontSize={22}>Customers</Typography>
+              </Link>
+            </ListItem>
+          </List>
+        )}
+
         <List className="nav pb-4" sx={{ borderBottom: '1px solid #ccc' }}>
           <ListItem className="nav-item">
             <Link
@@ -75,6 +134,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               </Grid2>
             </Link>
           </ListItem>
+
           <ListItem>
             <Link
               href="/favorite"
@@ -85,7 +145,8 @@ export default function Sidebar({ cartCount }: SidebarProps) {
             </Link>
           </ListItem>
         </List>
-        <List className="nav pt-4">
+
+        <List className="nav">
           <ListItem>
             <Link
               href="/account"
@@ -95,6 +156,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               <Typography fontSize={22}>Your Account</Typography>
             </Link>
           </ListItem>
+
           <ListItem>
             <Link
               href="/support"
@@ -104,6 +166,7 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               <Typography fontSize={22}>Support</Typography>
             </Link>
           </ListItem>
+
           <ListItem>
             {user ? (
               <Link

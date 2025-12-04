@@ -29,4 +29,26 @@ interface DbUserAddress {
   updated_at: string
 }
 
-export type { ShippingAddress, DbUserAddress }
+interface AddressRow {
+  first_name: string
+  last_name: string
+  address: string
+  city: string
+  state: string
+  postal_code: string
+  country: string
+  phone_number: string
+}
+
+interface GuestAddress {
+  first_name?: string
+  last_name?: string
+  address?: string
+  city?: string
+  state?: string
+  postal_code?: string
+  country?: string
+  phone_number?: string
+}
+
+export type { ShippingAddress, DbUserAddress, AddressRow, GuestAddress }

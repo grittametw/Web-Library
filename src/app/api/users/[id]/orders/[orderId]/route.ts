@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getPool } from "@/config/db"
-import { OrderItem, OrderRow, OrderItemRow, AddressRow } from "@/types/order"
+import { OrderItem, OrderRow, OrderItemRow } from "@/types/order"
+import { AddressRow } from "@/types/address"
 
 interface OrderShippingAddress {
   first_name: string

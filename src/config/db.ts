@@ -4,7 +4,6 @@ let pool: Pool
 
 export function getPool(): Pool {
   if (!pool) {
-    // ถ้ามี POSTGRES_URL_NON_POOLING (Production)
     const isProd = !!process.env.POSTGRES_URL_NON_POOLING
 
     const dbConfig: PoolConfig = isProd
