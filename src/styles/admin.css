@@ -1,0 +1,14 @@
+.link-admin {
+    width: 100%;
+    color: #000;
+    text-decoration: none;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.link-admin:hover {
+    border-color: #1976d2;
+    box-shadow: 0 4px 12px rgba(25 118 210 0.15);
+    transform: translateY(-4px);
+}

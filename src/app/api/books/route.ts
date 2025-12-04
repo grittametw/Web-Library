@@ -60,3 +60,34 @@ export async function GET(): Promise<NextResponse<Book[] | { error: string }>> {
     )
   }
 }
+
+export async function POST(req: Request): Promise<NextResponse> {
+  try {
+    const body = await req.json()
+    const { name, author, image, rate, genre, description } = body
+
+    if (!name || !author || !genre) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    const pool = getPool()
+
+    const result = await pool.query(
+      `INSERT INTO books (name, author, image, rate, genre, description)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [name, author, image || null, rate || null, genre, description]
+    )
+
+    return NextResponse.json(result.rows[0], { status: 201 })
+  } catch (error: unknown) {
+    console.error('Error creating book:', error)
+    return NextResponse.json(
+      { error: 'Failed to create book' },
+      { status: 500 }
+    )
+  }
+}

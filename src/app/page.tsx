@@ -4,9 +4,9 @@ import { useEffect, useState, Suspense } from 'react'
 import { Box, Grid2, Typography, Button, Paper, Rating, IconButton, InputLabel, FormControl, Select, MenuItem } from '@mui/material'
 import { FavoriteBorder, Favorite } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
-import { useAuth } from '@/hooks/useAuth'
 import { useFavorite } from '@/hooks/useFavorite'
 import { useBooks } from '@/context/BooksContext'
+import { useCategories } from '@/context/CategoriesContext'
 import { Book } from '@/types/book'
 import { SearchHandler } from '@/view/components/SearchHandler'
 import Sidebar from '@/view/components/Sidebar'
@@ -21,7 +21,7 @@ function HomePageContent() {
   const [sortType, setSortType] = useState<string>('Featured')
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [selectedOptionIds, setSelectedOptionIds] = useState<{ [bookId: number]: number }>({})
-  const { user } = useAuth()
+  const { categories } = useCategories()
   const { toggleFavorite, isFavorite } = useFavorite()
   const { books } = useBooks()
   const {
@@ -72,6 +72,8 @@ function HomePageContent() {
   const handleToggleFavorite = (bookId: number, book: Book) => {
     toggleFavorite(bookId, book)
   }
+  
+  const publishedCategories = ['All', ...categories.filter(c => c.published).map(c => c.name)]
 
   return (
     <Box className="d-flex" sx={{ height: '100vh', overflow: 'hidden' }}>
@@ -112,9 +114,6 @@ function HomePageContent() {
             <Box className="d-flex flex-column p-2 px-4 gap-2" sx={{ height: 'auto', backgroundColor: '#fff', borderRadius: '8px' }}>
               <Grid2 className="d-flex justify-content-between align-items-center">
                 <Typography fontWeight={600} fontSize={20}>Categories</Typography>
-                {user?.role === 'admin' && (
-                  <Button variant="contained">Add Item</Button>
-                )}
                 <Box sx={{ minWidth: '100px', backgroundColor: '#e7f1fe', borderRadius: '8px' }}>
                   <FormControl fullWidth>
                     <InputLabel className="z-0" id="demo-simple-select-label">Sort by</InputLabel>
@@ -134,13 +133,13 @@ function HomePageContent() {
                 </Box>
               </Grid2>
               <Grid2 className="d-flex gap-2 mb-2" sx={{ overflowX: 'auto' }}>
-                {['All', 'Sci-Fi', 'Fantasy', 'Drama', 'Horror', 'Historical'].map(category => (
+                {publishedCategories.map(category => (
                   <Button
                     key={category}
                     variant="contained"
                     disableElevation={selectedCategory !== category}
                     sx={{
-                      backgroundColor: selectedCategory === category ? '#1976d2' : '#e7f1fe',
+                      backgroundColor: selectedCategory === category ? 'active' : '#e7f1fe',
                       color: selectedCategory === category ? '#fff' : '#000',
                       borderRadius: '8px',
                       textTransform: 'none'
@@ -172,7 +171,7 @@ function HomePageContent() {
                         </IconButton>
                       </Grid2>
                       <Box className="d-flex gap-4 p-4 pt-0">
-                        <Image src={book.image} alt={book.name} width={130} height={200} />
+                        <Image src={book.image} alt={book.name} width={130} height={200} unoptimized/>
                         <Grid2 className="d-flex flex-column justify-content-between" sx={{ width: 'auto' }}>
                           <Grid2>
                             <Link

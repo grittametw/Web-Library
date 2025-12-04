@@ -1,5 +1,6 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 import type { Metadata } from 'next'
+import { CategoriesProvider } from '@/context/CategoriesContext'
 import { BooksProvider } from '@/context/BooksContext'
 import { FavoriteProvider } from '@/context/FavoriteContext'
 import { CartProvider } from '@/context/CartContext'
@@ -19,13 +20,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AppRouterCacheProvider>
-          <BooksProvider>
-            <FavoriteProvider>
-              <CartProvider>
-                {children}
-              </CartProvider>
-            </FavoriteProvider>
-          </BooksProvider>
+          <CategoriesProvider>
+            <BooksProvider>
+              <FavoriteProvider>
+                <CartProvider>
+                  {children}
+                </CartProvider>
+              </FavoriteProvider>
+            </BooksProvider>
+          </CategoriesProvider>
         </AppRouterCacheProvider>
       </body>
     </html>
