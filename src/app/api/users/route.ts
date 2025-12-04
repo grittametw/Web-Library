@@ -9,7 +9,7 @@ interface User {
   created_at: string
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const pool = getPool()
     const result = await pool.query(
