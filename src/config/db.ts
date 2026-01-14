@@ -9,7 +9,10 @@ export function getPool(): Pool {
     const dbConfig: PoolConfig = isProd
       ? {
           connectionString: process.env.POSTGRES_URL_NON_POOLING,
-          ssl: false,
+          ssl: {
+            rejectUnauthorized: false,
+            checkServerIdentity: () => undefined,
+          },
           max: 10,
           idleTimeoutMillis: 30000,
           connectionTimeoutMillis: 2000,
