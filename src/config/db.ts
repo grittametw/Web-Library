@@ -8,25 +8,28 @@ export function getPool(): Pool {
 
     const dbConfig: PoolConfig = isProd
       ? {
-          connectionString: process.env.POSTGRES_URL_NON_POOLING,
-          ssl: {
-            rejectUnauthorized: false,
-          },
-          max: 10,
-          idleTimeoutMillis: 30000,
-          connectionTimeoutMillis: 2000,
-        }
+        connectionString:
+          process.env.POSTGRES_URL_NON_POOLING ||
+          process.env.POSTGRES_URL ||
+          process.env.DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+        max: 10,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+      }
       : {
-          host: process.env.POSTGRES_HOST || 'localhost',
-          user: process.env.POSTGRES_USER || 'postgres',
-          password: process.env.POSTGRES_PASSWORD || 'postgres',
-          database: process.env.POSTGRES_DATABASE || 'postgres',
-          port: Number(process.env.POSTGRES_PORT) || 5432,
-          ssl: false,
-          max: 10,
-          idleTimeoutMillis: 30000,
-          connectionTimeoutMillis: 2000,
-        }
+        host: process.env.POSTGRES_HOST || 'localhost',
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || 'postgres',
+        database: process.env.POSTGRES_DATABASE || 'postgres',
+        port: Number(process.env.POSTGRES_PORT) || 5432,
+        ssl: false,
+        max: 10,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+      }
 
     pool = new Pool(dbConfig)
   }
