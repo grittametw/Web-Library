@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.externals.push({
+      'pg-native': 'pg-native',
+    })
+    return config
+  },
 }
 
 export default nextConfig;
