@@ -7,6 +7,14 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+type UserResponse = {
+  id: number
+  email: string
+  name: string
+  role: 'admin' | 'user'
+  profilePicture: string | null
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json()
@@ -33,7 +41,7 @@ export async function POST(req: NextRequest) {
     const pool = getPool()
     const userEmail = data.user.email
 
-    let userResponse: any = null
+    let userResponse: UserResponse | null = null
     let role: 'admin' | 'user' = 'user'
 
     const adminResult = await pool.query(
