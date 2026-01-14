@@ -20,8 +20,8 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!user?.id) {
-      const savedFavorites = localStorage.getItem('favorites_guest')
-      const savedFavoriteBooks = localStorage.getItem('favorite_books_guest')
+      const savedFavorites = localStorage.getItem('guest_favorites')
+      const savedFavoriteBooks = localStorage.getItem('guest_favorite_books')
 
       setFavorites(savedFavorites ? JSON.parse(savedFavorites) : [])
       setFavoriteBooks(savedFavoriteBooks ? JSON.parse(savedFavoriteBooks) : [])
@@ -40,13 +40,13 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!user?.id) {
-      localStorage.setItem('favorites_guest', JSON.stringify(favorites))
+      localStorage.setItem('guest_favorites', JSON.stringify(favorites))
     }
   }, [favorites, user?.id])
 
   useEffect(() => {
     if (!user?.id) {
-      localStorage.setItem('favorite_books_guest', JSON.stringify(favoriteBooks))
+      localStorage.setItem('guest_favorite_books', JSON.stringify(favoriteBooks))
     }
   }, [favoriteBooks, user?.id])
 

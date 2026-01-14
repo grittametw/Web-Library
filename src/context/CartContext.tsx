@@ -24,7 +24,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await res.json()
       setCart(data.cart || [])
     } else {
-      const saved = localStorage.getItem('cart_guest')
+      const saved = localStorage.getItem('guest_cart')
       setCart(saved ? JSON.parse(saved) : [])
     }
   }
@@ -35,7 +35,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      localStorage.setItem('cart_guest', JSON.stringify(cart))
+      localStorage.setItem('guest_cart', JSON.stringify(cart))
     }
   }, [cart, isLoggedIn])
 

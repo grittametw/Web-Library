@@ -21,9 +21,11 @@ export default function CheckoutPage() {
   const router = useRouter()
   const status = usePaymentStatus(chargeId)
 
+  const GUEST_ADDRESS_KEY = 'guest_shipping_address'
+
   const getShippingAddress = () => {
     try {
-      const saved = localStorage.getItem('guest_shipping_address')
+      const saved = localStorage.getItem(GUEST_ADDRESS_KEY)
       return saved ? JSON.parse(saved) : null
     } catch {
       return null
@@ -50,8 +52,8 @@ export default function CheckoutPage() {
         return
       }
 
-      const shippingAddress = getShippingAddress()
-      const addressId = getSelectedAddressId()
+      const shippingAddress = !isLoggedIn ? getShippingAddress() : null
+      const addressId = isLoggedIn ? getSelectedAddressId() : null
 
       if (!isLoggedIn && !shippingAddress) {
         setError('Please add shipping address')
@@ -123,6 +125,7 @@ export default function CheckoutPage() {
       setCart([])
       if (!isLoggedIn) {
         localStorage.removeItem('guest_cart')
+        localStorage.removeItem('guest_shipping_address')
       }
 
       setQrCode(paymentData.qr)
@@ -172,8 +175,8 @@ export default function CheckoutPage() {
               className="d-flex flex-column align-items-center p-4"
               sx={{ width: '100%', backgroundColor: '#fff', borderRadius: '8px' }}
             >
-              <Typography fontWeight={600} fontSize={32}>ชำระเงินด้วย QR PromptPay</Typography>
-              <Typography fontSize={24} sx={{ mt: 2 }}>จำนวนเงิน: ฿{totalPrice}</Typography>
+              <Typography fontWeight={600} fontSize={32}>Pay with QR PromptPay</Typography>
+              <Typography fontSize={24} sx={{ mt: 2 }}>Amount: ฿{totalPrice}</Typography>
 
               {error && (
                 <Typography color="error" sx={{ mt: 2 }}>
@@ -187,7 +190,7 @@ export default function CheckoutPage() {
                 disabled={loading || cart.length === 0}
                 sx={{ width: '200px', mt: 4 }}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : 'สร้าง QR ชำระเงิน'}
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Generate Payment QR'}
               </Button>
             </Box>
           </Box>
@@ -199,22 +202,22 @@ export default function CheckoutPage() {
           {qrCode && (
             <>
               <Typography variant="h6" gutterBottom>
-                สแกน QR เพื่อชำระเงิน
+                Scan the QR code to complete your payment
               </Typography>
               <Box sx={{ my: 3 }}>
                 <img src={qrCode} alt="PromptPay QR" width={350} height={350} />
               </Box>
               <Typography variant="body1" sx={{ mt: 2 }}>
-                สถานะ: {status || 'กำลังรอการชำระเงิน...'}
+                Status: {status || 'Waiting for payment...'}
               </Typography>
               {status === "successful" && (
                 <Typography color="green" fontWeight={600} sx={{ mt: 2 }}>
-                  ✅ ชำระเงินสำเร็จ กำลังนำไปหน้า Order...
+                  ✅ Payment successful. Redirecting to your order details...
                 </Typography>
               )}
               {status === "failed" && (
                 <Typography color="red" fontWeight={600} sx={{ mt: 2 }}>
-                  ❌ การชำระเงินล้มเหลว
+                  ❌ Payment failed.
                 </Typography>
               )}
             </>

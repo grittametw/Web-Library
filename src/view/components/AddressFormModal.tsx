@@ -12,14 +12,14 @@ interface Props {
   userEmail?: string
 }
 
-export default function AddressFormModal({ 
-  isOpen, 
-  onClose, 
-  onSave, 
-  address, 
-  isLoggedIn, 
-  userId, 
-  userEmail 
+export default function AddressFormModal({
+  isOpen,
+  onClose,
+  onSave,
+  address,
+  isLoggedIn,
+  userId,
+  userEmail
 }: Props) {
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -111,14 +111,30 @@ export default function AddressFormModal({
           body: JSON.stringify(requestBody)
         })
 
-        if (response.ok) {
-          onSave()
-          onClose()
-        } else {
+        if (!response.ok) {
           const errorData = await response.json()
           console.error('Failed to save address:', errorData.error)
+          return
         }
+
+        onSave()
+        onClose()
+        return
       }
+
+      const guestAddress = {
+        ...formData,
+        isGuest: true,
+        savedAt: new Date().toISOString()
+      }
+
+      const GUEST_ADDRESS_KEY = 'guest_shipping_address'
+
+      localStorage.setItem(GUEST_ADDRESS_KEY, JSON.stringify(guestAddress))
+
+      onSave()
+      onClose()
+
     } catch (error) {
       console.error('Failed to save address:', error)
     } finally {

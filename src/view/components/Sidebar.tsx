@@ -163,7 +163,10 @@ export default function Sidebar({ cartCount }: SidebarProps) {
               className={`nav-link d-flex align-items-center gap-4 ${currentPath === '/support' ? 'active' : ''}`}
             >
               <SupportAgentOutlined />
-              <Typography fontSize={22}>Support</Typography>
+              <Grid2>
+                <Typography fontSize={22}>Support</Typography>
+                <Typography fontWeight={600} fontSize={22}>(Mock Data)</Typography>
+              </Grid2>
             </Link>
           </ListItem>
 

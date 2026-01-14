@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       password,
     })
 
-    if (error) {
+    if (error || !data.session || !data.user) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -33,6 +33,9 @@ export async function POST(req: NextRequest) {
     const pool = getPool()
     const userEmail = data.user.email
 
+    let userResponse: any = null
+    let role: 'admin' | 'user' = 'user'
+
     const adminResult = await pool.query(
       'SELECT id, email, name, role, profile_picture FROM admins WHERE email = $1 LIMIT 1',
       [userEmail]
@@ -40,45 +43,64 @@ export async function POST(req: NextRequest) {
 
     if (adminResult.rows.length > 0) {
       const admin = adminResult.rows[0]
-      return NextResponse.json({
-        token: data.session.access_token,
-        refreshToken: data.session.refresh_token,
-        user: {
-          id: admin.id,
-          email: admin.email,
-          name: admin.name,
-          role: 'admin',
-          profilePicture: admin.profile_picture,
-        },
-      })
-    }
+      role = 'admin'
 
-    const userResult = await pool.query(
-      'SELECT id, email, name, role, profile_picture FROM users WHERE email = $1 LIMIT 1',
-      [userEmail]
-    )
-
-    if (userResult.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
+      userResponse = {
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        role,
+        profilePicture: admin.profile_picture,
+      }
+    } else {
+      const userResult = await pool.query(
+        'SELECT id, email, name, role, profile_picture FROM users WHERE email = $1 LIMIT 1',
+        [userEmail]
       )
-    }
 
-    const user = userResult.rows[0]
-    return NextResponse.json({
-      token: data.session.access_token,
-      refreshToken: data.session.refresh_token,
-      user: {
+      if (userResult.rows.length === 0) {
+        return NextResponse.json(
+          { error: 'User not found in database' },
+          { status: 404 }
+        )
+      }
+
+      const user = userResult.rows[0]
+      role = 'user'
+
+      userResponse = {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: 'user',
+        role,
         profilePicture: user.profile_picture,
-      },
+      }
+    }
+
+    const response = NextResponse.json({
+      success: true,
+      token: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+      user: userResponse,
     })
-  } catch (error: unknown) {
+
+    response.cookies.set('token', data.session.access_token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+    })
+
+    response.cookies.set('role', role, {
+      sameSite: 'lax',
+      path: '/',
+    })
+
+    return response
+  } catch (error) {
     console.error('Login error:', error)
-    return NextResponse.json({ error: 'Login failed' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Login failed' },
+      { status: 500 }
+    )
   }
 }

@@ -32,7 +32,10 @@ export function useAuth() {
     setToken(authToken)
     localStorage.setItem('authUser', JSON.stringify(userData))
     localStorage.setItem('authToken', authToken)
+    localStorage.removeItem('guest_cart')
     localStorage.removeItem('guest_shipping_address')
+    localStorage.removeItem('guest_favorites')
+    localStorage.removeItem('guest_favorite_books')
   }
 
   const logout = () => {

@@ -35,10 +35,16 @@ export default function MycartPage() {
   const handleAddressChange = (address: ShippingAddress | null) => {
     setShippingAddress(address)
 
-    if (address?.id) {
+    if (!address) {
+      localStorage.removeItem('selected_address_id')
+      localStorage.removeItem('guest_shipping_address')
+      return
+    }
+
+    if (isLoggedIn && address.id) {
       localStorage.setItem('selected_address_id', address.id.toString())
     } else {
-      localStorage.removeItem('selected_address_id')
+      localStorage.setItem('guest_shipping_address', JSON.stringify(address))
     }
   }
 

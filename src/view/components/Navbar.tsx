@@ -166,9 +166,14 @@ export default function Navbar() {
                             alignItems: 'center',
                             borderBottom: '1px solid #e0e0e0'
                         }}>
-                            <Typography fontSize={14} color='text.secondary'>
-                                Recently Received Notifications
-                            </Typography>
+                            <Grid2>
+                                <Typography fontSize={14} color='text.secondary'>
+                                    Recently Received Notifications
+                                </Typography>
+                                <Typography fontWeight={600} fontSize={20}>
+                                    (Mock Data)
+                                </Typography>
+                            </Grid2>
                             <IconButton
                                 size="small"
                                 onClick={() => setShowNotifications(false)}

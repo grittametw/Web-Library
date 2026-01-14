@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material'
 import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import '@/styles/login.css'
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
+  const router = useRouter()
 
   const validateInputs = (email: string, password: string) => {
     let isValid = true
@@ -43,6 +45,7 @@ export default function LoginPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setLoginError('')
+
     const data = new FormData(event.currentTarget)
     const email = data.get('email') as string
     const password = data.get('password') as string
@@ -50,6 +53,7 @@ export default function LoginPage() {
     if (!validateInputs(email, password)) return
 
     setLoading(true)
+    
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -59,19 +63,23 @@ export default function LoginPage() {
 
       const result = await res.json()
 
-      if (res.ok) {
-        login(result.user, result.token)
-        
-        localStorage.setItem('refreshToken', result.refreshToken)
-        
-        if (result.user.role === 'admin') {
-          window.location.href = '/admin/dashboard'
-        } else {
-          window.location.href = '/'
-        }
-      } else {
+      if (!res.ok || !result.success) {
         setLoginError(result.error || 'Login failed')
+        return
       }
+
+      login(result.user, result.token)
+
+      if (result.refreshToken) {
+        localStorage.setItem('refreshToken', result.refreshToken)
+      }
+
+      if (result.user.role === 'admin') {
+        router.replace('/admin/dashboard')
+      } else {
+        router.replace('/')
+      }
+
     } catch (error) {
       console.error('Login error:', error)
       setLoginError('Network error. Please try again.')
