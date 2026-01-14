@@ -9,10 +9,7 @@ export function getPool(): Pool {
     const dbConfig: PoolConfig = isProd
       ? {
           connectionString: process.env.POSTGRES_URL_NON_POOLING,
-          ssl: {
-            rejectUnauthorized: false,
-            checkServerIdentity: () => undefined,
-          },
+          ssl: { rejectUnauthorized: false },
           max: 10,
           idleTimeoutMillis: 30000,
           connectionTimeoutMillis: 2000,
@@ -24,7 +21,8 @@ export function getPool(): Pool {
           database: process.env.POSTGRES_DATABASE || 'postgres',
           port: Number(process.env.POSTGRES_PORT) || 54322,
           ssl: {
-            rejectUnauthorized: false,
+            rejectUnauthorized:
+              process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED !== 'false',
           },
           max: 10,
           idleTimeoutMillis: 30000,
