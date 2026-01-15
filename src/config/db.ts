@@ -5,11 +5,14 @@ let pool: Pool
 export function getPool(): Pool {
   if (!pool) {
     const hasConnectionString = !!process.env.POSTGRES_URL_NON_POOLING
+    const isProduction = process.env.NODE_ENV === 'production'
 
     const dbConfig: PoolConfig = hasConnectionString
       ? {
           connectionString: process.env.POSTGRES_URL_NON_POOLING,
-          ssl: true,
+          ssl: isProduction 
+            ? { rejectUnauthorized: true }
+            : { rejectUnauthorized: false },
           max: 10,
           idleTimeoutMillis: 30000,
           connectionTimeoutMillis: 2000,

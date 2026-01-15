@@ -1,5 +1,3 @@
-export const runtime = 'nodejs'
-  
 import { NextResponse } from 'next/server'
 import { getPool } from '@/config/db'
 import { Book, BookRow } from '@/types/book'
