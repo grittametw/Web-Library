@@ -4,12 +4,12 @@ let pool: Pool
 
 export function getPool(): Pool {
   if (!pool) {
-    const hasConnectionString = !!process.env.POSTGRES_URL_NON_POOLING
+    const hasConnectionString = !!process.env.POSTGRESQL_URL_NON_POOLING
     const isProduction = process.env.NODE_ENV === 'production'
 
     const dbConfig: PoolConfig = hasConnectionString
       ? {
-          connectionString: process.env.POSTGRES_URL_NON_POOLING,
+          connectionString: process.env.POSTGRESQL_URL_NON_POOLING,
           ssl: isProduction 
             ? { rejectUnauthorized: true }
             : { rejectUnauthorized: false },
