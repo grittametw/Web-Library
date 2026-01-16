@@ -7,7 +7,7 @@ This project demonstrates my ability to design, develop, and deploy a modern web
 
 ## 🌐 Live Demo
 
-🔗 https://web-library-grixttametwilai.vercel.app
+🔗 https://web-library-grittametwilai.vercel.app
 
 ---
 
