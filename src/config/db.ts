@@ -20,10 +20,7 @@ export function getPool(): Pool {
           password: process.env.POSTGRES_PASSWORD || 'postgres',
           database: process.env.POSTGRES_DATABASE || 'postgres',
           port: Number(process.env.POSTGRES_PORT) || 54322,
-          ssl:
-            process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED === 'false'
-              ? false
-              : { rejectUnauthorized: true },
+          ssl: false,
           max: 10,
           idleTimeoutMillis: 30000,
           connectionTimeoutMillis: 2000,
