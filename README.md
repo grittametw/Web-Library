@@ -102,7 +102,7 @@ Create a .env.local file:
 ```bash
 POSTGRES_URL=your_database_url
 ```
-4. Run the development server
+### 4. Run the development server
 ```bash
 npm run dev
 ```
@@ -118,6 +118,7 @@ For demo and portfolio purposes, SSL certificate verification is disabled in the
 NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
 This configuration prevents the SELF_SIGNED_CERT_IN_CHAIN error when establishing database connections.
+
 
 ## ⚠️ Important:
 This setup is intended only for demonstration and portfolio purposes.
