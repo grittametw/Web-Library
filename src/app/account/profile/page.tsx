@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { 
-    Box, Typography, Grid2, FormControl, FormLabel, TextField, Button, Avatar, 
-    CircularProgress, Snackbar, Alert, Input 
+import {
+    Box, Typography, Grid2, FormControl, FormLabel, TextField, Button, Avatar,
+    CircularProgress, Snackbar, Alert, Input
 } from '@mui/material'
 import { Person } from '@mui/icons-material'
 import { useCart } from '@/hooks/useCart'
@@ -72,19 +72,17 @@ export default function ProfilePage() {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: userData.username,
-                    email: userData.email
+                    username: userData.username
                 }),
             })
 
             if (!response.ok) throw new Error('Failed to update profile')
 
             updateUser({
-                name: userData.username,
-                email: userData.email
+                name: userData.username
             })
 
-            setSnackbarMessage('Data saved successfully')
+            setSnackbarMessage('Profile updated successfully')
             setSnackbarSeverity('success')
             setOpenSnackbar(true)
         } catch (err) {
@@ -182,7 +180,7 @@ export default function ProfilePage() {
                                                     variant="outlined"
                                                     defaultValue={user?.email}
                                                     onChange={handleInputChange}
-                                                    required
+                                                    disabled
                                                 />
                                             </FormControl>
                                         </Grid2>
