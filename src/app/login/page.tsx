@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Box, Typography, FormControl, TextField, Button, Grid2 } from '@mui/material'
 import { useAuth } from '@/hooks/useAuth'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import '@/styles/login.css'
@@ -16,7 +15,6 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
-  const router = useRouter()
 
   const validateInputs = (email: string, password: string) => {
     let isValid = true
