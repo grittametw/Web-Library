@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     const pool = getPool()
     const insertResult = await pool.query(
       'INSERT INTO users (email, name, role, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id, email, name, role',
-      [email, name || null, 'user']
+      [email, name || 'User', 'user']
     )
 
     const userData = insertResult.rows[0]

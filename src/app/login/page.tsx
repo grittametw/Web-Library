@@ -75,9 +75,9 @@ export default function LoginPage() {
       }
 
       if (result.user.role === 'admin') {
-        router.replace('/admin/dashboard')
+        window.location.href = '/admin/dashboard'
       } else {
-        router.replace('/')
+        window.location.href = '/'
       }
 
     } catch (error) {

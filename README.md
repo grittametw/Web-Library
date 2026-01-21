@@ -11,6 +11,23 @@ This project demonstrates my ability to design, develop, and deploy a modern web
 
 ---
 
+## 🔐 Demo Accounts
+
+You can use the following test accounts to explore the application features:
+
+### 👤 User Account
+- **Email:** user@example.com  
+- **Password:** User123  
+
+### 🛠 Admin Account
+- **Email:** admin@example.com  
+- **Password:** Admin123  
+
+> ⚠️ These accounts are provided for **demo and portfolio evaluation purposes only**.  
+> Please do not change passwords or sensitive data.
+
+---
+
 ## 📌 About This Project
 
 Web-Library is a web-based platform that allows users to browse digital products, manage favorites, and interact with a complete shopping flow.  
